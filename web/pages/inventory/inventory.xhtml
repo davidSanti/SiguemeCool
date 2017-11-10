@@ -1,0 +1,344 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../../resources/templates/plantilla.xhtml">
+
+            <ui:define name="content">
+
+                <center>
+                    <h2><h:outputText value="Listado de Puestos"/></h2>
+                </center>
+
+                <h:form style="margin: 8px;">
+                    <p:commandButton value="Migrar Elementos" oncomplete="PF('modalMigrar').show()" update="modalMigrar"/>
+                    <p:commandButton value="Registrar" onclick="PF('registrarPuesto').show()"/>
+                </h:form>
+
+                <h:form id="formInventario" prependId="false">
+                    <p:growl id="growlInvetario" showDetail="true" showSummary="false" sticky="false" life="3300"/> 
+
+                    <p:dataTable id="tablaInventario" emptyMessage="No se encontrarón registros"
+                                 var="puesto" value="#{inventarioController.puestos}" widgetVar="tablaInventario"
+                                 paginator="true" paginatorPosition="bottom" rows="8" reflow="true" rowStyleClass="row-color" >
+
+                        <p:column headerText="Puesto" filterBy="#{puesto.serialCode}">
+                            <h:outputText value="#{puesto.serialCode}"/>
+                        </p:column>
+
+                        <p:column filterBy="#{puesto.groupCls}" filterMatchMode="in" >
+                            <f:facet name="filter">
+                                <p:selectCheckboxMenu id="gruposList" label="Grupos"     
+                                                      onHide="ejecutarFiltro();"
+                                                      value="#{inventarioController.grupos}" filter="true"
+                                                      converter="grupoConverter" >
+
+                                    <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
+                                                   itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                </p:selectCheckboxMenu>
+                                <p:remoteCommand  name="ejecutarFiltro"
+                                                  update=":formInventario:tablaInventario" process="@this gruposList"
+                                                  action="#{inventarioController.filtrarPorGrupo()}"/> 
+                            </f:facet>
+
+                            <p:dataList value="#{puesto.groupCls}"
+                                        type="definition"  var="grupo"
+                                        emptyMessage="No se encontraron registros">
+                                <h:outputText value="#{grupo.groupName}"/>
+                            </p:dataList>
+
+                        </p:column>
+
+                        <p:column headerText="Ubicación">
+                            <h:outputText value="#{puesto.deskLocation}"/>
+                        </p:column>
+
+                        <p:column headerText="Acciones">
+                            <p:commandButton icon="ui-icon-pencil" actionListener="#{inventarioController.editarPuesto(puesto)}"
+                                             oncomplete="PF('modalEditarPuesto').show()" update="modalEditarPuesto"/>
+                            <p:commandButton icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.editarPuesto(puesto)}"
+                                             oncomplete="PF('modalVerPuesto').show()" update="modalVerPuesto"/>
+                        </p:column>
+                    </p:dataTable>
+
+                </h:form>   
+
+                <p:dialog id="registrarPuesto" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="registrarPuesto" 
+                          modal="true" showEffect="fade" hideEffect="fade">
+
+                    <h:form id="formRegistrar">
+                        <h1><h:outputText value="Registrar Puesto"/></h1>
+                        <h:panelGrid columns="2" id="gridRegistrar">
+
+                            <p:outputLabel value="Grupo(s)" />
+                            <p:selectCheckboxMenu label="-- Seleccione --" id="proyecto" 
+                                                  required="true" requiredMessage="El Proyecto es un campo obligatorio"
+                                                  value="#{inventarioController.puesto.groupCls}" filter='true'
+                                                  converter="grupoConverter">
+                                <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
+                                               itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                            </p:selectCheckboxMenu>
+
+                            <p:outputLabel value="Serial Code:" for="serialCode" />
+                            <p:inputText id="serialCode" value="#{inventarioController.puesto.serialCode}" title="Serial Code"
+                                         required="true" requiredMessage="El Serial Code es un campo obligatorio."
+                                         maxlength="9" validatorMessage="El serial Code debe contener entre 6 y 9 carácteres"
+                                         styleClass="upper-case">
+                                <f:validateLength minimum="6"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Ubicación" for="ubicacion" />
+                            <p:inputTextarea id="ubicacion" value="#{inventarioController.puesto.deskLocation}" title="DeskLocation" 
+                                             required="true" requiredMessage="La ubicación es un campo obligatorio." cols="21" 
+                                             maxlength="100" validatorMessage="La ubicación debe contener entre 10 y 100 carácteres">
+                                <f:validateLength minimum="10" maximum="100"/>
+                            </p:inputTextarea>
+
+                            <p:commandButton value="Registrar" action="#{inventarioController.registrarPuestoCerrarModal()}" 
+                                             update="formInventario, formRegistrar"/>
+                            <p:commandButton value="Cerrar" action="#{inventarioController.cerrarModal(1)}" update="formInventario, formRegistrar" immediate="true"/>
+                        </h:panelGrid>
+                    </h:form>                          
+                </p:dialog>
+
+                <p:dialog id="modalEditarPuesto" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="modalEditarPuesto" 
+                          modal="true" showEffect="fade" hideEffect="fade">
+
+                    <h:form id="formEditar">
+                        <h1><h:outputText value="Modificar Puesto"/></h1>
+                        <h:panelGrid columns="2" id="gridEditar">
+                            <p:outputLabel value="Grupo(s)" />
+                            <p:selectCheckboxMenu label="-- Seleccione --" id="proyecto" 
+                                                  required="true" requiredMessage="El Proyecto es un campo obligatorio"
+                                                  value="#{inventarioController.puesto.groupCls}" filter='true'
+                                                  converter="grupoConverter">
+                                <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
+                                               itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                            </p:selectCheckboxMenu>
+
+                            <p:outputLabel value="Serial Code:" for="serialCode" />
+                            <p:inputText id="serialCode" value="#{inventarioController.puesto.serialCode}" title="Serial Code"
+                                         required="true" requiredMessage="El Serial Code es un campo obligatorio."
+                                         maxlength="9" validatorMessage="El serial Code debe contener entre 6 y 9 carácteres"
+                                         styleClass="upper-case">
+                                <f:validateLength minimum="6"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Ubicación" for="ubicacion" />
+                            <p:inputTextarea id="ubicacion" value="#{inventarioController.puesto.deskLocation}" title="DeskLocation"
+                                             required="true" requiredMessage="La ubicación es un campo obligatorio." cols="21" 
+                                             maxlength="100" validatorMessage="La ubicación debe contener entre 10 y 100 carácteres">
+                                <f:validateLength minimum="10" maximum="100"/>
+                            </p:inputTextarea>
+
+                            <p:commandButton value="Guardar" action="#{inventarioController.editarCerrarModal()}" 
+                                             update="formInventario, formEditar"/>
+                            <p:commandButton value="Cerrar" action="#{inventarioController.cerrarModal(5)}" update="formInventario, formEditar" immediate="true"/>
+                        </h:panelGrid>
+                    </h:form>                          
+                </p:dialog>
+
+                <p:dialog id="modalAsignarElementos" resizable="false" closeOnEscape="true" 
+                          draggable="false" closable="true" widgetVar="modalAsignarElementos" 
+                          modal="true" showEffect="fade" hideEffect="fade">
+                    <center><h1><h:outputText value="Elementos del MSC"/></h1></center>
+                    <h:form>
+                        <h:panelGrid columns="2">
+                            <p:dataTable id="tablaElmentosMsc" emptyMessage="No se encontrarón registros"
+                                         var="elemento" value="#{inventarioController.elementosMsc}"
+                                         paginator="true" paginatorPosition="bottom" rows="8" reflow="true" 
+                                         rowStyleClass="row-color">
+
+                                <p:column headerText="Algo">
+                                    <h:outputText value="#{elemento.brand}"/>
+                                </p:column>
+                            </p:dataTable>
+
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+
+                <p:dialog id="modalVerPuesto" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="true" widgetVar="modalVerPuesto" 
+                          modal="true" showEffect="fade" hideEffect="fade" width="1000">
+                    <center>
+                        <h1><h:outputText value="Ver Elementos del puesto #{inventarioController.puesto.serialCode}"/></h1>
+                    </center>
+                    <br/>
+                    <h:form id="formVerPuesto">
+                        <p:dataTable id="tablaElmentos" emptyMessage="No se encontrarón registros"
+                                     var="elemento" value="#{inventarioController.elementosPorPuestos}"
+                                     paginator="true" paginatorPosition="bottom" rows="10" reflow="true" 
+                                     rowStyleClass="row-color">
+
+                            <p:column headerText="Tipo">
+                                <h:outputLabel value="#{elemento.typeId.description}"/>
+                            </p:column>
+
+                            <p:column headerText="Serial Code">
+                                <h:outputLabel value="#{elemento.serialCode}"/>
+                            </p:column>
+
+                            <p:column headerText="Placa Inventario">
+                                <h:outputLabel value="#{elemento.inventoryPlaque}"/>
+                            </p:column>
+
+                            <p:column headerText="Marca">
+                                <h:outputLabel value="#{elemento.brand}"/>    
+
+                            </p:column>
+
+                            <p:column headerText="Modelo">
+                                <h:outputLabel value="#{elemento.model}"/>    
+                            </p:column>
+
+                            <p:column headerText="Acciones" width="80">
+                                <p:commandButton value="Ver" icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.asignarElemento(elemento)}"
+                                                 oncomplete="PF('modalVerElemento').show()" update="modalVerElemento"/>
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <br/>
+                        <center>
+                            <p:commandButton value="Cerrar" actionListener="#{inventarioController.cerrarModal(4)}"/>
+                        </center>
+
+                        <p:commandButton value="Agregar" oncomplete="PF('modalAsignarElementos').show()" update="modalAsignarElementos"/>
+                    </h:form>
+                </p:dialog>
+
+
+                <p:dialog id="modalMigrar" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="modalMigrar" 
+                          modal="true" showEffect="fade" hideEffect="fade">
+
+                    <h:form id="formMigrar" >
+                        <p:growl id="growlMigrar" showSummary="false" showDetail="true" sticky="false" life="3000"/>                      
+                        <center><h1><h:outputText value="Validar Puesto"/></h1></center> 
+
+                        <h:panelGrid columns="2" id="gridMigrar">
+
+                            <p:outputLabel value="Origen" for="origen" />                
+                            <p:autoComplete id="origen" required="true" requiredMessage="El puesto de origen es un campo obligatorio."
+                                            value="#{inventarioController.serialCodeOrigen}" 
+                                            completeMethod="#{inventarioController.autoCompletarSerialCode}" >
+                            </p:autoComplete>
+
+                            <p:outputLabel value="Destino" for="destino" />
+                            <p:autoComplete id="destino" required="true" requiredMessage="El puesto de destino es un campo obligatorio."
+                                            value="#{inventarioController.serialCodeDestino}" 
+                                            completeMethod="#{inventarioController.autoCompletarSerialCode}" >
+                            </p:autoComplete>
+
+                            <p:commandButton value="Validar" action="#{inventarioController.validarPuestos()}" 
+                                             update="formMigrar, growlMigrar, modalMigrarElementos"/>
+                            <p:commandButton value="Cerrar" action="#{inventarioController.cerrarModal(2)}" update="formMigrar" immediate="true"/>
+                        </h:panelGrid>
+
+                    </h:form>
+                </p:dialog>
+
+
+                <p:dialog id="modalMigrarElementos" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="modalMigrarElementos" 
+                          modal="true" showEffect="fade" hideEffect="fade" width="850">
+                    <h:form id="formMigrarElementos">
+                        <center><h1><h:outputText value="Migrar Elementos"/></h1></center>
+                        <h:panelGrid columns="2" id="gridMigrarElementos">
+                            <p:panel>
+                                <h:form>
+                                    <center>
+                                        <h:outputText value="Elementos en el puesto #{inventarioController.serialCodeOrigen}"/>
+                                    </center>  
+                                    <p:selectManyMenu id="advanced" value="#{inventarioController.elementosPorPuestos}" 
+                                                      converter="elementoConverter" 
+                                                      filter="true" filterMatchMode="contains" showCheckbox="true">
+
+                                        <f:selectItems value="#{inventarioController.elementosPorPuestosOrigen}" var="elemento"
+                                                       itemLabel="#{elemento.typeId.description}" itemValue="#{elemento}" />
+
+                                    </p:selectManyMenu>
+                                </h:form>
+                            </p:panel>
+
+                            <p:panel>
+                                <center>
+                                    <h:outputText value="Elementos en el puesto #{inventarioController.serialCodeDestino}"/>
+                                </center>
+                                <p:dataTable value="#{inventarioController.elementosPorPuestosDestino}" var="elementoPuesto"
+                                             emptyMessage="No se encontrarón registros" rowStyleClass="row-color"
+                                             paginator="true" paginatorPosition="bottom" rows="6" reflow="true">
+
+                                    <p:column headerText="Elemento">
+                                        <h:outputText value="#{elementoPuesto.typeId.description}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Serial Code">
+                                        <h:outputText value="#{elementoPuesto.serialCode}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Acciones">
+                                        <p:commandButton value="Ver info" icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.asignarElemento(elementoPuesto)}"
+                                                         oncomplete="PF('modalVerElemento').show()" update="modalVerElemento"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+                        </h:panelGrid>
+
+                        <center>
+                            <p:commandButton value="Migrar" action="#{inventarioController.migrarElementos()}" update=":formInventario:growlInvetario, formMigrarElementos" />                        
+                            <p:commandButton value="Cerrar" action="#{inventarioController.cerrarModal(3)}" />
+                        </center>
+                    </h:form>
+
+                </p:dialog>
+
+
+                <p:dialog id="modalVerElemento" resizable="false" closeOnEscape="true" 
+                          draggable="false" closable="true" widgetVar="modalVerElemento" 
+                          modal="true" showEffect="fade" hideEffect="fade">
+                    <center><h1><h:outputText value="Detalle Elemento"/></h1></center>
+                    <br/>
+                    <h:form>
+                        <p:panelGrid columns="2">
+
+                            <h:outputLabel value="Tipo"/>
+                            <h:outputLabel value="#{inventarioController.elemento.typeId.description}"/>
+
+                            <h:outputLabel value="Serial Code"/>
+                            <h:outputLabel value="#{inventarioController.elemento.serialCode}"/>
+
+                            <h:outputLabel value="Placa Inventario"/>
+                            <h:outputLabel value="#{inventarioController.elemento.inventoryPlaque}"/>
+
+                            <h:outputLabel value="Marca"/>
+                            <h:outputLabel value="#{inventarioController.elemento.brand}"/>    
+
+                            <h:outputLabel value="Modelo"/>
+                            <h:outputLabel value="#{inventarioController.elemento.model}"/>    
+
+                            <h:outputLabel value="Nombre PC" rendered="#{inventarioController.verificarTipoElemento() eq true}"/>
+                            <h:outputLabel value="#{inventarioController.elemento.pcName}" rendered="#{inventarioController.verificarTipoElemento() eq true}"/>  
+
+                            <h:outputLabel value="Descripción"/>
+                            <h:outputLabel value="#{inventarioController.elemento.description}"/>
+
+                        </p:panelGrid>
+                        <br/>
+                        <center><p:commandButton value="Cerrar" onclick="PF('modalVerElemento').hide()" immediate="true"/></center> 
+                    </h:form>
+                </p:dialog>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
