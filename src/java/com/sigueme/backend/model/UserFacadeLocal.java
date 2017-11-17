@@ -34,10 +34,10 @@ public interface UserFacadeLocal {
 
     User iniciarSesion(User user);
 
-    List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos);
+    List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, List<User> usuariosExcluidos);
 
-    List<User> filtrarUsuariosPorRol(List<Role> listaRoles);
+    List<User> filtrarUsuariosPorRol(List<Role> listaRoles, List<User> usuariosExcluidos);
 
-    List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos);
+    List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos, List<User> usuariosExcluidos);
 
 }

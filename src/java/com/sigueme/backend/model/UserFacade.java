@@ -8,6 +8,7 @@ package com.sigueme.backend.model;
 import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.Role;
 import com.sigueme.backend.entities.User;
+import com.sigueme.backend.entities.UserByCourse;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -54,12 +55,20 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     }
 
     @Override
-    public List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos) {
+    public List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, List<User> usuariosExcluidos) {
         List<User> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos", User.class);
+            String consulta;
+            Query query;
+            if (usuariosExcluidos.isEmpty()) {
+                query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos", User.class);
+            } else {
+                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u NOT IN :usuariosExcluidos", User.class);
+                query.setParameter("usuariosExcluidos", usuariosExcluidos);
+            }
             query.setParameter("grupos", listaGrupos);
             lista = query.getResultList();
+
         } catch (Exception ex) {
             System.out.println("Error en el metodo filtrarUsuariosPorGrupo= " + ex.getMessage());
         }
@@ -67,10 +76,16 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     }
 
     @Override
-    public List<User> filtrarUsuariosPorRol(List<Role> listaRoles) {
+    public List<User> filtrarUsuariosPorRol(List<Role> listaRoles, List<User> usuariosExcluidos) {
         List<User> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.roleId IN :roles");
+            Query query;
+            if (usuariosExcluidos.isEmpty()) {
+                query = em.createQuery("SELECT u FROM User u WHERE u.roleId IN :roles");
+            } else {
+                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.roleId IN :roles AND u NOT IN :usuariosExcluidos");
+                query.setParameter("usuariosExcluidos", usuariosExcluidos);
+            }
             query.setParameter("roles", listaRoles);
             lista = query.getResultList();
         } catch (Exception ex) {
@@ -80,13 +95,21 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     }
 
     @Override
-    public List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos) {
+    public List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos, List<User> usuariosExcluidos) {
         List<User> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.roleId IN :roles");
+            Query query;
+            if (usuariosExcluidos.isEmpty()) {
+                query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.roleId IN :roles");
+
+            } else {
+                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u.roleId IN :roles AND u NOT IN :usuariosExcluidos");
+                query.setParameter("usuariosExcluidos", usuariosExcluidos);
+            }
             query.setParameter("grupos", listaGrupos);
             query.setParameter("roles", listaRoles);
             lista = query.getResultList();
+
         } catch (Exception ex) {
             System.out.println("Error en el metodo filtrarUsuariosPorRolYGrupos= " + ex.getMessage());
         }

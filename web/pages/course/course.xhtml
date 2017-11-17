@@ -245,40 +245,50 @@
                         <center>
                             <p:panelGrid columns="2">
                                 <h:panelGroup>
-                                    <h:panelGrid columns="3">
+                                    <h:panelGrid columns="4">
 
-                                        <p:selectCheckboxMenu label="MU" id="gruposEditar"
+                                        <p:selectCheckboxMenu label="MU" id="gruposEditarAsignar"
                                                               value="#{cursoController.listaGrupos}" 
                                                               converter="grupoConverter" filter='true'
                                                               styleClass="checkBox"
-                                                              onHide="ejecutarFiltroEditar();">
+                                                              onHide="ejecutarFiltroEditarAsignar();">
                                             <f:selectItems var="grupo" value="#{cursoController.listarGrupos()}" 
                                                            itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
                                         </p:selectCheckboxMenu>
 
-                                        <p:selectCheckboxMenu label="Roles" id="rolesEditar"
+                                        <p:selectCheckboxMenu label="Roles" id="rolesEditarAsignar"
                                                               value="#{cursoController.listaRoles}" 
                                                               converter="rolConverter" filter='true'
                                                               styleClass="checkBox" 
-                                                              onHide="ejecutarFiltroEditar();">
+                                                              onHide="ejecutarFiltroEditarAsignar();">
                                             <f:selectItems var="roles" value="#{cursoController.listarRoles()}" 
                                                            itemLabel="#{roles.description}" itemValue="#{roles}"/>
                                         </p:selectCheckboxMenu>
 
-                                        <p:remoteCommand  name="ejecutarFiltroEditar"
-                                                          update="listaUsuarios" process="@this grupos, @this roles"
+                                        <p:remoteCommand  name="ejecutarFiltroEditarAsignar"
+                                                          update="usuariosEditarAsignar" process="@this gruposEditarAsignar, @this rolesEditarAsignar"
                                                           action="#{cursoController.filtrarUsuarios()}"/> 
 
-
-                                        <p:commandButton value="Clear" action="#{cursoController.limpiarFiltro()}" update="listaUsuarios,grupos, roles"/>
+                                        <p:commandButton value="Clear" action="#{cursoController.limpiarFiltro()}" update="usuariosEditarAsignar, gruposEditarAsignar, rolesEditarAsignar"/>
 
                                     </h:panelGrid>
+                                    <p:selectManyMenu id="usuariosEditarAsignar" value="#{cursoController.usuariosLista}" showCheckbox="true" 
+                                                      converter="usuarioConverter" styleClass="usuarios-checkBox" scrollHeight="150"
+                                                      style="width: 300px !important" >
+                                        <f:selectItems var="user" value="#{cursoController.devolverUsuarios()}"
+                                                       itemLabel="#{user.firstName} #{user.lastName}" itemValue="#{user}">
+                                        </f:selectItems>
+                                    </p:selectManyMenu>
 
+                                    <center>
+                                        <p:commandButton value="Asignar" update=":formEditarUsuariosCurso"
+                                                         action="#{cursoController.asignarUsuariosAlEditar()}"/>
+                                    </center>
                                 </h:panelGroup>
 
                                 <h:panelGroup>
                                     <p:dataTable id="tablaUsuarios"
-                                                 value="#{cursoController.usuariosPorCurso}" var="usuarios" 
+                                                 value="#{cursoController.usuariosPorCurso}" var="usuariosCurso" 
                                                  emptyMessage="No se encontrarón registros" reflow="true"
                                                  paginator="true" paginatorPosition="bottom" rows="10"  rowStyleClass="algo">
 
@@ -296,19 +306,21 @@
                                                                   update=":formEditarUsuariosCurso:tablaUsuarios" process="@this gruposFiltro"
                                                                   action="#{cursoController.filtrarPersonasPorGrupo()}"/> 
                                             </f:facet>
-                                            <h:outputText value="#{usuarios.groupId.groupName}"/>
+                                            <h:outputText value="#{usuariosCurso.userId.groupId.groupName}"/>
                                         </p:column>
 
                                         <p:column headerText="Nombre">
-                                            <h:outputText value="#{usuarios.firstName} #{usuarios.lastName}">
+                                            <h:outputText value="#{usuariosCurso.userId.firstName} #{usuariosCurso.userId.lastName}">
                                             </h:outputText>
                                         </p:column>
 
                                         <p:column headerText="Acciones" width="55">
                                             <f:facet name="header">
-                                                <p:commandButton icon="ui-icon-circle-close" action="#{cursoController.removerTodosUsuariosDelCurso()}"/>
+                                                <p:commandButton icon="ui-icon-circle-close" update=":formEditarUsuariosCurso"
+                                                                 action="#{cursoController.removerTodosUsuariosDelCurso()}"/>
                                             </f:facet>
-                                            <p:commandButton icon="ui-icon-close" action="#{cursoController.removerUsuarioDelCurso(usuarios)}"/>
+                                            <p:commandButton icon="ui-icon-close" update=":formEditarUsuariosCurso"
+                                                             action="#{cursoController.removerUsuarioDelCurso(usuariosCurso)}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </h:panelGroup>
@@ -316,7 +328,8 @@
                             </p:panelGrid>
 
                             <center >
-                                <p:commandButton value="Cerrar" actionListener="#{cursoController.ocultarModal(5)}" immediate="true" update="verCurso" styleClass="correrBoton"/>
+                                <p:commandButton value="Cerrar" update="verCurso,formEditarUsuariosCurso" styleClass="correrBoton"
+                                                 actionListener="#{cursoController.ocultarModal(5)}" immediate="true" />
                             </center>
                         </center>
                     </h:form>
@@ -367,11 +380,11 @@
                                                               update=":formVerCurso:usuariosTabla" process="@this gruposLista"
                                                               action="#{cursoController.filtrarPersonasPorGrupo()}"/> 
                                         </f:facet>
-                                        <h:outputText value="#{usuariosCurso.groupId.groupName}"/>
+                                        <h:outputText value="#{usuariosCurso.userId.groupId.groupName}"/>
                                     </p:column>
 
                                     <p:column headerText="Nombres y Apellidos">
-                                        <h:outputText value="#{usuariosCurso.firstName} #{usuariosCurso.lastName}">
+                                        <h:outputText value="#{usuariosCurso.userId.firstName} #{usuariosCurso.userId.lastName}">
                                         </h:outputText>
                                     </p:column>
                                 </p:dataTable>

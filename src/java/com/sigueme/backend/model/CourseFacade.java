@@ -48,19 +48,6 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
     }
 
     @Override
-    public List<User> listarUsuariosPorCurso(Course curso) {
-        List<User> lista = new ArrayList<>();
-        try {
-            Query query = em.createQuery("SELECT u FROM UserByCourse uc JOIN uc.userId u WHERE uc.courseId = :curso ");
-            query.setParameter("curso", curso);
-            lista = query.getResultList();
-        } catch (Exception ex) {
-            System.out.println("Error en el metodo listar Cursos = " + ex.getMessage());
-        }
-        return lista;
-    }
-
-    @Override
     public List<Course> listarCursosPorEstado(boolean estado) {
         List<Course> lista = new ArrayList<>();
 
@@ -76,10 +63,10 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
     }
 
     @Override
-    public List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso) {
-        List<User> lista = new ArrayList<>();
+    public List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso) {
+        List<UserByCourse> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT u FROM UserByCourse us JOIN us.userId u WHERE u.groupId IN :grupos AND us.courseId = :curso", User.class);
+            Query query = em.createQuery("SELECT us FROM UserByCourse us JOIN us.userId u WHERE u.groupId IN :grupos AND us.courseId = :curso", UserByCourse.class);
             query.setParameter("grupos", listaGrupos);
             query.setParameter("curso", curso);
             lista = query.getResultList();

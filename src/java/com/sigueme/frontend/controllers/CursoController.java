@@ -55,8 +55,9 @@ public class CursoController implements Serializable {
     private Course curso;
 
     List<User> usuariosLista;
+    List<User> usuariosPorCursoEditar;
     List<Course> cursos;
-    List<User> usuariosPorCurso;
+    List<UserByCourse> usuariosPorCurso;
     List<GroupCls> listaGrupos;
     List<GroupCls> gruposPersona;
     List<Role> listaRoles;
@@ -68,6 +69,7 @@ public class CursoController implements Serializable {
         curso = new Course();
         usuariosLista = new ArrayList<>();
         usuariosPorCurso = new ArrayList<>();
+        usuariosPorCursoEditar = new ArrayList<>();
         listaGrupos = new ArrayList<>();
         gruposPersona = new ArrayList<>();
         listaRoles = new ArrayList<>();
@@ -83,11 +85,11 @@ public class CursoController implements Serializable {
         return curso;
     }
 
-    public List<User> getUsuariosPorCurso() {
+    public List<UserByCourse> getUsuariosPorCurso() {
         return usuariosPorCurso;
     }
 
-    public void setUsuariosPorCurso(List<User> usuariosPorCurso) {
+    public void setUsuariosPorCurso(List<UserByCourse> usuariosPorCurso) {
         this.usuariosPorCurso = usuariosPorCurso;
     }
 
@@ -141,6 +143,14 @@ public class CursoController implements Serializable {
 
     public void setGruposPersona(List<GroupCls> gruposPersona) {
         this.gruposPersona = gruposPersona;
+    }
+
+    public List<User> getUsuariosPorCursoEditar() {
+        return usuariosPorCursoEditar;
+    }
+
+    public void setUsuariosPorCursoEditar(List<User> usuariosPorCursoEditar) {
+        this.usuariosPorCursoEditar = usuariosPorCursoEditar;
     }
 
     //Aquí se llama al método que valida las fechas y si éste devuelva "true" llama al método encargado de abrir el modal para asiganar usuarios
@@ -264,10 +274,12 @@ public class CursoController implements Serializable {
     }
 
     //Cuando se llame a éste método se verifica si el curso es diferente de null y si es así retorna todos los usuarios que tenga asociados dicho curso
-    public List<User> devolverUsuariosPorCurso() {
+    public List<UserByCourse> devolverUsuariosPorCurso() {
+        System.out.println("antes" + usuariosPorCurso.size());
         if (curso != null) {
-            usuariosPorCurso = cursoFacadeLocal.listarUsuariosPorCurso(curso);
+            usuariosPorCurso.addAll(curso.getUserByCourseList());
         }
+        System.out.println("despues" + usuariosPorCurso.size());
         return usuariosPorCurso;
     }
 
@@ -298,10 +310,13 @@ public class CursoController implements Serializable {
                 break;
             case 5:
                 req.execute("PF('editarUsuarios').hide();");
+                limpiarFiltro();
+                System.out.println("sdsds" + curso.getUserByCourseList().size());
                 break;
             default:
                 break;
         }
+        usuariosPorCurso = new ArrayList<>();
         req.reset(formulario);
     }
 
@@ -332,21 +347,25 @@ public class CursoController implements Serializable {
       el filtro puede ser por grupo,por rol o ambos (esto depende de si la lista del filtro esta vacia o no)
      */
     public void filtrarUsuarios() {
+        List<User> algo = new ArrayList<>();
+        for (UserByCourse item : usuariosPorCurso) {
+            algo.add(item.getUserId());
+        }
         if (!listaGrupos.isEmpty()) {
 
             if (!listaRoles.isEmpty()) {
-                usuariosLista = usuarioFacadeLocal.filtrarUsuariosPorRolYGrupos(listaRoles, listaGrupos);
+                usuariosLista = usuarioFacadeLocal.filtrarUsuariosPorRolYGrupos(listaRoles, listaGrupos, algo);
             } else {
-                usuariosLista = usuarioFacadeLocal.filtrarUsuariosPorGrupo(listaGrupos);
+                usuariosLista = usuarioFacadeLocal.filtrarUsuariosPorGrupo(listaGrupos, algo);
             }
         } else {
             if (!listaRoles.isEmpty()) {
-                usuariosLista = usuarioFacadeLocal.filtrarUsuariosPorRol(listaRoles);
+                usuariosLista = usuarioFacadeLocal.filtrarUsuariosPorRol(listaRoles, algo);
             } else {
                 usuariosLista = new ArrayList<>();
             }
         }
-        RequestContext.getCurrentInstance().update("formAsociar:listaUsuarios");
+
     }
 
     //Este metodo se ultiliza pára realizar la limpieza de los filtros de Grupo y Rol que se encuentran en el modal de Asociar Usuarios
@@ -386,26 +405,44 @@ public class CursoController implements Serializable {
     }
 
     public void removerTodosUsuariosDelCurso() {
-        List<UserByCourse> listaUsuariosPorCurso = curso.getUserByCourseList();
-        for (UserByCourse item : listaUsuariosPorCurso) {
-            removerUsuarioDelCurso(item);
+        List<UserByCourse> listaRemover = new ArrayList<>();
+        for (UserByCourse item : usuariosPorCurso) {
+            if (validarSiRemueveUsuarioDelCurso(item)) {
+                System.out.println("si se puede eliminar" + item.getUserId().getFirstName());
+                listaRemover.add(item);
+            }
         }
+        usuariosPorCurso.removeAll(listaRemover);
+        filtrarUsuarios();
     }
 
     public void removerUsuarioDelCurso(UserByCourse usuarioCurso) {
         FacesContext context = FacesContext.getCurrentInstance();
-
-        if (usuarioCurso.getAttached() == null && usuarioCurso.getDescription() == null) {
-            //userByCourseFacadeLocal.remove(usuarioCurso);
+        if (validarSiRemueveUsuarioDelCurso(usuarioCurso)) {
             System.out.println("si se puede eliminar" + usuarioCurso.getUserId().getFirstName());
+            usuariosPorCurso.remove(usuarioCurso);
         }
-
+        filtrarUsuarios();
     }
 
-    public void removerUsuarioDelCurso(User usuarioCurso) {
-        FacesContext context = FacesContext.getCurrentInstance();
+    public boolean validarSiRemueveUsuarioDelCurso(UserByCourse usuarioCurso) {
+        if (usuarioCurso.getAttached() == null && usuarioCurso.getDescription() == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-        UserByCourse usuarioPorCurso = userByCourseFacadeLocal.listarUsuariosPorCurso(curso, usuarioCurso);
-        removerUsuarioDelCurso(usuarioPorCurso);
+    public void asignarUsuariosAlEditar() {
+        List<UserByCourse> listaUsuariosPorCurso = new ArrayList<>();
+        for (User item : usuariosLista) {
+            UserByCourse usuarioPorCurso = new UserByCourse();
+            usuarioPorCurso.setCourseId(curso);
+            usuarioPorCurso.setUserId(item);
+            listaUsuariosPorCurso.add(usuarioPorCurso);
+        }
+        usuariosPorCurso.addAll(listaUsuariosPorCurso);
+        usuariosLista.removeAll(usuariosLista);
+        filtrarUsuarios();
     }
 }

@@ -8,6 +8,7 @@ package com.sigueme.backend.model;
 import com.sigueme.backend.entities.Course;
 import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.User;
+import com.sigueme.backend.entities.UserByCourse;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -33,11 +34,9 @@ public interface CourseFacadeLocal {
     int count();
 
     List<Course> listarCursos();
-
-    List<User> listarUsuariosPorCurso(Course curso);
     
     List<Course> listarCursosPorEstado(boolean estado);
     
-    List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso);
+    List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso);
     
 }

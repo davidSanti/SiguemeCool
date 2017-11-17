@@ -46,21 +46,4 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
         }
         return lista;
     }
-
-    @Override
-    public UserByCourse listarUsuariosPorCurso(Course curso, User usuario) {
-        UserByCourse usuarioCurso = null;
-        try {
-            Query query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :usuario AND uc.courseId = :curso");
-            query.setParameter("usuario", usuario);
-            query.setParameter("curso", curso);
-            List<UserByCourse> lista = query.getResultList();
-            if(!lista.isEmpty()){
-                usuarioCurso = lista.get(0);
-            }
-        } catch (Exception ex) {
-            System.out.println("Error en el metodo listarUsuariosPorCurso= " + ex.getMessage());
-        }
-        return usuarioCurso;
-    }
 }
