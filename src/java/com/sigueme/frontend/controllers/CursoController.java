@@ -275,11 +275,9 @@ public class CursoController implements Serializable {
 
     //Cuando se llame a éste método se verifica si el curso es diferente de null y si es así retorna todos los usuarios que tenga asociados dicho curso
     public List<UserByCourse> devolverUsuariosPorCurso() {
-        System.out.println("antes" + usuariosPorCurso.size());
         if (curso != null) {
             usuariosPorCurso.addAll(curso.getUserByCourseList());
         }
-        System.out.println("despues" + usuariosPorCurso.size());
         return usuariosPorCurso;
     }
 
@@ -400,6 +398,7 @@ public class CursoController implements Serializable {
         if (gruposPersona.size() > 0) {
             usuariosPorCurso = cursoFacadeLocal.filtrarUsuariosPorGrupo(gruposPersona, curso);
         } else {
+            usuariosPorCurso = new ArrayList<>();
             devolverUsuariosPorCurso();
         }
     }
@@ -445,4 +444,47 @@ public class CursoController implements Serializable {
         usuariosLista.removeAll(usuariosLista);
         filtrarUsuarios();
     }
+
+    public void guardarEdicionUsuariosCurso() {
+
+        for (UserByCourse ss : usuariosPorCurso) {
+            System.out.println("ss" + ss.getUserId().getFirstName());
+        }
+        //En esta parte se verifica los usuarios originales que se encontraban asignados al curso (en la base de datos)
+        //y si se identifica un usuario nuevo se agrega
+        for (UserByCourse usuariosAgregar : usuariosPorCurso) {
+            boolean bandera = false;
+            for (UserByCourse listaOriginal : curso.getUserByCourseList()) {
+                if (listaOriginal.getUserId().equals(usuariosAgregar.getUserId())) {
+                    bandera = true;
+                }
+            }
+            if (!bandera) {
+                UserByCourse usuarioCurso = new UserByCourse();
+                usuarioCurso.setCourseId(curso);
+                usuarioCurso.setUserId(usuariosAgregar.getUserId());
+                curso.getUserByCourseList().add(usuarioCurso);
+            }
+        }
+        System.out.println("tamaño agregar" + curso.getUserByCourseList().size());
+
+        //En esta parte se verifica los usuarios originales que se encontraban asignados al curso (en la base de datos)
+        //si se identifica un usuario que en la lsita orginal aparecia y en la actual no se elimina
+        for (int i = 0; i < curso.getUserByCourseList().size(); i++) {
+            boolean bandera = true;
+            for (UserByCourse usuariosRemover : usuariosPorCurso) {
+                if (usuariosRemover.getUserId().equals(curso.getUserByCourseList().get(i).getUserId())) {
+                    bandera = false;
+                }
+            }
+            if (bandera) {
+                System.out.println("remove" + curso.getUserByCourseList().get(i).getUserId().getFirstName());
+                userByCourseFacadeLocal.remove(curso.getUserByCourseList().remove(i));
+            }
+        }
+        System.out.println("tamaño remove" + curso.getUserByCourseList().size());
+        cursoFacadeLocal.edit(curso);
+        System.out.println("super");
+    }
+
 }

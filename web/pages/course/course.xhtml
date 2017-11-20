@@ -328,6 +328,8 @@
                             </p:panelGrid>
 
                             <center >
+                                <p:commandButton value="Guardar" update="verCurso,formEditarUsuariosCurso" styleClass="correrBoton"
+                                                 action="#{cursoController.guardarEdicionUsuariosCurso()}" immediate="true" />
                                 <p:commandButton value="Cerrar" update="verCurso,formEditarUsuariosCurso" styleClass="correrBoton"
                                                  actionListener="#{cursoController.ocultarModal(5)}" immediate="true" />
                             </center>
