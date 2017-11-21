@@ -275,6 +275,7 @@ public class CursoController implements Serializable {
 
     //Cuando se llame a éste método se verifica si el curso es diferente de null y si es así retorna todos los usuarios que tenga asociados dicho curso
     public List<UserByCourse> devolverUsuariosPorCurso() {
+        usuariosPorCurso = new ArrayList<>();
         if (curso != null) {
             usuariosPorCurso.addAll(curso.getUserByCourseList());
         }
@@ -309,8 +310,9 @@ public class CursoController implements Serializable {
             case 5:
                 req.execute("PF('editarUsuarios').hide();");
                 limpiarFiltro();
-                System.out.println("sdsds" + curso.getUserByCourseList().size());
+                usuariosLista = new ArrayList<>();
                 break;
+
             default:
                 break;
         }
@@ -398,7 +400,6 @@ public class CursoController implements Serializable {
         if (gruposPersona.size() > 0) {
             usuariosPorCurso = cursoFacadeLocal.filtrarUsuariosPorGrupo(gruposPersona, curso);
         } else {
-            usuariosPorCurso = new ArrayList<>();
             devolverUsuariosPorCurso();
         }
     }
@@ -445,11 +446,19 @@ public class CursoController implements Serializable {
         filtrarUsuarios();
     }
 
+    public void guardarEdicionCerrarModal() {
+        if (!usuariosPorCurso.isEmpty()) {
+            guardarEdicionUsuariosCurso();
+            ocultarModal(5);
+            ocultarModal(2);
+        } else {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No puedes dejar un curso sin usuarios"));
+        }
+    }
+
     public void guardarEdicionUsuariosCurso() {
 
-        for (UserByCourse ss : usuariosPorCurso) {
-            System.out.println("ss" + ss.getUserId().getFirstName());
-        }
         //En esta parte se verifica los usuarios originales que se encontraban asignados al curso (en la base de datos)
         //y si se identifica un usuario nuevo se agrega
         for (UserByCourse usuariosAgregar : usuariosPorCurso) {
@@ -466,7 +475,6 @@ public class CursoController implements Serializable {
                 curso.getUserByCourseList().add(usuarioCurso);
             }
         }
-        System.out.println("tamaño agregar" + curso.getUserByCourseList().size());
 
         //En esta parte se verifica los usuarios originales que se encontraban asignados al curso (en la base de datos)
         //si se identifica un usuario que en la lsita orginal aparecia y en la actual no se elimina
@@ -478,13 +486,17 @@ public class CursoController implements Serializable {
                 }
             }
             if (bandera) {
-                System.out.println("remove" + curso.getUserByCourseList().get(i).getUserId().getFirstName());
                 userByCourseFacadeLocal.remove(curso.getUserByCourseList().remove(i));
             }
         }
-        System.out.println("tamaño remove" + curso.getUserByCourseList().size());
         cursoFacadeLocal.edit(curso);
-        System.out.println("super");
+
+        FacesContext.getCurrentInstance().addMessage(
+                null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos se han modificado correctamente"));
     }
 
+    
+    public void abrirModalEditarUsuarios(){
+        
+    }
 }

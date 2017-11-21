@@ -235,7 +235,7 @@
                 </p:dialog>
 
                 <p:dialog id="editarUsuarios"  resizable="false" 
-                          closeOnEscape="false" draggable="false" closable="true"
+                          closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="editarUsuarios" modal="true" styleClass="algo"
                           showEffect="fold" hideEffect="fold" width="800" >
                     <center>
@@ -328,8 +328,8 @@
                             </p:panelGrid>
 
                             <center >
-                                <p:commandButton value="Guardar" update="verCurso,formEditarUsuariosCurso" styleClass="correrBoton"
-                                                 action="#{cursoController.guardarEdicionUsuariosCurso()}" immediate="true" />
+                                <p:commandButton value="Guardar" update="verCurso,formEditarUsuariosCurso, :formCurso:growlCurso" styleClass="correrBoton"
+                                                 action="#{cursoController.guardarEdicionCerrarModal()}" immediate="true" />
                                 <p:commandButton value="Cerrar" update="verCurso,formEditarUsuariosCurso" styleClass="correrBoton"
                                                  actionListener="#{cursoController.ocultarModal(5)}" immediate="true" />
                             </center>
