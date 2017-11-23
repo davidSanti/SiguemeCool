@@ -98,7 +98,7 @@ public class InventarioController implements Serializable {
             puestos = deskFacadeLocal.listarPuestosPorGrupo(grupos);
         } else {
             listarPuestos();
-        }        
+        }
     }
 
     //Con este método pretendemos validar que el registro se realice de manera exitosa para porsteriormente cerrar el modal de registro
@@ -225,6 +225,8 @@ public class InventarioController implements Serializable {
         return bandera;
     }
 
+    //Este método verifica si el elemento es  un computador (1 desktop 2 laptop) 
+    //para poder validar si se muestra o no el dato de pcName en la interfaz gráfica de Ver detalle elemento
     public boolean verificarTipoElemento() {
         if (elemento.getElementId() != null) {
             int tipoElementoId = elemento.getTypeId().getElementTypeId();
@@ -456,7 +458,5 @@ public class InventarioController implements Serializable {
     public void setGrupos(List<GroupCls> grupos) {
         this.grupos = grupos;
     }
-    
-    
 
 }

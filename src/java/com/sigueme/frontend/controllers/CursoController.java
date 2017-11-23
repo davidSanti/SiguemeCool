@@ -58,6 +58,7 @@ public class CursoController implements Serializable {
     List<User> usuariosPorCursoEditar;
     List<Course> cursos;
     List<UserByCourse> usuariosPorCurso;
+    List<UserByCourse> usuariosTemporalesPorCurso;
     List<GroupCls> listaGrupos;
     List<GroupCls> gruposPersona;
     List<Role> listaRoles;
@@ -69,6 +70,7 @@ public class CursoController implements Serializable {
         curso = new Course();
         usuariosLista = new ArrayList<>();
         usuariosPorCurso = new ArrayList<>();
+        usuariosTemporalesPorCurso = new ArrayList<>();
         usuariosPorCursoEditar = new ArrayList<>();
         listaGrupos = new ArrayList<>();
         gruposPersona = new ArrayList<>();
@@ -151,6 +153,14 @@ public class CursoController implements Serializable {
 
     public void setUsuariosPorCursoEditar(List<User> usuariosPorCursoEditar) {
         this.usuariosPorCursoEditar = usuariosPorCursoEditar;
+    }
+
+    public List<UserByCourse> getUsuariosTemporalesPorCurso() {
+        return usuariosTemporalesPorCurso;
+    }
+
+    public void setUsuariosTemporalesPorCurso(List<UserByCourse> usuariosTemporalesPorCurso) {
+        this.usuariosTemporalesPorCurso = usuariosTemporalesPorCurso;
     }
 
     //Aquí se llama al método que valida las fechas y si éste devuelva "true" llama al método encargado de abrir el modal para asiganar usuarios
@@ -275,11 +285,17 @@ public class CursoController implements Serializable {
 
     //Cuando se llame a éste método se verifica si el curso es diferente de null y si es así retorna todos los usuarios que tenga asociados dicho curso
     public List<UserByCourse> devolverUsuariosPorCurso() {
-        usuariosPorCurso = new ArrayList<>();
-        if (curso != null) {
-            usuariosPorCurso.addAll(curso.getUserByCourseList());
+        if (usuariosTemporalesPorCurso.isEmpty()) {
+            usuariosPorCurso = new ArrayList<>();
+            if (curso != null) {
+                usuariosPorCurso.addAll(curso.getUserByCourseList());
+            }
+            usuariosTemporalesPorCurso = new ArrayList<>();
+            usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
+            return usuariosPorCurso;
+        } else {
+            return usuariosTemporalesPorCurso;
         }
-        return usuariosPorCurso;
     }
 
     /*Este metodo sirve para cerrar los modales segun corresponda a cada uno de los casos de switch 
@@ -348,8 +364,11 @@ public class CursoController implements Serializable {
      */
     public void filtrarUsuarios() {
         List<User> algo = new ArrayList<>();
-        for (UserByCourse item : usuariosPorCurso) {
+        System.out.println("filtrarUsuarios  tempo" + usuariosTemporalesPorCurso.size());
+
+        for (UserByCourse item : usuariosTemporalesPorCurso) {
             algo.add(item.getUserId());
+            System.out.println("item" + item);
         }
         if (!listaGrupos.isEmpty()) {
 
@@ -397,22 +416,39 @@ public class CursoController implements Serializable {
     }
 
     public void filtrarPersonasPorGrupo() {
+        List<User> algo = new ArrayList<>();
+        System.out.println("antes de filtrar" + usuariosTemporalesPorCurso.size());
+        for (UserByCourse item : usuariosTemporalesPorCurso) {
+            algo.add(item.getUserId());
+        }
         if (gruposPersona.size() > 0) {
-            usuariosPorCurso = cursoFacadeLocal.filtrarUsuariosPorGrupo(gruposPersona, curso);
+            usuariosPorCurso = cursoFacadeLocal.filtrarUsuariosPorGrupo(gruposPersona, curso, algo);
         } else {
             devolverUsuariosPorCurso();
         }
+        System.out.println("filtrarPersonas: usuariosCuros" + usuariosPorCurso.size());
+    }
+
+    public void agregarPersonasTemporalmenteAlCurso() {
+
     }
 
     public void removerTodosUsuariosDelCurso() {
         List<UserByCourse> listaRemover = new ArrayList<>();
+        System.out.println("a eliminar cuantos" + usuariosPorCurso.size());
         for (UserByCourse item : usuariosPorCurso) {
             if (validarSiRemueveUsuarioDelCurso(item)) {
                 System.out.println("si se puede eliminar" + item.getUserId().getFirstName());
                 listaRemover.add(item);
             }
         }
+        System.out.println("revome" + listaRemover.size());
         usuariosPorCurso.removeAll(listaRemover);
+        System.out.println("cuanto antes" + usuariosTemporalesPorCurso.size());
+
+        usuariosTemporalesPorCurso.removeAll(listaRemover);
+        System.out.println("cuanti" + usuariosTemporalesPorCurso.size());
+
         filtrarUsuarios();
     }
 
@@ -422,6 +458,8 @@ public class CursoController implements Serializable {
             System.out.println("si se puede eliminar" + usuarioCurso.getUserId().getFirstName());
             usuariosPorCurso.remove(usuarioCurso);
         }
+        usuariosTemporalesPorCurso = new ArrayList<>();
+        usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
         filtrarUsuarios();
     }
 
@@ -443,11 +481,17 @@ public class CursoController implements Serializable {
         }
         usuariosPorCurso.addAll(listaUsuariosPorCurso);
         usuariosLista.removeAll(usuariosLista);
+
+        System.out.println("en usuariosCuros" + usuariosPorCurso.size());
+        System.out.println("en usuariosTemporalesPorCurso" + usuariosTemporalesPorCurso.size());
+        usuariosTemporalesPorCurso = new ArrayList<>();
+        usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
+
         filtrarUsuarios();
     }
 
     public void guardarEdicionCerrarModal() {
-        if (!usuariosPorCurso.isEmpty()) {
+        if (!usuariosTemporalesPorCurso.isEmpty()) {
             guardarEdicionUsuariosCurso();
             ocultarModal(5);
             ocultarModal(2);
@@ -461,7 +505,7 @@ public class CursoController implements Serializable {
 
         //En esta parte se verifica los usuarios originales que se encontraban asignados al curso (en la base de datos)
         //y si se identifica un usuario nuevo se agrega
-        for (UserByCourse usuariosAgregar : usuariosPorCurso) {
+        for (UserByCourse usuariosAgregar : usuariosTemporalesPorCurso) {
             boolean bandera = false;
             for (UserByCourse listaOriginal : curso.getUserByCourseList()) {
                 if (listaOriginal.getUserId().equals(usuariosAgregar.getUserId())) {
@@ -480,7 +524,7 @@ public class CursoController implements Serializable {
         //si se identifica un usuario que en la lsita orginal aparecia y en la actual no se elimina
         for (int i = 0; i < curso.getUserByCourseList().size(); i++) {
             boolean bandera = true;
-            for (UserByCourse usuariosRemover : usuariosPorCurso) {
+            for (UserByCourse usuariosRemover : usuariosTemporalesPorCurso) {
                 if (usuariosRemover.getUserId().equals(curso.getUserByCourseList().get(i).getUserId())) {
                     bandera = false;
                 }
@@ -495,8 +539,7 @@ public class CursoController implements Serializable {
                 null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos se han modificado correctamente"));
     }
 
-    
-    public void abrirModalEditarUsuarios(){
-        
+    public void abrirModalEditarUsuarios() {
+
     }
 }

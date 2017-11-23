@@ -63,12 +63,13 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
     }
 
     @Override
-    public List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso) {
+    public List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso, List<User> listaParaFiltrar) {
         List<UserByCourse> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT DISTINCT us FROM UserByCourse us JOIN us.userId u WHERE u.groupId IN :grupos AND us.courseId = :curso", UserByCourse.class);
+            Query query = em.createQuery("SELECT DISTINCT us FROM UserByCourse us JOIN us.userId u WHERE u.groupId IN :grupos AND us.courseId = :curso AND u IN :usuarios", UserByCourse.class);
             query.setParameter("grupos", listaGrupos);
             query.setParameter("curso", curso);
+            query.setParameter("usuarios", listaParaFiltrar);
             lista = query.getResultList();
         } catch (Exception ex) {
             System.out.println("Error en el metodo filtrarUsuariosPorGrupo= " + ex.getMessage());

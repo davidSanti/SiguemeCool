@@ -37,6 +37,6 @@ public interface CourseFacadeLocal {
     
     List<Course> listarCursosPorEstado(boolean estado);
     
-    List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso);
+    List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso, List<User> listaParaFiltrar);
     
 }
