@@ -202,9 +202,8 @@ public class CursoController implements Serializable {
     public void editarCurso(Course course, int opcion) {
         this.curso = course;
         if (opcion == 1) {
-            devolverUsuariosPorCurso();
+            devolverUsuariosPorCurso(1);
         }
-
     }
 
     /*Este método se utiliza para validar desde la interfaz si se debe cerrar o no el modal de editar teniendo en cuenta
@@ -284,8 +283,8 @@ public class CursoController implements Serializable {
     }
 
     //Cuando se llame a éste método se verifica si el curso es diferente de null y si es así retorna todos los usuarios que tenga asociados dicho curso
-    public List<UserByCourse> devolverUsuariosPorCurso() {
-        if (usuariosTemporalesPorCurso.isEmpty()) {
+    public List<UserByCourse> devolverUsuariosPorCurso(int opcion) {
+        if (usuariosTemporalesPorCurso.isEmpty() && opcion == 1) {
             usuariosPorCurso = new ArrayList<>();
             if (curso != null) {
                 usuariosPorCurso.addAll(curso.getUserByCourseList());
@@ -295,6 +294,7 @@ public class CursoController implements Serializable {
             return usuariosPorCurso;
         } else {
             return usuariosTemporalesPorCurso;
+
         }
     }
 
@@ -327,6 +327,10 @@ public class CursoController implements Serializable {
                 req.execute("PF('editarUsuarios').hide();");
                 limpiarFiltro();
                 usuariosLista = new ArrayList<>();
+                usuariosTemporalesPorCurso = new ArrayList<>();
+                break;
+            case 6:
+                req.execute("PF('subirEvidencia').hide();");
                 break;
 
             default:
@@ -392,6 +396,7 @@ public class CursoController implements Serializable {
         usuariosLista = new ArrayList<>();
         listaGrupos = new ArrayList<>();
         listaRoles = new ArrayList<>();
+        gruposPersona = new ArrayList<>();
 
         listarGrupos();
         listarRoles();
@@ -422,15 +427,26 @@ public class CursoController implements Serializable {
             algo.add(item.getUserId());
         }
         if (gruposPersona.size() > 0) {
-            usuariosPorCurso = cursoFacadeLocal.filtrarUsuariosPorGrupo(gruposPersona, curso, algo);
+//            usuariosPorCurso = cursoFacadeLocal.filtrarUsuariosPorGrupo(gruposPersona, curso, algo);
+            usuariosPorCurso = filtrarPersonasPorGrupo(usuariosTemporalesPorCurso);
         } else {
-            devolverUsuariosPorCurso();
+            devolverUsuariosPorCurso(2);
         }
         System.out.println("filtrarPersonas: usuariosCuros" + usuariosPorCurso.size());
     }
 
-    public void agregarPersonasTemporalmenteAlCurso() {
+    public List<UserByCourse> filtrarPersonasPorGrupo(List<UserByCourse> listaParaFiltrar) {
+        List<UserByCourse> listaFiltrada = new ArrayList<>();
 
+        for (UserByCourse item : listaParaFiltrar) {
+            for (GroupCls grupo : gruposPersona) {
+                if (item.getUserId().getGroupId().equals(grupo)) {
+                    listaFiltrada.add(item);
+                }
+            }
+        }
+
+        return listaFiltrada;
     }
 
     public void removerTodosUsuariosDelCurso() {
@@ -457,9 +473,8 @@ public class CursoController implements Serializable {
         if (validarSiRemueveUsuarioDelCurso(usuarioCurso)) {
             System.out.println("si se puede eliminar" + usuarioCurso.getUserId().getFirstName());
             usuariosPorCurso.remove(usuarioCurso);
+            usuariosTemporalesPorCurso.remove(usuarioCurso);
         }
-        usuariosTemporalesPorCurso = new ArrayList<>();
-        usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
         filtrarUsuarios();
     }
 

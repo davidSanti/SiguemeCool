@@ -218,7 +218,7 @@
 
                             <h:column/>
                             <p:commandLink value="Editar usuarios" oncomplete="PF('editarUsuarios').show();" 
-                                           actionListener="#{cursoController.devolverUsuariosPorCurso()}" update="editarUsuarios"/>
+                                           actionListener="#{cursoController.devolverUsuariosPorCurso(1)}" update="editarUsuarios"/>
 
                             <p:outputLabel value="Descripción" for="description" />
                             <p:inputTextarea id="description" value="#{cursoController.curso.description}" title="Description" 

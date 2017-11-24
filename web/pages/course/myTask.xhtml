@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
+
+    <body>
+
+        <ui:composition template="./../../resources/templates/plantilla.xhtml">
+
+            <ui:define name="content">
+                <br></br><br></br>
+                <center>
+                    <br/>
+                    <h2><h:outputText value="Mis Cursos"/></h2>
+                </center>
+                <br></br>
+                
+                
+                <h:form>
+                    <p:dataTable id="miCursoTabla" value="#{miCursoController.misCursos}" var="curso"
+                                 emptyMessage="No se encuentran registros" reflow="true" paginator="true"
+                                 paginatorPosition="bottom" rows="10" rowStyleClass="algo">
+
+                        <p:column headerText="Name" filterBy="#{curso.courseId.courseName}">
+                            <h:outputText value="#{curso.courseId.courseName}">
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Fecha Inicio" filterBy="#{curso.courseId.startDate}">
+                            <h:outputText  value="#{curso.courseId.startDate}">
+                                <f:convertDateTime pattern="dd/MM/yyyy">
+                                </f:convertDateTime>
+                            </h:outputText>           
+                        </p:column>
+
+
+                        <p:column headerText="Acciones" >
+                            <p:commandButton value="Enviar" oncomplete="PF('subirEvidencia').show()" 
+                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia"/>                               
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+                
+                
+                <p:dialog id="subirEvidencia" widgetVar="subirEvidencia" resizable="false" 
+                          closeOnEscape="false" draggable="false" closable="false" 
+                           modal="true" showEffect="fold" hideEffect="fold"
+                          responsive="true" width="700" >
+                    <h1><h:outputText value="Mis cursos"/></h1>
+                    
+                  
+                    <h:form id="formPrueba" enctype="multipart/form-data" acceptcharset="ISO-8859-1">
+
+                        <p:growl id="growlTarea" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+
+                        <p:panelGrid columns="2" style="width:670px">
+
+                            <p:outputLabel value="Name"/>
+                            <h:outputText value="#{miCursoController.usuariosMiCurso.courseId.courseName}"></h:outputText>
+
+                            <p:outputLabel value="Fecha Inicio"/>
+                            <h:outputText  value="#{miCursoController.usuariosMiCurso.courseId.startDate}">
+                                <f:convertDateTime pattern="dd/MM/yyyy">
+                                </f:convertDateTime>
+                            </h:outputText>   
+
+                            <p:outputLabel value="Fecha Fin"/>
+                            <h:outputText  value="#{miCursoController.usuariosMiCurso.courseId.finishDate}">
+                                <f:convertDateTime pattern="dd/MM/yyyy">
+                                </f:convertDateTime>
+                            </h:outputText>
+
+                            <p:outputLabel value="Descripcion"/>
+                            <h:outputText value="#{miCursoController.usuariosMiCurso.courseId.description}"></h:outputText>
+                            
+                            <p:outputLabel value="Archivo Adjunto"/>
+                            <p:fileUpload id="archivo" mode="simple" pt:required="true" 
+                                          value="#{miCursoController.file}"/>
+
+
+                        </p:panelGrid>
+
+                        <p:inputTextarea value="#{miCursoController.usuariosMiCurso.description}" required="true" pt:required="true" 
+                                         requiredMessage="La descripción es obligatoria"
+                                         maxlength="500" cols="92"  rows="7"  autoResize="false" 
+                                         pt:maxlength="500" pt:minlength="10">
+                            <f:validateLength minimum="10" maximum="500"/>                              
+
+                        </p:inputTextarea>
+                        <br></br>
+                        <center>
+
+                            <p:commandButton id="guardar" value="Guardar" action="#{miCursoController.subirEvidencia()}" 
+                                             ajax="false"/>
+                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(6)}" immediate="true" 
+                                             update="subirEvidencia"/>
+                        </center>
+                    </h:form>
+                </p:dialog>
+
+                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

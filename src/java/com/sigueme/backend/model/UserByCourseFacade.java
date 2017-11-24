@@ -46,4 +46,17 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
         }
         return lista;
     }
+
+    @Override
+    public List<UserByCourse> listarMisCursos(User user) {
+        List<UserByCourse> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user ");
+            query.setParameter("user", user);
+            lista = query.getResultList();
+        } catch (Exception ex) {
+            System.out.println("Error en el metodo listarMisCursos= " + ex.getMessage());
+        }
+        return lista;
+    }
 }

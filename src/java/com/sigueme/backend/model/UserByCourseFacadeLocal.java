@@ -33,4 +33,6 @@ public interface UserByCourseFacadeLocal {
     int count();
 
     List<UserByCourse> listarUsuariosPorCurso(Course curso);
+    
+    List<UserByCourse> listarMisCursos(User user);
 }
