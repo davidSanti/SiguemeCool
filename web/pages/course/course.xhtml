@@ -344,6 +344,7 @@
                     <center>
                         <h1><h:outputText value="Detalle Curso"></h:outputText></h1>
                     </center>
+                    <br/>
                     <h:form id="formVerCurso">
                         <center>
                             <p:panelGrid columns="2" id="gridVerCurso">
@@ -389,13 +390,73 @@
                                         <h:outputText value="#{usuariosCurso.userId.firstName} #{usuariosCurso.userId.lastName}">
                                         </h:outputText>
                                     </p:column>
+                                    
+                                    <p:column headerText="Calificación">
+                                        <h:outputText value="#{cursoController.determinarCalificacion(usuariosCurso)}">
+                                        </h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Calificar" width="55">
+                                        <p:commandButton icon="ui-icon-star" oncomplete="PF('calificarCurso').show();"
+                                                         actionListener="#{cursoController.asignarUsuarioCurso(usuariosCurso)}"
+                                                         update="calificarCurso" disabled="#{usuariosCurso.grade == true ? true : false}"/>
+                                    </p:column>
                                 </p:dataTable>
                             </p:panelGrid>
+                            <br/>
                             <center >
                                 <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(4)}" immediate="true" update="verCurso" styleClass="correrBoton"/>
                             </center>
                         </center>
                     </h:form>
+                </p:dialog>
+
+
+                <p:dialog id="calificarCurso"  resizable="false" 
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="calificarCurso" modal="true"
+                          showEffect="fade" hideEffect="fade" width="600" >
+                    <center>
+                        <h1><h:outputText value="Calificar Curso"></h:outputText></h1>
+                    </center>
+                    <br/>
+                    <h:form>
+                        <center>
+                            <p:panelGrid columns="2">
+
+                                <p:outputLabel value="Curso"/>
+                                <h:outputText value="#{cursoController.usuarioPorCursoActual.courseId.courseName}"/>
+
+                                <p:outputLabel value="Persona"/>
+                                <h:outputText value="#{cursoController.usuarioPorCursoActual.userId.firstName} 
+                                              #{cursoController.usuarioPorCursoActual.userId.lastName}"/>
+
+
+                                <p:outputLabel value="Descripción"/>
+                                <h:outputText value="#{cursoController.usuarioPorCursoActual.description}"/>
+
+                                <p:outputLabel value="Adjunto"/>
+                                <p:commandButton ajax="false" immediate="true" value="Descargar"
+                                                 disabled="#{cursoController.usuarioPorCursoActual.attached == null ? true : false}"> 
+                                    <p:fileDownload value="#{cursoController.file}"/>
+                                </p:commandButton>
+
+                                <p:outputLabel value="Calificación"/>
+                                <p:selectOneMenu value="#{cursoController.usuarioPorCursoActual.grade}">
+                                    <f:selectItem itemLabel="Aprobado" itemValue="true"/>
+                                    <f:selectItem itemLabel="No Aprobado" itemValue="false"/>
+                                </p:selectOneMenu>
+
+                            </p:panelGrid>
+                            <br/>
+
+                            <p:commandButton value="Guardar" iconPos="ui-icon-check"
+                                             action="#{cursoController.calificarUsuarioCurso()}"
+                                             update="formCurso:growlCurso, formVerCurso:usuariosTabla"/>
+                            <p:commandButton value="Cerrar" inline="true" actionListener="#{cursoController.ocultarModal(8)}"/>
+                        </center>
+                    </h:form>
+
                 </p:dialog>
 
 

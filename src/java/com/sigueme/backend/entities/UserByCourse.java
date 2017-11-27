@@ -46,7 +46,7 @@ public class UserByCourse implements Serializable {
     @Column(name = "attached")
     private String attached;
     
-    @Size(max = 100)
+    @Size(max = 500)
     @Column(name = "description")
     private String description;
     

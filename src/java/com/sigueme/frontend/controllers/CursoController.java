@@ -15,9 +15,8 @@ import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +29,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -64,6 +64,8 @@ public class CursoController implements Serializable {
     List<Role> listaRoles;
 
     private String filtrarEstado;
+    private UserByCourse usuarioPorCursoActual;
+    private StreamedContent file;
 
     @PostConstruct
     public void init() {
@@ -75,7 +77,7 @@ public class CursoController implements Serializable {
         listaGrupos = new ArrayList<>();
         gruposPersona = new ArrayList<>();
         listaRoles = new ArrayList<>();
-
+        usuarioPorCursoActual = new UserByCourse();
         listarCursos();
         filtrarEstado = new String();
     }
@@ -161,6 +163,22 @@ public class CursoController implements Serializable {
 
     public void setUsuariosTemporalesPorCurso(List<UserByCourse> usuariosTemporalesPorCurso) {
         this.usuariosTemporalesPorCurso = usuariosTemporalesPorCurso;
+    }
+
+    public StreamedContent getFile() {
+        return file;
+    }
+
+    public void setFile(StreamedContent file) {
+        this.file = file;
+    }
+
+    public UserByCourse getUsuarioPorCursoActual() {
+        return usuarioPorCursoActual;
+    }
+
+    public void setUsuarioPorCursoActual(UserByCourse usuarioPorCursoActual) {
+        this.usuarioPorCursoActual = usuarioPorCursoActual;
     }
 
     //Aquí se llama al método que valida las fechas y si éste devuelva "true" llama al método encargado de abrir el modal para asiganar usuarios
@@ -287,12 +305,14 @@ public class CursoController implements Serializable {
         if (usuariosTemporalesPorCurso.isEmpty() && opcion == 1) {
             usuariosPorCurso = new ArrayList<>();
             if (curso != null) {
+                System.out.println("entra o ");
                 usuariosPorCurso.addAll(curso.getUserByCourseList());
             }
             usuariosTemporalesPorCurso = new ArrayList<>();
             usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
             return usuariosPorCurso;
         } else {
+            System.out.println("else");
             return usuariosTemporalesPorCurso;
 
         }
@@ -332,15 +352,22 @@ public class CursoController implements Serializable {
             case 6:
                 req.execute("PF('subirEvidencia').hide();");
                 break;
-
+            case 7:
+                req.execute("PF('Descargar').hide();");
+                break;
+            case 8:
+                req.execute("PF('calificarCurso').hide();");
+                break;
             default:
                 break;
         }
-        usuariosPorCurso = new ArrayList<>();
+        if (opcion != 8) {
+            usuariosPorCurso = new ArrayList<>();
+        }
         req.reset(formulario);
     }
-
     //éste método se utiliza para abrir las ventanas modales
+
     public void abrirModal(int opciones) {
         RequestContext request = RequestContext.getCurrentInstance();
         switch (opciones) {
@@ -554,7 +581,34 @@ public class CursoController implements Serializable {
                 null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos se han modificado correctamente"));
     }
 
-    public void abrirModalEditarUsuarios() {
+    public void asignarUsuarioCurso(UserByCourse personaCurso) {
+        this.usuarioPorCursoActual = personaCurso;
+    }
 
+    public void calificarUsuarioCurso() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            userByCourseFacadeLocal.edit(usuarioPorCursoActual);
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La calificación se han realizado correctamente"));
+            ocultarModal(8);
+//            usuariosPorCurso = new ArrayList<>();
+//            usuariosPorCurso.addAll(curso.getUserByCourseList());
+            System.out.println("sss" + usuariosPorCurso.size());
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Ha ocurrido un error al calificar el curso"));
+        }
+    }
+
+    public String determinarCalificacion(UserByCourse usuarioCurso) {
+        String calificacion = "No Aprobado";
+
+        if (usuarioCurso.getGrade() == null) {
+            calificacion = "Pendiente";
+        } else if (usuarioCurso.getGrade()) {
+            calificacion = "Aprobado";
+        }
+        return calificacion;
     }
 }
