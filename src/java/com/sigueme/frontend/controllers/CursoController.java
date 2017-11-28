@@ -16,11 +16,19 @@ import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URLConnection;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -29,6 +37,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 /**
@@ -205,7 +214,10 @@ public class CursoController implements Serializable {
             this.curso = course;
             List<UserByCourse> lista = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
             for (UserByCourse item : lista) {
-                userByCourseFacadeLocal.remove(item);
+                if (validarSiRemueveUsuarioDelCurso(item)) {
+                    userByCourseFacadeLocal.remove(item);
+
+                }
             }
             this.cursoFacadeLocal.remove(curso);
             curso = new Course();
@@ -305,14 +317,12 @@ public class CursoController implements Serializable {
         if (usuariosTemporalesPorCurso.isEmpty() && opcion == 1) {
             usuariosPorCurso = new ArrayList<>();
             if (curso != null) {
-                System.out.println("entra o ");
                 usuariosPorCurso.addAll(curso.getUserByCourseList());
             }
             usuariosTemporalesPorCurso = new ArrayList<>();
             usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
             return usuariosPorCurso;
         } else {
-            System.out.println("else");
             return usuariosTemporalesPorCurso;
 
         }
@@ -479,20 +489,23 @@ public class CursoController implements Serializable {
     public void removerTodosUsuariosDelCurso() {
         List<UserByCourse> listaRemover = new ArrayList<>();
         System.out.println("a eliminar cuantos" + usuariosPorCurso.size());
+        boolean bandera = true;
         for (UserByCourse item : usuariosPorCurso) {
             if (validarSiRemueveUsuarioDelCurso(item)) {
                 System.out.println("si se puede eliminar" + item.getUserId().getFirstName());
                 listaRemover.add(item);
+            } else {
+                bandera = false;
             }
         }
-        System.out.println("revome" + listaRemover.size());
         usuariosPorCurso.removeAll(listaRemover);
-        System.out.println("cuanto antes" + usuariosTemporalesPorCurso.size());
-
         usuariosTemporalesPorCurso.removeAll(listaRemover);
-        System.out.println("cuanti" + usuariosTemporalesPorCurso.size());
-
         filtrarUsuarios();
+        if (!bandera) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                           " algunos usuarios no se pueden remover del curso porque ya enviaron su evidencia"));
+        }
     }
 
     public void removerUsuarioDelCurso(UserByCourse usuarioCurso) {
@@ -501,6 +514,10 @@ public class CursoController implements Serializable {
             System.out.println("si se puede eliminar" + usuarioCurso.getUserId().getFirstName());
             usuariosPorCurso.remove(usuarioCurso);
             usuariosTemporalesPorCurso.remove(usuarioCurso);
+        } else {
+            context.addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                            usuarioCurso.getUserId().getFirstName() + " ya envio su evidencia, no se puede remover del curso"));
         }
         filtrarUsuarios();
     }
@@ -583,6 +600,7 @@ public class CursoController implements Serializable {
 
     public void asignarUsuarioCurso(UserByCourse personaCurso) {
         this.usuarioPorCursoActual = personaCurso;
+        descargarAdjunto();
     }
 
     public void calificarUsuarioCurso() {
@@ -592,9 +610,6 @@ public class CursoController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(
                     null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La calificación se han realizado correctamente"));
             ocultarModal(8);
-//            usuariosPorCurso = new ArrayList<>();
-//            usuariosPorCurso.addAll(curso.getUserByCourseList());
-            System.out.println("sss" + usuariosPorCurso.size());
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(
                     null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Ha ocurrido un error al calificar el curso"));
@@ -603,12 +618,28 @@ public class CursoController implements Serializable {
 
     public String determinarCalificacion(UserByCourse usuarioCurso) {
         String calificacion = "No Aprobado";
-
         if (usuarioCurso.getGrade() == null) {
             calificacion = "Pendiente";
         } else if (usuarioCurso.getGrade()) {
             calificacion = "Aprobado";
         }
         return calificacion;
+    }
+
+    public void descargarAdjunto() {
+        try {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            if (this.usuarioPorCursoActual.getAttached() != null) {
+                String url = this.usuarioPorCursoActual.getAttached();
+                String path = fc.getExternalContext().getRealPath("/") + url;
+                File f = new File(path);
+                InputStream stream = (InputStream) new FileInputStream(f);
+                file = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

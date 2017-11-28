@@ -80,7 +80,7 @@
 
                             <p:commandButton  icon="ui-icon-trash" action="#{cursoController.eliminarCurso(curso)}"
                                               update="tablaCurso, formCurso:growlCurso">
-                                <p:confirm header="Confirmation" message="Estas Seguro?" icon="ui-icon-alert"/>
+                                <p:confirm header="Confirmación" message="Estas Seguro de eliminar este curso?" icon="ui-icon-alert"/>
                             </p:commandButton>
 
                         </p:column>
@@ -316,10 +316,10 @@
 
                                         <p:column headerText="Acciones" width="55">
                                             <f:facet name="header">
-                                                <p:commandButton icon="ui-icon-circle-close" update=":formEditarUsuariosCurso"
+                                                <p:commandButton icon="ui-icon-circle-close" update=":formEditarUsuariosCurso, :formCurso:growlCurso"
                                                                  action="#{cursoController.removerTodosUsuariosDelCurso()}"/>
                                             </f:facet>
-                                            <p:commandButton icon="ui-icon-close" update=":formEditarUsuariosCurso"
+                                            <p:commandButton icon="ui-icon-close" update=":formEditarUsuariosCurso, :formCurso:growlCurso"
                                                              action="#{cursoController.removerUsuarioDelCurso(usuariosCurso)}"/>
                                         </p:column>
                                     </p:dataTable>
