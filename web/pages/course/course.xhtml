@@ -390,16 +390,18 @@
                                         <h:outputText value="#{usuariosCurso.userId.firstName} #{usuariosCurso.userId.lastName}">
                                         </h:outputText>
                                     </p:column>
-                                    
+
                                     <p:column headerText="Calificación">
                                         <h:outputText value="#{cursoController.determinarCalificacion(usuariosCurso)}">
                                         </h:outputText>
                                     </p:column>
 
                                     <p:column headerText="Calificar" width="55">
-                                        <p:commandButton icon="ui-icon-star" oncomplete="PF('calificarCurso').show();"
+                                        <p:commandButton icon="ui-icon-star" 
                                                          actionListener="#{cursoController.asignarUsuarioCurso(usuariosCurso)}"
-                                                         update="calificarCurso" disabled="#{usuariosCurso.grade == true ? true : false}"/>
+                                                         oncomplete="PF('calificarCurso').show();"
+                                                         update="calificarCurso" 
+                                                         disabled="#{usuariosCurso.grade == true ? true : false}"/>
                                     </p:column>
                                 </p:dataTable>
                             </p:panelGrid>
@@ -420,9 +422,9 @@
                         <h1><h:outputText value="Calificar Curso"></h:outputText></h1>
                     </center>
                     <br/>
-                    <h:form>
+                    <h:form id="formCalificar">
                         <center>
-                            <p:panelGrid columns="2">
+                            <p:panelGrid columns="2" id="gridCalificar">
 
                                 <p:outputLabel value="Curso"/>
                                 <h:outputText value="#{cursoController.usuarioPorCursoActual.courseId.courseName}"/>

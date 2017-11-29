@@ -367,11 +367,14 @@ public class CursoController implements Serializable {
                 break;
             case 8:
                 req.execute("PF('calificarCurso').hide();");
+                usuarioPorCursoActual = new UserByCourse();
+                formulario = "formCalificar:gridCalificar";
                 break;
             default:
                 break;
         }
-        if (opcion != 8) {
+        if (opcion != 8 && opcion != 4) {
+            System.out.println("aqi=");
             usuariosPorCurso = new ArrayList<>();
         }
         req.reset(formulario);
@@ -504,7 +507,7 @@ public class CursoController implements Serializable {
         if (!bandera) {
             FacesContext.getCurrentInstance().addMessage(
                     null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
-                           " algunos usuarios no se pueden remover del curso porque ya enviaron su evidencia"));
+                            " algunos usuarios no se pueden remover del curso porque ya enviaron su evidencia"));
         }
     }
 
@@ -599,7 +602,9 @@ public class CursoController implements Serializable {
     }
 
     public void asignarUsuarioCurso(UserByCourse personaCurso) {
+        System.out.println("hoa" + personaCurso.getUserId().getFirstName());
         this.usuarioPorCursoActual = personaCurso;
+        System.out.println("hoa" + usuarioPorCursoActual.getUserId().getFirstName());
         descargarAdjunto();
     }
 
