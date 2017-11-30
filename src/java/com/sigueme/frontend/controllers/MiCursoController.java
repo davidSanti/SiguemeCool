@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- */
+ */ 
 package com.sigueme.frontend.controllers;
 
 import com.sigueme.backend.entities.User;
@@ -91,7 +91,7 @@ public class MiCursoController implements Serializable {
     public void asignarUsuarioCursos(UserByCourse usuarioCurso) {
         usuariosMiCurso = usuarioCurso;
 
-//        descargarAdjunto();
+        descargarAdjunto();
     }
 
     //Este metodo captura el usuario que esta en sesion y lista los cursos asginados a esa persona
@@ -178,5 +178,39 @@ public class MiCursoController implements Serializable {
             e.printStackTrace();
         }
         return pathReal;
-    }    
+    }
+
+    public void descargarAdjunto() {
+        try {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            if (this.usuariosMiCurso.getAttached() != null) {
+                String url = this.usuariosMiCurso.getAttached();
+                String path = fc.getExternalContext().getRealPath("/") + url;
+                File f = new File(path);
+                InputStream stream = (InputStream) new FileInputStream(f);
+                downloadFile = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
+
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public String determinarCalificacion(UserByCourse usuarioCurso) {
+        String calificacion = "No Aprobado";
+
+        if (usuarioCurso.getGrade() == null) {
+            if (usuarioCurso.getAttached() == null || usuarioCurso.getAttached().equals("")) {
+                calificacion = "Sin Evidencia";
+            } else {
+                calificacion = "Pendiente Por Calificar";
+            }
+
+        } else if (usuarioCurso.getGrade()) {
+            calificacion = "Aprobado";
+        }
+        return calificacion;
+    }
 }

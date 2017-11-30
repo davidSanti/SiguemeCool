@@ -210,18 +210,23 @@ public class CursoController implements Serializable {
     //Éste método obtiene todos los usuaros asociados a un curso, elimina los registros de la tabla user_by_course y por último elimina el curso seleccionado
     public void eliminarCurso(Course course) {
         FacesContext context = FacesContext.getCurrentInstance();
+        boolean bandera = true;
         try {
             this.curso = course;
             List<UserByCourse> lista = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
             for (UserByCourse item : lista) {
                 if (validarSiRemueveUsuarioDelCurso(item)) {
                     userByCourseFacadeLocal.remove(item);
-
+                } else {
+                    bandera = false;
                 }
             }
             this.cursoFacadeLocal.remove(curso);
             curso = new Course();
             listarCursos();
+            if (!bandera) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "algunos no se eliminan"));
+            }
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
         } catch (Exception ex) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo eliminar"));
@@ -378,7 +383,7 @@ public class CursoController implements Serializable {
         }
         req.reset(formulario);
     }
-    
+
     //éste método se utiliza para abrir las ventanas modales
     public void abrirModal(int opciones) {
         RequestContext request = RequestContext.getCurrentInstance();
@@ -427,6 +432,7 @@ public class CursoController implements Serializable {
                 usuariosLista = new ArrayList<>();
             }
         }
+        System.out.println("usuarios lista" +usuariosLista.size() );
 
     }
 
@@ -470,6 +476,9 @@ public class CursoController implements Serializable {
         } else {
             devolverUsuariosPorCurso(2);
         }
+        
+        System.out.println("filtrarPersona: usuariosPorCurso" + usuariosPorCurso.size());
+        System.out.println("filtrarPersona: usuariosTemporalesPorCurso" + usuariosTemporalesPorCurso.size());
     }
 
     public List<UserByCourse> filtrarPersonasPorGrupo(List<UserByCourse> listaParaFiltrar) {
@@ -530,6 +539,25 @@ public class CursoController implements Serializable {
         }
     }
 
+//    public void asignarUsuariosAlEditar() {
+//        List<UserByCourse> listaUsuariosPorCurso = new ArrayList<>();
+//        for (User item : usuariosLista) {
+//            UserByCourse usuarioPorCurso = new UserByCourse();
+//            usuarioPorCurso.setCourseId(curso);
+//            usuarioPorCurso.setUserId(item);
+//            listaUsuariosPorCurso.add(usuarioPorCurso);
+//        }
+//        usuariosPorCurso.addAll(listaUsuariosPorCurso);
+//        usuariosLista.removeAll(usuariosLista);
+//
+//        System.out.println("en usuariosCuros" + usuariosPorCurso.size());
+//        System.out.println("en usuariosTemporalesPorCurso" + usuariosTemporalesPorCurso.size());
+//        usuariosTemporalesPorCurso = new ArrayList<>();
+//        usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
+//
+//        filtrarUsuarios();
+//    }
+    
     public void asignarUsuariosAlEditar() {
         List<UserByCourse> listaUsuariosPorCurso = new ArrayList<>();
         for (User item : usuariosLista) {
@@ -538,13 +566,13 @@ public class CursoController implements Serializable {
             usuarioPorCurso.setUserId(item);
             listaUsuariosPorCurso.add(usuarioPorCurso);
         }
-        usuariosPorCurso.addAll(listaUsuariosPorCurso);
+        usuariosTemporalesPorCurso.addAll(listaUsuariosPorCurso);
         usuariosLista.removeAll(usuariosLista);
 
         System.out.println("en usuariosCuros" + usuariosPorCurso.size());
         System.out.println("en usuariosTemporalesPorCurso" + usuariosTemporalesPorCurso.size());
-        usuariosTemporalesPorCurso = new ArrayList<>();
-        usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
+        usuariosPorCurso = new ArrayList<>();
+        usuariosPorCurso.addAll(usuariosTemporalesPorCurso);
 
         filtrarUsuarios();
     }
@@ -599,9 +627,7 @@ public class CursoController implements Serializable {
     }
 
     public void asignarUsuarioCurso(UserByCourse personaCurso) {
-        System.out.println("hoa" + personaCurso.getUserId().getFirstName());
         this.usuarioPorCursoActual = personaCurso;
-        System.out.println("hoa" + usuarioPorCursoActual.getUserId().getFirstName());
         descargarAdjunto();
     }
 
