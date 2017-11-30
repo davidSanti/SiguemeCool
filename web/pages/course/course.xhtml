@@ -389,6 +389,10 @@
                                         <h:outputText value="#{usuariosCurso.userId.firstName} #{usuariosCurso.userId.lastName}">
                                         </h:outputText>
                                     </p:column>
+
+                                    <p:column headerText="Calificar">
+                                        <p:commandButton icon="ui-icon-star" oncomplete="PF('calificarCurso').SHOW();"/>
+                                    </p:column>
                                 </p:dataTable>
                             </p:panelGrid>
                             <center >
@@ -396,6 +400,21 @@
                             </center>
                         </center>
                     </h:form>
+                </p:dialog>
+
+
+                <p:dialog id="calificarCurso"  resizable="false" 
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="calificarCurso" modal="true"
+                          showEffect="fade" hideEffect="fade" width="400" >
+
+                    <h:form>
+                        <p:panelGrid columns="2">
+
+                            
+                        </p:panelGrid>
+                    </h:form>
+
                 </p:dialog>
 
 

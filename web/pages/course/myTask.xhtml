@@ -18,9 +18,11 @@
                     <h2><h:outputText value="Mis Cursos"/></h2>
                 </center>
                 <br></br>
-                
-                
-                <h:form>
+
+
+                <h:form id="formMiCurso">
+                    <p:growl id="growlMiCurso" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+
                     <p:dataTable id="miCursoTabla" value="#{miCursoController.misCursos}" var="curso"
                                  emptyMessage="No se encuentran registros" reflow="true" paginator="true"
                                  paginatorPosition="bottom" rows="10" rowStyleClass="algo">
@@ -37,22 +39,38 @@
                             </h:outputText>           
                         </p:column>
 
+                        <p:column headerText="Fecha Fin" filterBy="#{curso.courseId.finishDate}">
+                            <h:outputText  value="#{curso.courseId.finishDate}">
+                                <f:convertDateTime pattern="dd/MM/yyyy">
+                                </f:convertDateTime>
+                            </h:outputText>           
+                        </p:column>
+
+                        <p:column headerText="Calificación" filterBy="#{miCursoController.determinarCalificacion(curso)}">
+                            <h:outputText value="#{miCursoController.determinarCalificacion(curso)}"></h:outputText>
+                        </p:column >
 
                         <p:column headerText="Acciones" >
-                            <p:commandButton value="Enviar" oncomplete="PF('subirEvidencia').show()" 
-                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia"/>                               
+                            <p:commandButton oncomplete="PF('subirEvidencia').show()" 
+                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia" icon="  ui-icon-folder-collapsed"/>   
+                            <p:commandButton oncomplete="PF('Descargar').show()" 
+                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso)}" update="Descargar" 
+                                             disabled="#{curso.attached == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   
+
+                            <p:commandButton actionListener="#{miCursoController.eliminarEvidencia(curso)}" update="formMiCurso"
+                                             disabled="#{curso.attached == null ? true : false }" icon="ui-icon-circle-close"/> 
                         </p:column>
                     </p:dataTable>
                 </h:form>
-                
-                
+
+
                 <p:dialog id="subirEvidencia" widgetVar="subirEvidencia" resizable="false" 
                           closeOnEscape="false" draggable="false" closable="false" 
-                           modal="true" showEffect="fold" hideEffect="fold"
+                          modal="true" showEffect="fold" hideEffect="fold"
                           responsive="true" width="700" >
                     <h1><h:outputText value="Mis cursos"/></h1>
-                    
-                  
+
+
                     <h:form id="formPrueba" enctype="multipart/form-data" acceptcharset="ISO-8859-1">
 
                         <p:growl id="growlTarea" showDetail="true" showSummary="false" sticky="false" life="3000"/>
@@ -76,14 +94,13 @@
 
                             <p:outputLabel value="Descripcion"/>
                             <h:outputText value="#{miCursoController.usuariosMiCurso.courseId.description}"></h:outputText>
-                            
+
                             <p:outputLabel value="Archivo Adjunto"/>
                             <p:fileUpload id="archivo" mode="simple" pt:required="true" 
                                           value="#{miCursoController.file}"/>
 
 
                         </p:panelGrid>
-
                         <p:inputTextarea value="#{miCursoController.usuariosMiCurso.description}" required="true" pt:required="true" 
                                          requiredMessage="La descripción es obligatoria"
                                          maxlength="500" cols="92"  rows="7"  autoResize="false" 
@@ -93,16 +110,48 @@
                         </p:inputTextarea>
                         <br></br>
                         <center>
-
                             <p:commandButton id="guardar" value="Guardar" action="#{miCursoController.subirEvidencia()}" 
-                                             ajax="false"/>
+                                             ajax="false"  update="subirEvidencia, :formMiCurso:growlMiCurso"/>
                             <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(6)}" immediate="true" 
                                              update="subirEvidencia"/>
                         </center>
                     </h:form>
                 </p:dialog>
 
-                
+                <p:dialog id="Descargar" resizable="false" 
+                          closeOnEscape="false" draggable="false" closable="false" 
+                          widgetVar="Descargar" modal="true" showEffect="fold" hideEffect="fold"
+                          responsive="true" width="500" >
+                    <h1><h:outputText value="Descargar archivo"/></h1>
+                    <h:form id="formDescaga">
+
+                        <p:panelGrid columns="2" style="width:480px">
+                            <p:outputLabel value="Curso"/>
+                            <h:outputText value="#{miCursoController.usuariosMiCurso.courseId.courseName}"></h:outputText>
+
+                            <p:outputLabel value="Descripción"/>
+                            <h:outputText value="#{miCursoController.usuariosMiCurso.description}"></h:outputText>
+
+                            <p:outputLabel value="Calificación"/>
+                            <h:outputText value="#{miCursoController.determinarCalificacion(miCursoController.usuariosMiCurso)}"></h:outputText>
+
+                            <p:outputLabel value="Adjunto"/>
+                            <p:commandButton ajax="false" immediate="true" value="Descargar">
+
+                                <p:fileDownload value="#{miCursoController.downloadFile}"/>
+                            </p:commandButton> 
+
+                        </p:panelGrid>
+                        <center>
+                            <p:commandButton value="Cerrar"  action="#{cursoController.ocultarModal(7)}" immediate="true" 
+                                             update="Descargar"/> 
+                        </center>
+
+                    </h:form>
+
+                </p:dialog>
+
+
             </ui:define>
         </ui:composition>
     </body>

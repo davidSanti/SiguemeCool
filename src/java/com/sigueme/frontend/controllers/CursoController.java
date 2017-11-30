@@ -333,6 +333,10 @@ public class CursoController implements Serializable {
                 req.execute("PF('subirEvidencia').hide();");
                 break;
 
+            case 7:
+                req.execute("PF('Descargar').hide();");
+                break;
+
             default:
                 break;
         }

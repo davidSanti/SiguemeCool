@@ -5,16 +5,20 @@
  */
 package com.sigueme.frontend.controllers;
 
-import com.sigueme.backend.entities.Course;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.entities.UserByCourse;
-import com.sigueme.backend.model.CourseFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
-import com.sigueme.backend.model.UserFacadeLocal;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URLConnection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -23,6 +27,8 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.servlet.http.HttpSession;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
 /**
@@ -39,6 +45,7 @@ public class MiCursoController implements Serializable {
     List<UserByCourse> misCursos;
     private UserByCourse usuariosMiCurso;
     private UploadedFile file;
+    private StreamedContent downloadFile;
 
     public MiCursoController() {
     }
@@ -51,6 +58,14 @@ public class MiCursoController implements Serializable {
 
     public UserByCourse getUsuariosMiCurso() {
         return usuariosMiCurso;
+    }
+
+    public StreamedContent getDownloadFile() {
+        return downloadFile;
+    }
+
+    public void setDownloadFile(StreamedContent downloadFile) {
+        this.downloadFile = downloadFile;
     }
 
     public void setUsuariosMiCurso(UserByCourse usuariosMiCurso) {
@@ -75,6 +90,8 @@ public class MiCursoController implements Serializable {
 
     public void asignarUsuarioCursos(UserByCourse usuarioCurso) {
         usuariosMiCurso = usuarioCurso;
+
+        descargarAdjunto();
     }
 
     //Este metodo captura el usuario que esta en sesion y lista los cursos asginados a esa persona
@@ -88,15 +105,52 @@ public class MiCursoController implements Serializable {
     //Este metodo es el encargado de actualizar el registro en la tabla UserByCourse 
     // con el archivo la descrpcion proporcionada por un usuario asignado a un curso en particular
     public void subirEvidencia() {
-
+        FacesContext context = FacesContext.getCurrentInstance();
         if (file != null && !file.getFileName().equals("")) {
             String archivo = cargarAdjunto();
             this.usuariosMiCurso.setAttached(archivo);
-            System.out.println("se" + usuariosMiCurso.getUserByCourseId());
-            userByCourseFacadeLocal.edit(usuariosMiCurso);
+            try {
+                userByCourseFacadeLocal.edit(usuariosMiCurso);
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha cargado correctamente"));
+
+            } catch (Exception e) {
+                RequestContext.getCurrentInstance().execute("PF('subirEvidencia').show();");
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ha ocurrido un error al cargar tu evidencia"));
+            }
         } else {
             RequestContext.getCurrentInstance().execute("PF('subirEvidencia').show();");
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No puedes guardar sin adjuntar un archivo por favor"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No puedes guardar sin adjuntar un archivo por favor"));
+        }
+
+    }
+
+    public void eliminarEvidencia(UserByCourse usuarioCurso) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (usuarioCurso != null) {
+
+                String url = usuarioCurso.getAttached();
+                String path = context.getExternalContext().getRealPath("/");
+                path = path.substring(0, path.indexOf("\\build\\"));
+                path += "\\Web\\" + url;
+
+                File f = new File(path);
+                InputStream stream = (InputStream) new FileInputStream(f);
+                stream.close();
+                if (f.exists()) {
+                    if (f.delete()) {
+                        usuarioCurso.setDescription(null);
+                        usuarioCurso.setAttached(null);
+                        userByCourseFacadeLocal.edit(usuarioCurso);
+                    }
+                }
+            }
+          
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado  correctamente"));
+
+        } catch (Exception e) {
+            System.out.println("" + e.getMessage());
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ha ocurrido un error al elminar tu evidencia"));
         }
 
     }
@@ -111,8 +165,9 @@ public class MiCursoController implements Serializable {
         try {
             String nombre = file.getFileName();
             path += nombre;
-            pathReal = "/archivos/" + nombre;
-
+//            pathReal = "/archivos/" + nombre;
+            pathReal = "\\archivos\\" + nombre;
+            System.out.println("ruta " + pathReal);
             InputStream input = file.getInputstream();
             byte[] data = new byte[input.available()];
             input.read(data);
@@ -123,5 +178,39 @@ public class MiCursoController implements Serializable {
             e.printStackTrace();
         }
         return pathReal;
+    }
+
+    public void descargarAdjunto() {
+        try {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            if (this.usuariosMiCurso.getAttached() != null) {
+                String url = this.usuariosMiCurso.getAttached();
+                String path = fc.getExternalContext().getRealPath("/") + url;
+                File f = new File(path);
+                InputStream stream = (InputStream) new FileInputStream(f);
+                downloadFile = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
+
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public String determinarCalificacion(UserByCourse usuarioCurso) {
+        String calificacion = "No Aprobado";
+
+        if (usuarioCurso.getGrade() == null) {
+            if (usuarioCurso.getAttached() == null || usuarioCurso.getAttached().equals("")) {
+                calificacion = "Sin Evidencia";
+            } else {
+                calificacion = "Pendiente Por Calificar";
+            }
+
+        } else if (usuarioCurso.getGrade()) {
+            calificacion = "Aprobado";
+        }
+        return calificacion;
     }
 }
