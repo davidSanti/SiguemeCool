@@ -15,13 +15,20 @@ import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.net.URLConnection;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -30,6 +37,8 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -64,6 +73,8 @@ public class CursoController implements Serializable {
     List<Role> listaRoles;
 
     private String filtrarEstado;
+    private UserByCourse usuarioPorCursoActual;
+    private StreamedContent file;
 
     @PostConstruct
     public void init() {
@@ -75,7 +86,7 @@ public class CursoController implements Serializable {
         listaGrupos = new ArrayList<>();
         gruposPersona = new ArrayList<>();
         listaRoles = new ArrayList<>();
-
+        usuarioPorCursoActual = new UserByCourse();
         listarCursos();
         filtrarEstado = new String();
     }
@@ -163,6 +174,22 @@ public class CursoController implements Serializable {
         this.usuariosTemporalesPorCurso = usuariosTemporalesPorCurso;
     }
 
+    public StreamedContent getFile() {
+        return file;
+    }
+
+    public void setFile(StreamedContent file) {
+        this.file = file;
+    }
+
+    public UserByCourse getUsuarioPorCursoActual() {
+        return usuarioPorCursoActual;
+    }
+
+    public void setUsuarioPorCursoActual(UserByCourse usuarioPorCursoActual) {
+        this.usuarioPorCursoActual = usuarioPorCursoActual;
+    }
+
     //Aquí se llama al método que valida las fechas y si éste devuelva "true" llama al método encargado de abrir el modal para asiganar usuarios
     public void registrarCurso() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -187,7 +214,10 @@ public class CursoController implements Serializable {
             this.curso = course;
             List<UserByCourse> lista = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
             for (UserByCourse item : lista) {
-                userByCourseFacadeLocal.remove(item);
+                if (validarSiRemueveUsuarioDelCurso(item)) {
+                    userByCourseFacadeLocal.remove(item);
+
+                }
             }
             this.cursoFacadeLocal.remove(curso);
             curso = new Course();
@@ -332,18 +362,23 @@ public class CursoController implements Serializable {
             case 6:
                 req.execute("PF('subirEvidencia').hide();");
                 break;
-
             case 7:
                 req.execute("PF('Descargar').hide();");
                 break;
-
+            case 8:
+                req.execute("PF('calificarCurso').hide();");
+                usuarioPorCursoActual = new UserByCourse();
+                formulario = "formCalificar:gridCalificar";
+                break;
             default:
                 break;
         }
-        usuariosPorCurso = new ArrayList<>();
+        if (opcion != 8 && opcion != 4) {
+            usuariosPorCurso = new ArrayList<>();
+        }
         req.reset(formulario);
     }
-
+    
     //éste método se utiliza para abrir las ventanas modales
     public void abrirModal(int opciones) {
         RequestContext request = RequestContext.getCurrentInstance();
@@ -426,7 +461,6 @@ public class CursoController implements Serializable {
 
     public void filtrarPersonasPorGrupo() {
         List<User> algo = new ArrayList<>();
-        System.out.println("antes de filtrar" + usuariosTemporalesPorCurso.size());
         for (UserByCourse item : usuariosTemporalesPorCurso) {
             algo.add(item.getUserId());
         }
@@ -436,7 +470,6 @@ public class CursoController implements Serializable {
         } else {
             devolverUsuariosPorCurso(2);
         }
-        System.out.println("filtrarPersonas: usuariosCuros" + usuariosPorCurso.size());
     }
 
     public List<UserByCourse> filtrarPersonasPorGrupo(List<UserByCourse> listaParaFiltrar) {
@@ -456,20 +489,23 @@ public class CursoController implements Serializable {
     public void removerTodosUsuariosDelCurso() {
         List<UserByCourse> listaRemover = new ArrayList<>();
         System.out.println("a eliminar cuantos" + usuariosPorCurso.size());
+        boolean bandera = true;
         for (UserByCourse item : usuariosPorCurso) {
             if (validarSiRemueveUsuarioDelCurso(item)) {
                 System.out.println("si se puede eliminar" + item.getUserId().getFirstName());
                 listaRemover.add(item);
+            } else {
+                bandera = false;
             }
         }
-        System.out.println("revome" + listaRemover.size());
         usuariosPorCurso.removeAll(listaRemover);
-        System.out.println("cuanto antes" + usuariosTemporalesPorCurso.size());
-
         usuariosTemporalesPorCurso.removeAll(listaRemover);
-        System.out.println("cuanti" + usuariosTemporalesPorCurso.size());
-
         filtrarUsuarios();
+        if (!bandera) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                            " algunos usuarios no se pueden remover del curso porque ya enviaron su evidencia"));
+        }
     }
 
     public void removerUsuarioDelCurso(UserByCourse usuarioCurso) {
@@ -478,6 +514,10 @@ public class CursoController implements Serializable {
             System.out.println("si se puede eliminar" + usuarioCurso.getUserId().getFirstName());
             usuariosPorCurso.remove(usuarioCurso);
             usuariosTemporalesPorCurso.remove(usuarioCurso);
+        } else {
+            context.addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                            usuarioCurso.getUserId().getFirstName() + " ya envio su evidencia, no se puede remover del curso"));
         }
         filtrarUsuarios();
     }
@@ -558,7 +598,50 @@ public class CursoController implements Serializable {
                 null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos se han modificado correctamente"));
     }
 
-    public void abrirModalEditarUsuarios() {
+    public void asignarUsuarioCurso(UserByCourse personaCurso) {
+        System.out.println("hoa" + personaCurso.getUserId().getFirstName());
+        this.usuarioPorCursoActual = personaCurso;
+        System.out.println("hoa" + usuarioPorCursoActual.getUserId().getFirstName());
+        descargarAdjunto();
+    }
 
+    public void calificarUsuarioCurso() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            userByCourseFacadeLocal.edit(usuarioPorCursoActual);
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La calificación se han realizado correctamente"));
+            ocultarModal(8);
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Ha ocurrido un error al calificar el curso"));
+        }
+    }
+
+    public String determinarCalificacion(UserByCourse usuarioCurso) {
+        String calificacion = "No Aprobado";
+        if (usuarioCurso.getGrade() == null) {
+            calificacion = "Pendiente";
+        } else if (usuarioCurso.getGrade()) {
+            calificacion = "Aprobado";
+        }
+        return calificacion;
+    }
+
+    public void descargarAdjunto() {
+        try {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            if (this.usuarioPorCursoActual.getAttached() != null) {
+                String url = this.usuarioPorCursoActual.getAttached();
+                String path = fc.getExternalContext().getRealPath("/") + url;
+                File f = new File(path);
+                InputStream stream = (InputStream) new FileInputStream(f);
+                file = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
