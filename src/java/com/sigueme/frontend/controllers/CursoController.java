@@ -374,13 +374,12 @@ public class CursoController implements Serializable {
                 break;
         }
         if (opcion != 8 && opcion != 4) {
-            System.out.println("aqi=");
             usuariosPorCurso = new ArrayList<>();
         }
         req.reset(formulario);
     }
+    
     //éste método se utiliza para abrir las ventanas modales
-
     public void abrirModal(int opciones) {
         RequestContext request = RequestContext.getCurrentInstance();
         switch (opciones) {
@@ -462,7 +461,6 @@ public class CursoController implements Serializable {
 
     public void filtrarPersonasPorGrupo() {
         List<User> algo = new ArrayList<>();
-        System.out.println("antes de filtrar" + usuariosTemporalesPorCurso.size());
         for (UserByCourse item : usuariosTemporalesPorCurso) {
             algo.add(item.getUserId());
         }
@@ -472,7 +470,6 @@ public class CursoController implements Serializable {
         } else {
             devolverUsuariosPorCurso(2);
         }
-        System.out.println("filtrarPersonas: usuariosCuros" + usuariosPorCurso.size());
     }
 
     public List<UserByCourse> filtrarPersonasPorGrupo(List<UserByCourse> listaParaFiltrar) {

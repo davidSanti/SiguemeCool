@@ -402,6 +402,7 @@
                                                          oncomplete="PF('calificarCurso').show();"
                                                          update="calificarCurso" 
                                                          disabled="#{usuariosCurso.grade == true ? true : false}"/>
+                                        <!--en ver de actionListener un action-->
                                     </p:column>
                                 </p:dataTable>
                             </p:panelGrid>
@@ -455,7 +456,7 @@
                             <p:commandButton value="Guardar" iconPos="ui-icon-check"
                                              action="#{cursoController.calificarUsuarioCurso()}"
                                              update="formCurso:growlCurso, formVerCurso:usuariosTabla"/>
-                            <p:commandButton value="Cerrar" inline="true" actionListener="#{cursoController.ocultarModal(8)}"/>
+                            <p:commandButton value="Cerrar" immediate="true" actionListener="#{cursoController.ocultarModal(8)}"/>
                         </center>
                     </h:form>
 
