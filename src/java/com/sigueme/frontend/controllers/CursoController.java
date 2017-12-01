@@ -15,7 +15,6 @@ import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -416,7 +415,7 @@ public class CursoController implements Serializable {
 
         for (UserByCourse item : usuariosTemporalesPorCurso) {
             algo.add(item.getUserId());
-            System.out.println("item" + item);
+            System.out.println("item " + item.getUserId().getFirstName());
         }
         if (!listaGrupos.isEmpty()) {
 
@@ -432,7 +431,10 @@ public class CursoController implements Serializable {
                 usuariosLista = new ArrayList<>();
             }
         }
-        System.out.println("usuarios lista" +usuariosLista.size() );
+        System.out.println("usuarios lista" + usuariosLista.size());
+        for (User user : usuariosLista) {
+            System.out.println("item lista rara " + user.getFirstName());
+        }
 
     }
 
@@ -476,7 +478,7 @@ public class CursoController implements Serializable {
         } else {
             devolverUsuariosPorCurso(2);
         }
-        
+
         System.out.println("filtrarPersona: usuariosPorCurso" + usuariosPorCurso.size());
         System.out.println("filtrarPersona: usuariosTemporalesPorCurso" + usuariosTemporalesPorCurso.size());
     }
@@ -521,8 +523,14 @@ public class CursoController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         if (validarSiRemueveUsuarioDelCurso(usuarioCurso)) {
             System.out.println("si se puede eliminar" + usuarioCurso.getUserId().getFirstName());
+            for (UserByCourse userByCourse : usuariosPorCurso) {
+                System.out.println("usuariosPorCurso " + userByCourse.getUserId().getFirstName());
+            }
             usuariosPorCurso.remove(usuarioCurso);
             usuariosTemporalesPorCurso.remove(usuarioCurso);
+            for (UserByCourse userByCourse : usuariosTemporalesPorCurso) {
+                System.out.println("usuariosTemporalesPorCurso " + userByCourse.getUserId().getFirstName());
+            }
         } else {
             context.addMessage(
                     null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
@@ -557,7 +565,6 @@ public class CursoController implements Serializable {
 //
 //        filtrarUsuarios();
 //    }
-    
     public void asignarUsuariosAlEditar() {
         List<UserByCourse> listaUsuariosPorCurso = new ArrayList<>();
         for (User item : usuariosLista) {
