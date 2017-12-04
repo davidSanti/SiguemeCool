@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- */ 
+ */
 package com.sigueme.frontend.controllers;
 
 import com.sigueme.backend.entities.User;
@@ -145,7 +145,7 @@ public class MiCursoController implements Serializable {
                     }
                 }
             }
-          
+
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado  correctamente"));
 
         } catch (Exception e) {
@@ -186,8 +186,11 @@ public class MiCursoController implements Serializable {
             if (this.usuariosMiCurso.getAttached() != null) {
                 String url = this.usuariosMiCurso.getAttached();
                 String path = fc.getExternalContext().getRealPath("/") + url;
+                path = path.substring(0, path.indexOf("\\build\\"));
+                path += "\\Web\\" + url;
                 File f = new File(path);
                 InputStream stream = (InputStream) new FileInputStream(f);
+
                 downloadFile = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
 
             }
