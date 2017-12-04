@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -527,7 +528,8 @@ public class CursoController implements Serializable {
                 System.out.println("usuariosPorCurso " + userByCourse.getUserId().getFirstName());
             }
             usuariosPorCurso.remove(usuarioCurso);
-            usuariosTemporalesPorCurso.remove(usuarioCurso);
+//            usuariosTemporalesPorCurso.remove(usuarioCurso);
+            removerUsuarioDeListaTemporal(usuarioCurso.getUserId());
             for (UserByCourse userByCourse : usuariosTemporalesPorCurso) {
                 System.out.println("usuariosTemporalesPorCurso " + userByCourse.getUserId().getFirstName());
             }
@@ -547,24 +549,17 @@ public class CursoController implements Serializable {
         }
     }
 
-//    public void asignarUsuariosAlEditar() {
-//        List<UserByCourse> listaUsuariosPorCurso = new ArrayList<>();
-//        for (User item : usuariosLista) {
-//            UserByCourse usuarioPorCurso = new UserByCourse();
-//            usuarioPorCurso.setCourseId(curso);
-//            usuarioPorCurso.setUserId(item);
-//            listaUsuariosPorCurso.add(usuarioPorCurso);
-//        }
-//        usuariosPorCurso.addAll(listaUsuariosPorCurso);
-//        usuariosLista.removeAll(usuariosLista);
-//
-//        System.out.println("en usuariosCuros" + usuariosPorCurso.size());
-//        System.out.println("en usuariosTemporalesPorCurso" + usuariosTemporalesPorCurso.size());
-//        usuariosTemporalesPorCurso = new ArrayList<>();
-//        usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
-//
-//        filtrarUsuarios();
-//    }
+    public void removerUsuarioDeListaTemporal(User usuarioTemporal) {
+        for (int i = 0; i < usuariosTemporalesPorCurso.size(); i++) {
+            if (Objects.equals(usuariosTemporalesPorCurso.get(i).getUserId().getUserId(), usuarioTemporal.getUserId())) {
+                usuariosTemporalesPorCurso.remove(i);
+                break;
+            }
+        }
+        System.out.println("como vamos");
+
+    }
+
     public void asignarUsuariosAlEditar() {
         List<UserByCourse> listaUsuariosPorCurso = new ArrayList<>();
         for (User item : usuariosLista) {
