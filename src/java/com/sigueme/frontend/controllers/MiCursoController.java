@@ -128,7 +128,7 @@ public class MiCursoController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
             if (usuarioCurso != null) {
-
+                boolean bandera = false;
                 String url = usuarioCurso.getAttached();
                 String path = context.getExternalContext().getRealPath("/");
                 path = path.substring(0, path.indexOf("\\build\\"));
@@ -142,11 +142,15 @@ public class MiCursoController implements Serializable {
                         usuarioCurso.setDescription(null);
                         usuarioCurso.setAttached(null);
                         userByCourseFacadeLocal.edit(usuarioCurso);
+                        bandera = true;
                     }
                 }
+                if (bandera) {
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado  correctamente"));
+                } else {
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Tu evidencia no se pudo elminar, intenta más tarde"));
+                }
             }
-
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado  correctamente"));
 
         } catch (Exception e) {
             System.out.println("" + e.getMessage());
