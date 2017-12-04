@@ -182,8 +182,4 @@ public class MenuController implements Serializable {
         return "/index?faces-redirect=true";
     }
 
-    public void hola() {
-        System.out.println("decir hola");
-    }
-
 }
