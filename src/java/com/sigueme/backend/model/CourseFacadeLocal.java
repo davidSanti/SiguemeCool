@@ -39,4 +39,5 @@ public interface CourseFacadeLocal {
     
     List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso, List<User> listaParaFiltrar);
     
+    boolean validarEvidenciaUsuariosCurso(Course curso);    
 }

@@ -210,24 +210,18 @@ public class CursoController implements Serializable {
     //Éste método obtiene todos los usuaros asociados a un curso, elimina los registros de la tabla user_by_course y por último elimina el curso seleccionado
     public void eliminarCurso(Course course) {
         FacesContext context = FacesContext.getCurrentInstance();
-        boolean bandera = true;
         try {
             this.curso = course;
             List<UserByCourse> lista = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
-            for (UserByCourse item : lista) {
-                if (validarSiRemueveUsuarioDelCurso(item)) {
-                    userByCourseFacadeLocal.remove(item);
-                } else {
-                    bandera = false;
-                }
-            }
-            this.cursoFacadeLocal.remove(curso);
-            curso = new Course();
-            listarCursos();
+            boolean bandera = cursoFacadeLocal.validarEvidenciaUsuariosCurso(curso);
+
             if (!bandera) {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "algunos no se eliminan"));
+                //abrir modal para aceptar la eliminacon de usuarios
+                abrirModal(2);
             }
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
+            listarCursos();
+
+//            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
         } catch (Exception ex) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo eliminar"));
         }
@@ -391,6 +385,9 @@ public class CursoController implements Serializable {
             case 1:
                 request.execute("PF('asociarUsuarios').show()");
                 break;
+            case 2:
+                request.execute("PF('confirmarEliminacion').show()");
+                break;
             default:
                 break;
         }
@@ -528,7 +525,7 @@ public class CursoController implements Serializable {
                 System.out.println("usuariosPorCurso " + userByCourse.getUserId().getFirstName());
             }
             usuariosPorCurso.remove(usuarioCurso);
-//            usuariosTemporalesPorCurso.remove(usuarioCurso);
+//            usuariosTemporalesPorCurso.remove(usuarioCurso); no se por qué no funciona es como si elimara otro objeto
             removerUsuarioDeListaTemporal(usuarioCurso.getUserId());
             for (UserByCourse userByCourse : usuariosTemporalesPorCurso) {
                 System.out.println("usuariosTemporalesPorCurso " + userByCourse.getUserId().getFirstName());

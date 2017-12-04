@@ -76,5 +76,22 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
         }
         return lista;
     }
-    
+
+    @Override
+    public boolean validarEvidenciaUsuariosCurso(Course curso) {
+        List<UserByCourse> lista = new ArrayList<>();
+        boolean bandera = false;
+        try {
+            Query query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.courseId = :curso and uc.attached IS NOT NULL", UserByCourse.class);
+            query.setParameter("curso", curso);
+            lista = query.getResultList();
+
+            bandera = lista.isEmpty();
+
+        } catch (Exception e) {
+            System.out.println("Error en el metodo ValidarEvidenciaUsuariosCurso = " + e.getMessage());
+        }
+        return bandera;
+    }
+
 }

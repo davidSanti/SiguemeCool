@@ -462,10 +462,33 @@
 
                 </p:dialog>
 
+                <p:dialog id="confirmarEliminacion"  resizable="false" 
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="confirmarEliminacion" modal="true"
+                          showEffect="fade" hideEffect="fade"  header="Confirmar">
+
+                    
+                    <h:form>
+                        <center>
+                            <h:outputText value="Algunas personas ya enviaron la evidencia"/>                         
+                            <br/>
+
+                            <h:outputText value="y no pueden ser removidas de este curso"/>
+                            <br/>
+                            <h:outputText value="¿Desea remover a los demás usuarios?"/>
+                            <br/>
+                            <p:separator/>
+
+                            <p:commandButton value="Si" icon="ui-icon-check" />
+                            <p:commandButton value="No" icon="ui-icon-close" />
+                        </center>
+                    </h:form>       
+
+                </p:dialog>
 
                 <h:form>           
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
                         <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
                     </p:confirmDialog>
                 </h:form>
