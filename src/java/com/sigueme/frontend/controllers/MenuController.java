@@ -181,5 +181,9 @@ public class MenuController implements Serializable {
         context.getExternalContext().invalidateSession();
         return "/index?faces-redirect=true";
     }
+    
+    public void hola(){
+        
+    }
 
 }
