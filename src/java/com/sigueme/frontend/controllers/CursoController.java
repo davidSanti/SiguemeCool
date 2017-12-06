@@ -233,7 +233,6 @@ public class CursoController implements Serializable {
         try {
             List<UserByCourse> listaUsuariosPorCurso = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
             for (UserByCourse item : listaUsuariosPorCurso) {
-                System.out.println(item.getAttached() + item.getDescription());
                 if (item.getAttached() == null && item.getDescription() == null) {
                     System.out.println("eliminar a " + item.getUserId().getFirstName());
                     userByCourseFacadeLocal.remove(item);
@@ -705,5 +704,13 @@ public class CursoController implements Serializable {
         } catch (IOException ex) {
             Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public boolean desabilitarInputSiCursoVencido() {
+        boolean bandera = false;
+        if (this.curso != null && this.curso.getCourseId() != null) {
+            bandera = curso.getFinishDate().before(Date.from(Instant.now()));
+        }
+        return bandera;
     }
 }

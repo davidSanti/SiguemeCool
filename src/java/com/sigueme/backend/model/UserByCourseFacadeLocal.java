@@ -35,4 +35,6 @@ public interface UserByCourseFacadeLocal {
     List<UserByCourse> listarUsuariosPorCurso(Course curso);
     
     List<UserByCourse> listarMisCursos(User user);
+    
+    List<UserByCourse> filtrarMisCursosPorCValificacion(User user, boolean grade,String option);
 }

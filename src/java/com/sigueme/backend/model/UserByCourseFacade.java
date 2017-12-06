@@ -51,11 +51,39 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
     public List<UserByCourse> listarMisCursos(User user) {
         List<UserByCourse> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user  ORDER BY uc.userByCourseId ASC");
+            Query query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user  ORDER BY uc.userByCourseId DESC");
             query.setParameter("user", user);
             lista = query.getResultList();
         } catch (Exception ex) {
             System.out.println("Error en el metodo listarMisCursos= " + ex.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<UserByCourse> filtrarMisCursosPorCValificacion(User user, boolean grade, String option) {
+        List<UserByCourse> lista = new ArrayList<>();
+        try {
+            Query query = null;
+
+            switch (option) {
+                case "calificado":
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user AND uc.grade = :grade ORDER BY uc.userByCourseId DESC");
+                    query.setParameter("grade", grade);
+                    break;
+                case "pendiente":
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user AND uc.grade IS NULL AND uc.attached IS NOT NULL ORDER BY uc.userByCourseId DESC");
+                    break;
+                case "sin_Evidencia":
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user AND uc.grade IS NULL AND uc.attached IS NULL ORDER BY uc.userByCourseId DESC");
+                    break;
+                default:
+                    break;
+            }
+            query.setParameter("user", user);
+            lista = query.getResultList();
+        } catch (Exception ex) {
+            System.out.println("Error en el metodo filtrarMisCursosPorCValificacion= " + ex.getMessage());
         }
         return lista;
     }

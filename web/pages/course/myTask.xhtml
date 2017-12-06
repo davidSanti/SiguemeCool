@@ -50,7 +50,21 @@
                             <h:outputText value="#{miCursoController.determinarCalificacion(curso)}"></h:outputText>
                         </p:column >
 
-                        <p:column headerText="Acciones" >
+                        <p:column filterBy="#{curso.grade}" headerText="Calificación">
+                            <f:facet name="filter">
+                                <p:selectOneMenu value="#{miCursoController.filtrarEstado}">
+                                    <f:selectItem itemLabel="Todos" itemValue="todos" />
+                                    <f:selectItem itemLabel="Pendiente" itemValue="pendiente" />
+                                    <f:selectItem itemLabel="Sin Evidencia" itemValue="sin_Evidencia" />
+                                    <f:selectItem itemLabel="Aprobado" itemValue="aprobado" />
+                                    <f:selectItem itemLabel="No Aprobado" itemValue="no_Aprobado" />
+                                    <f:ajax event="change" listener="#{miCursoController.filtrarPorEstado}" render="miCursoTabla"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                            <h:outputText value="#{miCursoController.determinarCalificacion(curso)}"></h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Acciones" width="100">
                             <p:commandButton oncomplete="PF('subirEvidencia').show()" 
                                              actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia" icon="  ui-icon-folder-collapsed"
                                              disabled="#{curso.grade}"/>   
@@ -59,7 +73,10 @@
                                              disabled="#{curso.attached == null and curso.description == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   
 
                             <p:commandButton actionListener="#{miCursoController.eliminarEvidencia(curso)}" update="formMiCurso"
-                                             disabled="#{curso.attached == null || curso.grade != null ? true : false }" icon="ui-icon-circle-close"/> 
+                                             disabled="#{curso.attached == null || curso.grade != null ? true : false }" icon="ui-icon-circle-close" >
+                                <p:confirm header="Confirmación" message="Estas Seguro de eliminar este curso?" icon="ui-icon-alert"/>
+
+                            </p:commandButton>
                         </p:column>
                     </p:dataTable>
                 </h:form>
@@ -151,6 +168,12 @@
 
                 </p:dialog>
 
+                <h:form>           
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </h:form>
 
             </ui:define>
         </ui:composition>

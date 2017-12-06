@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.servlet.http.HttpSession;
@@ -47,6 +48,8 @@ public class MiCursoController implements Serializable {
     private UploadedFile file;
     private StreamedContent downloadFile;
 
+    private String filtrarEstado;
+
     public MiCursoController() {
     }
 
@@ -54,6 +57,7 @@ public class MiCursoController implements Serializable {
     public void init() {
         listraMisCursos();
         usuariosMiCurso = new UserByCourse();
+        filtrarEstado = "";
     }
 
     public UserByCourse getUsuariosMiCurso() {
@@ -94,12 +98,25 @@ public class MiCursoController implements Serializable {
         descargarAdjunto();
     }
 
+    public String getFiltrarEstado() {
+        return filtrarEstado;
+    }
+
+    public void setFiltrarEstado(String filtrarEstado) {
+        this.filtrarEstado = filtrarEstado;
+    }
+
     //Este metodo captura el usuario que esta en sesion y lista los cursos asginados a esa persona
     public void listraMisCursos() {
+        User usuarioEnSesion = devolverUsuarioEnSesion();
+        misCursos = userByCourseFacadeLocal.listarMisCursos(usuarioEnSesion);
+    }
+
+    public User devolverUsuarioEnSesion() {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpSession sesion = (HttpSession) context.getExternalContext().getSession(true);
         User usuarioEnSesion = (User) sesion.getAttribute("usuario");
-        misCursos = userByCourseFacadeLocal.listarMisCursos(usuarioEnSesion);
+        return usuarioEnSesion;
     }
 
     //Este metodo es el encargado de actualizar el registro en la tabla UserByCourse 
@@ -165,7 +182,7 @@ public class MiCursoController implements Serializable {
         path = path.substring(0, path.indexOf("\\build\\"));
         path += "\\Web\\archivos\\";
         String pathReal = null;
-        
+
         try {
             String nombre = file.getFileName();
             path += nombre;
@@ -178,7 +195,7 @@ public class MiCursoController implements Serializable {
             FileOutputStream output = new FileOutputStream(path);
             output.write(data);
             output.close();
-           renombrarArchivo(pathReal);
+            renombrarArchivo(pathReal);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -258,5 +275,30 @@ public class MiCursoController implements Serializable {
     //y debemos asignar de nuevo el archivo parta que no arroje error
     public void descargarAdjuntoDeNuevo() {
         descargarAdjunto();
+    }
+
+    public void filtrarPorEstado(AjaxBehaviorEvent event) {
+        User usuarioEnSeison = devolverUsuarioEnSesion();
+
+        switch (filtrarEstado) {
+            case "aprobado":
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, true,"calificado");
+                break;
+            case "no_Aprobado":
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false,"calificado");
+                break;
+            case "pendiente":
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "pendiente");                
+                break;
+            case "sin_Evidencia":
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false,"sin_Evidencia");
+                break;
+            case "todos":
+                listraMisCursos();
+                break;
+            default:
+                break;
+        }
+        RequestContext.getCurrentInstance().update("formMiCurso:miCursoTabla");
     }
 }

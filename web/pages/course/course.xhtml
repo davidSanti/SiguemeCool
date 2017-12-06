@@ -58,12 +58,12 @@
 
                         <p:column filterBy="#{curso.couseStatus}" headerText="Estado">
                             <f:facet name="filter">
-                                <p:selectOneButton value="#{cursoController.filtrarEstado}">
-                                    <f:selectItem itemLabel="All" itemValue="all" />
-                                    <f:selectItem itemLabel="Prog" itemValue="true" />
+                                <p:selectOneMenu value="#{cursoController.filtrarEstado}">
+                                    <f:selectItem itemLabel="Todos" itemValue="all" />
+                                    <f:selectItem itemLabel="En Progreso" itemValue="true" />
                                     <f:selectItem itemLabel="Vencido" itemValue="false" />
                                     <f:ajax event="change" listener="#{cursoController.filtrarPorEstado}" render="tablaCurso"/>
-                                </p:selectOneButton>
+                                </p:selectOneMenu>
                             </f:facet>
                             <h:outputText value="#{curso.couseStatus ? 'En proceso': 'Vencido'}" />
                         </p:column>
@@ -197,19 +197,21 @@
                         <h1><h:outputText value="Editar"/></h1>
                         <h:panelGrid columns="2" id="gridEditar">
 
-                            <p:outputLabel value="Nombre" for="courseName" />
-                            <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
-                                         required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90">
-                                <f:validateLength minimum="10" maximum="90"/>
-                            </p:inputText>
+                            
+                                <p:outputLabel value="Nombre" for="courseName" />
+                                <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
+                                             required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90"
+                                             disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
+                                    <f:validateLength minimum="10" maximum="90"/>
+                                </p:inputText>
 
-                            <p:outputLabel value="Fecha Inicio" for="startDate" />
-                            <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" required="true" 
-                                        requiredMessage="El campo fecha inicio es obligatorio"  showOn="button" effect="fold"
-                                        pattern="dd/MM/yyyy">
-                                <f:convertDateTime pattern="dd/MM/yyyy" />
-                            </p:calendar>
-
+                                <p:outputLabel value="Fecha Inicio" for="startDate" />
+                                <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" required="true" 
+                                            requiredMessage="El campo fecha inicio es obligatorio"  showOn="button" effect="fold"
+                                            pattern="dd/MM/yyyy" disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </p:calendar>
+                          
                             <p:outputLabel value="Fecha Fin" for="finishDate" />
                             <p:calendar id="finishDate" value="#{cursoController.curso.finishDate}" title="FinishDate" showOn="button"
                                         required="true" requiredMessage="El campo fecha fin es obligatorio." pattern="dd/MM/yyyy" effect="fold">
@@ -218,12 +220,13 @@
 
                             <h:column/>
                             <p:commandLink value="Editar usuarios" oncomplete="PF('editarUsuarios').show();" 
-                                           actionListener="#{cursoController.devolverUsuariosPorCurso(1)}" update="editarUsuarios"/>
+                                           actionListener="#{cursoController.devolverUsuariosPorCurso(1)}" update="editarUsuarios"
+                                           disabled="#{cursoController.desabilitarInputSiCursoVencido()}"/>
 
                             <p:outputLabel value="Descripción" for="description" />
                             <p:inputTextarea id="description" value="#{cursoController.curso.description}" title="Description" 
                                              required="true" requiredMessage="La descripción es obligatoria" maxlength="500"
-                                             cols="22" autoResize="false">
+                                             cols="22" autoResize="false" disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
                                 <f:validateLength minimum="10" maximum="500"/>
                             </p:inputTextarea>
 
@@ -364,7 +367,7 @@
                                 <h:outputText value="Descripcion"/>
                                 <h:outputText value="#{cursoController.curso.description}"/>
                                 <h:outputText value="Usuarios"/>
-                                
+
                                 <p:dataTable id="usuariosTabla" reflow="true"
                                              value="#{cursoController.usuariosPorCurso}" var="usuariosCurso" 
                                              emptyMessage="No se encontrarón registros" 
@@ -468,7 +471,6 @@
                           widgetVar="confirmarEliminacion" modal="true"
                           showEffect="fade" hideEffect="fade"  header="Confirmar">
 
-                    
                     <h:form>
                         <center>
                             <h:outputText value="Algunas personas ya enviaron la evidencia"/>                         
@@ -493,7 +495,7 @@
                         <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
                         <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
                     </p:confirmDialog>
-                </h:form>
+                </h:form>             
 
             </ui:define>
 

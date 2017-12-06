@@ -58,7 +58,6 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     public List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, List<User> usuariosExcluidos) {
         List<User> lista = new ArrayList<>();
         try {
-            String consulta;
             Query query;
             if (usuariosExcluidos.isEmpty()) {
                 query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos", User.class);
