@@ -220,4 +220,10 @@ public class MiCursoController implements Serializable {
         }
         return calificacion;
     }
+
+    //Este método es importante ya que cuando el archivo se descarga por primera vez el Stream se cierra 
+    //y debemos asignar de nuevo el archivo parta que no arroje error
+    public void descargarAdjuntoDeNuevo() {
+        descargarAdjunto();
+    }
 }

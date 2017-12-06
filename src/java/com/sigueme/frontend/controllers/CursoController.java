@@ -227,10 +227,37 @@ public class CursoController implements Serializable {
         }
     }
 
+    public void elimnarCurso() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        boolean bandera = true;
+        try {
+            List<UserByCourse> listaUsuariosPorCurso = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
+            for (UserByCourse item : listaUsuariosPorCurso) {
+                System.out.println(item.getAttached() + item.getDescription());
+                if (item.getAttached() == null && item.getDescription() == null) {
+                    System.out.println("eliminar a " + item.getUserId().getFirstName());
+                    userByCourseFacadeLocal.remove(item);
+                }
+            }
+        } catch (Exception e) {
+            bandera = false;
+        }
+
+        if (bandera) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "No se pudo eliminar"));
+        } else {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Algunos usuarios no se eliminaron intentalo nuevamnte"));
+        }
+
+        ocultarModal(9);
+    }
+
     //éste método asigna el curso que está llegando de la interfaz a la variable global de éste controlador llamada curso
     public void editarCurso(Course course, int opcion) {
         this.curso = course;
+        System.out.println("aqui");
         if (opcion == 1) {
+            System.out.println("aaa");
             devolverUsuariosPorCurso(1);
         }
     }
@@ -250,11 +277,17 @@ public class CursoController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean banderita = false;
         try {
-            this.cursoFacadeLocal.edit(this.curso);
-            banderita = true;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Editado Correctamente"));
+            if (validarFechas()) {
+                this.cursoFacadeLocal.edit(this.curso);
+                banderita = true;
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Editado Correctamente"));
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Verifique la fechas por favor"));
+
+            }
+
         } catch (Exception ex) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo editar"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un error al editar el curso"));
         }
         return banderita;
     }
@@ -316,14 +349,14 @@ public class CursoController implements Serializable {
         if (usuariosTemporalesPorCurso.isEmpty() && opcion == 1) {
             usuariosPorCurso = new ArrayList<>();
             if (curso != null) {
-                usuariosPorCurso.addAll(curso.getUserByCourseList());
+                usuariosPorCurso.addAll(userByCourseFacadeLocal.listarUsuariosPorCurso(curso));
+
             }
             usuariosTemporalesPorCurso = new ArrayList<>();
             usuariosTemporalesPorCurso.addAll(usuariosPorCurso);
             return usuariosPorCurso;
         } else {
             return usuariosTemporalesPorCurso;
-
         }
     }
 
@@ -368,6 +401,10 @@ public class CursoController implements Serializable {
                 req.execute("PF('calificarCurso').hide();");
                 usuarioPorCursoActual = new UserByCourse();
                 formulario = "formCalificar:gridCalificar";
+                break;
+            case 9:
+                req.execute("PF('confirmarEliminacion').hide();");
+                init();
                 break;
             default:
                 break;
