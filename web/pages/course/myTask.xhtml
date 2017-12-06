@@ -52,13 +52,14 @@
 
                         <p:column headerText="Acciones" >
                             <p:commandButton oncomplete="PF('subirEvidencia').show()" 
-                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia" icon="  ui-icon-folder-collapsed"/>   
+                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia" icon="  ui-icon-folder-collapsed"
+                                             disabled="#{curso.grade}"/>   
                             <p:commandButton oncomplete="PF('Descargar').show()" 
                                              actionListener="#{miCursoController.asignarUsuarioCursos(curso)}" update="Descargar" 
-                                             disabled="#{curso.attached == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   
+                                             disabled="#{curso.attached == null and curso.description == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   
 
                             <p:commandButton actionListener="#{miCursoController.eliminarEvidencia(curso)}" update="formMiCurso"
-                                             disabled="#{curso.attached == null ? true : false }" icon="ui-icon-circle-close"/> 
+                                             disabled="#{curso.attached == null || curso.grade != null ? true : false }" icon="ui-icon-circle-close"/> 
                         </p:column>
                     </p:dataTable>
                 </h:form>
