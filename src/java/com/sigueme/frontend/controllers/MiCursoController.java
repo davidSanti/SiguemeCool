@@ -146,9 +146,9 @@ public class MiCursoController implements Serializable {
                     }
                 }
                 if (bandera) {
-                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado  correctamente"));
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado correctamente"));
                 } else {
-                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Tu evidencia no se pudo elminar, intenta más tarde"));
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Tu evidencia no se pudo eliminar, intenta más tarde"));
                 }
             }
 
@@ -165,7 +165,7 @@ public class MiCursoController implements Serializable {
         path = path.substring(0, path.indexOf("\\build\\"));
         path += "\\Web\\archivos\\";
         String pathReal = null;
-
+        
         try {
             String nombre = file.getFileName();
             path += nombre;
@@ -178,10 +178,43 @@ public class MiCursoController implements Serializable {
             FileOutputStream output = new FileOutputStream(path);
             output.write(data);
             output.close();
+           renombrarArchivo(pathReal);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return pathReal;
+    }
+
+    public void renombrarArchivo(String pathDB) {
+//        String nombreCurso = usuariosMiCurso.getCourseId().getCourseName();
+//        String cedula = usuariosMiCurso.getUserId().getIdentification();
+//        String archivo = nombreCurso.replaceAll(" ", "_") + "_" + cedula;
+//
+//        String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/") + pathDB;
+//        path = path.substring(0, path.indexOf("\\build\\"));
+//        path += "\\Web\\" + pathDB;
+//        File f = new File(path);
+//
+//        String rutaCompleta;
+//        if (f.exists()) {
+//            String url = path.substring(0, path.indexOf("\\archivos\\"));
+//            String extension = pathDB.substring(pathDB.lastIndexOf(".", pathDB.length()));
+//            
+//            rutaCompleta = url + "\\archivos\\" + archivo + extension;
+//            System.out.println(rutaCompleta);
+//            if (f.renameTo(new File(rutaCompleta))) {
+//                System.out.println("bo");
+//            }
+//        }
+
+        File f = new File("C:\\Users\\ZamudioL\\Desktop\\PROYECTO QUE I ESTA BIEN BONITO\\otro\\SiguemeKahe\\web\\archivos\\mua.txt");
+        if (f.exists()) {
+            System.out.println("ss");
+            boolean ff = f.renameTo(new File("C:\\Users\\ZamudioL\\Desktop\\PROYECTO QUE I ESTA BIEN BONITO\\otro\\SiguemeKahe\\web\\archivos\\hola.txt"));
+            if (ff) {
+                System.out.println("goog");
+            }
+        }
     }
 
     public void descargarAdjunto() {

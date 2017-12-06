@@ -402,7 +402,7 @@
                                                          actionListener="#{cursoController.asignarUsuarioCurso(usuariosCurso)}"
                                                          oncomplete="PF('calificarCurso').show();"
                                                          update="calificarCurso" 
-                                                         disabled="#{usuariosCurso.grade == true ? true : false}"/>
+                                                         disabled="#{usuariosCurso.grade}"/>
                                         <!--en ver de actionListener un action-->
                                     </p:column>
                                 </p:dataTable>
