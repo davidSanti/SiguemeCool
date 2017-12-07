@@ -60,7 +60,7 @@
                             <f:facet name="filter">
                                 <p:selectOneMenu value="#{cursoController.filtrarEstado}">
                                     <f:selectItem itemLabel="Todos" itemValue="all" />
-                                    <f:selectItem itemLabel="En Progreso" itemValue="true" />
+                                    <f:selectItem itemLabel="En Proceso" itemValue="true" />
                                     <f:selectItem itemLabel="Vencido" itemValue="false" />
                                     <f:ajax event="change" listener="#{cursoController.filtrarPorEstado}" render="tablaCurso"/>
                                 </p:selectOneMenu>
@@ -482,7 +482,7 @@
                             <br/>
                             <p:separator/>
 
-                            <p:commandButton value="Si" icon="ui-icon-check" action="#{cursoController.elimnarCurso()}" 
+                            <p:commandButton value="Si" icon="ui-icon-check" action="#{cursoController.elimnarUsuariosDelCurso()}" 
                                              update=":formCurso:tablaCurso, :formCurso:growlCurso" />
                             <p:commandButton value="No" icon="ui-icon-close" oncomplete="PF('confirmarEliminacion').hide();"/>
                         </center>

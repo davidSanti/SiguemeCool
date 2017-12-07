@@ -210,24 +210,30 @@ public class CursoController implements Serializable {
     //Éste método obtiene todos los usuaros asociados a un curso, elimina los registros de la tabla user_by_course y por último elimina el curso seleccionado
     public void eliminarCurso(Course course) {
         FacesContext context = FacesContext.getCurrentInstance();
+        this.curso = course;
         try {
-            this.curso = course;
-            List<UserByCourse> lista = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
-            boolean bandera = cursoFacadeLocal.validarEvidenciaUsuariosCurso(curso);
+            if (curso.getFinishDate().after(Date.from(Instant.now()))) {
+                List<UserByCourse> lista = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
+                boolean bandera = cursoFacadeLocal.validarEvidenciaUsuariosCurso(curso);
 
-            if (!bandera) {
-                //abrir modal para aceptar la eliminacon de usuarios
-                abrirModal(2);
+                if (!bandera) {
+                    //abrir modal para aceptar la eliminacon de usuarios
+                    abrirModal(2);
+                } else {
+                    elimnarUsuariosDelCurso();
+                    cursoFacadeLocal.remove(this.curso);
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
+                }
+                listarCursos();
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "El curso se encuentra vencido y no es posible eliminarlo"));
             }
-            listarCursos();
-
-//            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
         } catch (Exception ex) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo eliminar"));
         }
     }
 
-    public void elimnarCurso() {
+    public void elimnarUsuariosDelCurso() {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean bandera = true;
         try {
