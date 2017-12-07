@@ -34,10 +34,12 @@ public interface CourseFacadeLocal {
     int count();
 
     List<Course> listarCursos();
-    
+
     List<Course> listarCursosPorEstado(boolean estado);
-    
+
     List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso, List<User> listaParaFiltrar);
-    
-    boolean validarEvidenciaUsuariosCurso(Course curso);    
+
+    boolean validarEvidenciaUsuariosCurso(Course curso);
+
+    void vencerCursos();
 }

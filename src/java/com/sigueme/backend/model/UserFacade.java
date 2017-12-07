@@ -114,4 +114,14 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         }
         return lista;
     }
+
+    public void vencerCursos() {
+        try {
+            Query query = em.createQuery("UPDATE Course c SET c.couseStatus = FALSE WHERE c.finishDate <= CURRENT_DATE");
+            query.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("Error en el metodo vencerCursos= " + e.getMessage());
+        }
+    }
+
 }

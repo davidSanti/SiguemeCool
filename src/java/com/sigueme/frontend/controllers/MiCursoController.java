@@ -5,8 +5,10 @@
  */
 package com.sigueme.frontend.controllers;
 
+import com.sigueme.backend.entities.Course;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.entities.UserByCourse;
+import com.sigueme.backend.model.CourseFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +46,8 @@ public class MiCursoController implements Serializable {
 
     @EJB
     private UserByCourseFacadeLocal userByCourseFacadeLocal;
+    @EJB
+    private CourseFacadeLocal cursoFacadeLocal;
 
     List<UserByCourse> misCursos;
     private UserByCourse usuariosMiCurso;
@@ -282,16 +288,16 @@ public class MiCursoController implements Serializable {
 
         switch (filtrarEstado) {
             case "aprobado":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, true,"calificado");
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, true, "calificado");
                 break;
             case "no_Aprobado":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false,"calificado");
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "calificado");
                 break;
             case "pendiente":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "pendiente");                
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "pendiente");
                 break;
             case "sin_Evidencia":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false,"sin_Evidencia");
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "sin_Evidencia");
                 break;
             case "todos":
                 listraMisCursos();

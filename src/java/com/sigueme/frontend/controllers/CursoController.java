@@ -283,6 +283,7 @@ public class CursoController implements Serializable {
         boolean banderita = false;
         try {
             if (validarFechas()) {
+                verificarEstadoCurso();
                 this.cursoFacadeLocal.edit(this.curso);
                 banderita = true;
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Editado Correctamente"));
@@ -295,6 +296,12 @@ public class CursoController implements Serializable {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un error al editar el curso"));
         }
         return banderita;
+    }
+
+    public void verificarEstadoCurso() {
+        if (curso.getFinishDate().after(Date.from(Instant.now()))) {
+            curso.setCouseStatus(true);
+        }
     }
 
     /*éste método lo llamamos en la línea 170 de la interfaz de course.xhtml y debido a que devuleve la misma lista de usuarios 
@@ -336,8 +343,13 @@ public class CursoController implements Serializable {
 
     //Éste método devuelve la lista de cursos en orden descendente
     public List<Course> listarCursos() {
+        vencerCursos();
         cursos = cursoFacadeLocal.listarCursos();
         return cursos;
+    }
+
+    public void vencerCursos() {
+        cursoFacadeLocal.vencerCursos();
     }
 
     public List<Role> listarRoles() {
@@ -595,8 +607,6 @@ public class CursoController implements Serializable {
                 break;
             }
         }
-        System.out.println("como vamos");
-
     }
 
     public void asignarUsuariosAlEditar() {
@@ -630,7 +640,6 @@ public class CursoController implements Serializable {
     }
 
     public void guardarEdicionUsuariosCurso() {
-
         //En esta parte se verifica los usuarios originales que se encontraban asignados al curso (en la base de datos)
         //y si se identifica un usuario nuevo se agrega
         for (UserByCourse usuariosAgregar : usuariosTemporalesPorCurso) {
@@ -661,6 +670,7 @@ public class CursoController implements Serializable {
                 userByCourseFacadeLocal.remove(curso.getUserByCourseList().remove(i));
             }
         }
+        verificarEstadoCurso();
         cursoFacadeLocal.edit(curso);
 
         FacesContext.getCurrentInstance().addMessage(
