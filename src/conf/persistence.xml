@@ -1,25 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="SiguemePU" transaction-type="JTA">
-    <jta-data-source>Sigueme</jta-data-source>
-    <class>com.sigueme.backend.entities.Activity</class>
-    <class>com.sigueme.backend.entities.Adherence</class>
-    <class>com.sigueme.backend.entities.Aht</class>
-    <class>com.sigueme.backend.entities.Course</class>
-    <class>com.sigueme.backend.entities.Desk</class>
-    <class>com.sigueme.backend.entities.Element</class>
-    <class>com.sigueme.backend.entities.ElementType</class>
-    <class>com.sigueme.backend.entities.GroupCls</class>
-    <class>com.sigueme.backend.entities.Guideline</class>
-    <class>com.sigueme.backend.entities.ManageAdherence</class>
-    <class>com.sigueme.backend.entities.ManagePaymentRequest</class>
-    <class>com.sigueme.backend.entities.Permission</class>
-    <class>com.sigueme.backend.entities.PermissionRole</class>
-    <class>com.sigueme.backend.entities.Role</class>
-    <class>com.sigueme.backend.entities.TaxiRateByUser</class>
-    <class>com.sigueme.backend.entities.User</class>
-    <class>com.sigueme.backend.entities.UserByCourse</class>
-    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <jta-data-source>SUSTS</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
     </properties>

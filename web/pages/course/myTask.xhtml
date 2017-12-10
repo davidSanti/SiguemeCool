@@ -25,7 +25,8 @@
 
                     <p:dataTable id="miCursoTabla" value="#{miCursoController.misCursos}" var="curso"
                                  emptyMessage="No se encuentran registros" reflow="true" paginator="true"
-                                 paginatorPosition="bottom" rows="10" rowStyleClass="algo">
+                                 paginatorPosition="bottom" rows="10" 
+                                 rowStyleClass="#{miCursoController.validarSiCursoVencido(curso) ? 'cursoVencido' : 'row-color'}" >
 
                         <p:column headerText="Name" filterBy="#{curso.courseId.courseName}">
                             <h:outputText value="#{curso.courseId.courseName}">
@@ -50,10 +51,11 @@
                             <f:facet name="filter">
                                 <p:selectOneMenu value="#{miCursoController.filtrarEstado}">
                                     <f:selectItem itemLabel="Todos" itemValue="todos" />
-                                    <f:selectItem itemLabel="Pendiente" itemValue="pendiente" />
-                                    <f:selectItem itemLabel="Sin Evidencia" itemValue="sin_Evidencia" />
                                     <f:selectItem itemLabel="Aprobado" itemValue="aprobado" />
                                     <f:selectItem itemLabel="No Aprobado" itemValue="no_Aprobado" />
+                                    <f:selectItem itemLabel="Pendiente Calificación" itemValue="pendiente" />
+                                    <f:selectItem itemLabel="Sin Evidencia" itemValue="sin_Evidencia" />
+                                    <f:selectItem itemLabel="Vencido" itemValue="vencido" />
                                     <f:ajax event="change" listener="#{miCursoController.filtrarPorEstado}" render="miCursoTabla"/>
                                 </p:selectOneMenu>
                             </f:facet>
@@ -63,7 +65,7 @@
                         <p:column headerText="Acciones" width="140">
                             <p:commandButton oncomplete="PF('subirEvidencia').show()" 
                                              actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia" icon="  ui-icon-folder-collapsed"
-                                             disabled="#{curso.grade}"/>   
+                                             disabled="#{miCursoController.validarSiCursoVencido(curso)}"/>   
                             <p:commandButton oncomplete="PF('Descargar').show()" 
                                              actionListener="#{miCursoController.asignarUsuarioCursos(curso)}" update="Descargar" 
                                              disabled="#{curso.attached == null and curso.description == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   

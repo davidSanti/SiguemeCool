@@ -36,6 +36,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -75,6 +76,9 @@ public class CursoController implements Serializable {
     private String filtrarEstado;
     private UserByCourse usuarioPorCursoActual;
     private StreamedContent file;
+
+    @Inject
+    CursoChartController cursoGraficaController;
 
     @PostConstruct
     public void init() {
@@ -260,10 +264,10 @@ public class CursoController implements Serializable {
     //éste método asigna el curso que está llegando de la interfaz a la variable global de éste controlador llamada curso
     public void editarCurso(Course course, int opcion) {
         this.curso = course;
-        System.out.println("aqui");
         if (opcion == 1) {
-            System.out.println("aaa");
             devolverUsuariosPorCurso(1);
+            System.out.println("aqui");
+            cursoGraficaController.setCurso(this.curso);
         }
     }
 
@@ -423,10 +427,15 @@ public class CursoController implements Serializable {
                 req.execute("PF('confirmarEliminacion').hide();");
                 init();
                 break;
+            case 10:
+                req.execute("PF('graficaCurso').hide();");
+                break;
             default:
                 break;
         }
-        if (opcion != 8 && opcion != 4) {
+        //Este condicional nos sirve para determinar si la lista usuariosPorCurso se debe vaciar
+        //para algunos modales se debe hacer en otros dañaría el funcionamiento en el modal de verCurso
+        if (opcion != 8 && opcion != 4 && opcion != 10) {
             usuariosPorCurso = new ArrayList<>();
         }
         req.reset(formulario);

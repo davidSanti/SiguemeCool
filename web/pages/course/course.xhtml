@@ -34,8 +34,8 @@
 
 
                     <p:dataTable id="tablaCurso" value="#{cursoController.cursos}" var="curso"
-                                 emptyMessage="No se encontrarón registros"  reflow="true"
-                                 paginator="true" paginatorPosition="bottom" rows="10"  rowStyleClass="algo">
+                                 emptyMessage="No se encontrarón registros"  reflow="true" 
+                                 paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color">
 
                         <p:column headerText="Nombre" filterBy="#{curso.courseName}" filterMatchMode="contains">
                             <h:outputText value="#{curso.courseName}">
@@ -197,21 +197,21 @@
                         <h1><h:outputText value="Editar"/></h1>
                         <h:panelGrid columns="2" id="gridEditar">
 
-                            
-                                <p:outputLabel value="Nombre" for="courseName" />
-                                <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
-                                             required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90"
-                                             disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
-                                    <f:validateLength minimum="10" maximum="90"/>
-                                </p:inputText>
 
-                                <p:outputLabel value="Fecha Inicio" for="startDate" />
-                                <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" required="true" 
-                                            requiredMessage="El campo fecha inicio es obligatorio"  showOn="button" effect="fold"
-                                            pattern="dd/MM/yyyy" disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy" />
-                                </p:calendar>
-                          
+                            <p:outputLabel value="Nombre" for="courseName" />
+                            <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
+                                         required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90"
+                                         disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
+                                <f:validateLength minimum="10" maximum="90"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Fecha Inicio" for="startDate" />
+                            <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" required="true" 
+                                        requiredMessage="El campo fecha inicio es obligatorio"  showOn="button" effect="fold"
+                                        pattern="dd/MM/yyyy" disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:calendar>
+
                             <p:outputLabel value="Fecha Fin" for="finishDate" />
                             <p:calendar id="finishDate" value="#{cursoController.curso.finishDate}" title="FinishDate" showOn="button"
                                         required="true" requiredMessage="El campo fecha fin es obligatorio." pattern="dd/MM/yyyy" effect="fold">
@@ -366,8 +366,13 @@
 
                                 <h:outputText value="Descripcion"/>
                                 <h:outputText value="#{cursoController.curso.description}"/>
-                                <h:outputText value="Usuarios"/>
 
+                                <h:outputText value="Grafica"/>
+                                <p:commandLink oncomplete="PF('graficaCurso').show();" value="jsjsdjsijdsdi" 
+                                               actionListener="#{cursoChartController.listarUsuarios()}"
+                                               update=":formGrafica:gridGrafica"/>
+
+                                <h:outputText value="Usuarios"/>
                                 <p:dataTable id="usuariosTabla" reflow="true"
                                              value="#{cursoController.usuariosPorCurso}" var="usuariosCurso" 
                                              emptyMessage="No se encontrarón registros" 
@@ -406,9 +411,9 @@
                                                          oncomplete="PF('calificarCurso').show();"
                                                          update="calificarCurso" 
                                                          disabled="#{usuariosCurso.grade}"/>
-                                        <!--en ver de actionListener un action-->
                                     </p:column>
                                 </p:dataTable>
+
                             </p:panelGrid>
                             <br/>
                             <center >
@@ -465,6 +470,63 @@
                     </h:form>
 
                 </p:dialog>
+
+                <p:dialog id="graficaCurso"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="graficaCurso" modal="true"  style="max-width: 1200px;"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+                    <h:form id="formGrafica">
+
+                        <h1><h:outputText value="Desarrollo"/></h1>
+                        <h:panelGrid columns="1" id="gridGrafica">
+                            <p:chart type="bar" model="#{cursoChartController.barModel}" style="height:200px;" 
+                                     responsive="true"/>
+
+
+                            <p:dataTable id="usuarioCursoTable" reflow="true" 
+                                         value="#{cursoChartController.listaUsuariosSinEvidencia}" var="usuarioCurso"
+                                         emptyMessage="No se encontrarón registros" rowStyleClass="row-color"
+                                         paginator="true" paginatorPosition="bottom" rows="10" >
+
+                                <p:column filterBy="#{usuarioCurso.groupId.groupName}" filterMatchMode="in" >
+                                    <f:facet name="filter">
+                                        <p:selectCheckboxMenu id="gruposListaGrafica" label="Grupos"     
+                                                              onHide="ejecutarFiltroGrafica();"
+                                                              value="#{cursoChartController.gruposPersona}" filter="true"
+                                                              converter="grupoConverter" >
+
+                                            <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
+                                                           itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                        </p:selectCheckboxMenu>
+                                        <p:remoteCommand  name="ejecutarFiltroGrafica"
+                                                          update=":formGrafica:usuarioCursoTable" process="@this gruposListaGrafica"
+                                                          action="#{cursoChartController.filtrarPersonas()}"/> 
+                                    </f:facet>
+                                    <h:outputText value="#{usuarioCurso.groupId.groupName}"/>
+                                </p:column>
+
+                                <p:column headerText="Persona" filterMatchMode="in"
+                                          filterBy="#{usuarioCurso.firstName}" >
+                                    <f:facet name="filter">
+                                        <p:inputText value="#{cursoChartController.nombrePersona}" 
+                                                     placeholder="Ej. Arturo">
+                                            <p:ajax event="change" update=":formGrafica:usuarioCursoTable" 
+                                                    listener="#{cursoChartController.filtrarPersonas()}" />
+                                        </p:inputText>
+                                    </f:facet>
+                                    <h:outputText value="#{usuarioCurso.firstName} #{usuarioCurso.lastName}"/>
+                                </p:column>
+                            </p:dataTable>
+
+                        </h:panelGrid>
+
+                        <center>
+                            <p:commandButton value="Cerrar" actionListener="#{cursoController.ocultarModal(10)}"/>
+                        </center>
+                    </h:form>
+
+                </p:dialog>
+
 
                 <p:dialog id="confirmarEliminacion"  resizable="false" 
                           closeOnEscape="false" draggable="false" closable="false"

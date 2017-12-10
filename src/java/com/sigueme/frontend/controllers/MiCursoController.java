@@ -263,16 +263,21 @@ public class MiCursoController implements Serializable {
 
     public String determinarCalificacion(UserByCourse usuarioCurso) {
         String calificacion = "No Aprobado";
+        if (usuarioCurso != null && usuarioCurso.getUserByCourseId() != null) {
+            if (usuarioCurso.getGrade() == null) {
+                if (usuarioCurso.getAttached() == null || usuarioCurso.getAttached().equals("")) {
+                    if (!usuarioCurso.getCourseId().getCouseStatus()) {
+                        calificacion = "Vencido";
+                    } else {
+                        calificacion = "Sin Evidencia";
+                    }
+                } else {
+                    calificacion = "Pendiente Por Calificar";
+                }
 
-        if (usuarioCurso.getGrade() == null) {
-            if (usuarioCurso.getAttached() == null || usuarioCurso.getAttached().equals("")) {
-                calificacion = "Sin Evidencia";
-            } else {
-                calificacion = "Pendiente Por Calificar";
+            } else if (usuarioCurso.getGrade()) {
+                calificacion = "Aprobado";
             }
-
-        } else if (usuarioCurso.getGrade()) {
-            calificacion = "Aprobado";
         }
         return calificacion;
     }
@@ -297,6 +302,9 @@ public class MiCursoController implements Serializable {
                 misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "pendiente");
                 break;
             case "sin_Evidencia":
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, true, "sin_Evidencia");
+                break;
+            case "vencido":
                 misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "sin_Evidencia");
                 break;
             case "todos":
@@ -306,5 +314,19 @@ public class MiCursoController implements Serializable {
                 break;
         }
         RequestContext.getCurrentInstance().update("formMiCurso:miCursoTabla");
+    }
+
+    public boolean validarSiCursoVencido(UserByCourse usuarioCurso) {
+        boolean bandera = false;
+        if (usuarioCurso != null && usuarioCurso.getUserByCourseId() != null) {
+            if (determinarCalificacion(usuarioCurso).equals("Vencido")) {
+                bandera = true;
+            } else {
+                if (usuarioCurso.getGrade() != null) {
+                    bandera = usuarioCurso.getGrade();
+                }
+            }
+        }
+        return bandera;
     }
 }

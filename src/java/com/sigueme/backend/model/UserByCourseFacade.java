@@ -75,7 +75,10 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
                     query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user AND uc.grade IS NULL AND uc.attached IS NOT NULL ORDER BY uc.userByCourseId DESC");
                     break;
                 case "sin_Evidencia":
-                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user AND uc.grade IS NULL AND uc.attached IS NULL ORDER BY uc.userByCourseId DESC");
+                    //En este método no se necesita la calificacion "grade" pero utilizamos el tipo booleano que se pasa para
+                    // filtrar por el estado del curso para determinar si el curso está vencido y sin evidencia o solo sin evidencia
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user AND uc.grade IS NULL AND uc.attached IS NULL AND uc.courseId.couseStatus = :status ORDER BY uc.userByCourseId DESC");
+                    query.setParameter("status", grade);
                     break;
                 default:
                     break;
@@ -84,6 +87,19 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
             lista = query.getResultList();
         } catch (Exception ex) {
             System.out.println("Error en el metodo filtrarMisCursosPorCValificacion= " + ex.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<User> listarUsuariosSinEvidencia(Course curso) {
+        List<User> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT u FROM UserByCourse uc JOIN uc.userId u WHERE uc.courseId = :curso AND uc.attached IS NULL AND uc.description IS NULL ORDER BY u.groupId ASC");
+            query.setParameter("curso", curso);
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el metodo listarUsuariosSinEvidencia= " + e.getMessage());
         }
         return lista;
     }

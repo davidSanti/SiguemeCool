@@ -115,13 +115,18 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         return lista;
     }
 
-    public void vencerCursos() {
+    //Este método no se está utilizando, cuadno se utilice elimianr comentario
+    @Override
+    public List<User> buscarPersonaPorNombre(String nombre) {
+        List<User> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("UPDATE Course c SET c.couseStatus = FALSE WHERE c.finishDate <= CURRENT_DATE");
-            query.executeUpdate();
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.firstName LIKE CONCAT('%',:nombre,'%') OR u.lastName LIKE CONCAT('%',:nombre,'%')");
+            query.setParameter("nombre", nombre);
+            lista = query.getResultList();
         } catch (Exception e) {
-            System.out.println("Error en el metodo vencerCursos= " + e.getMessage());
+            System.out.println("Error en el metodo buscarPersonaPorNombre= " + e.getMessage());
         }
+        return lista;
     }
 
 }
