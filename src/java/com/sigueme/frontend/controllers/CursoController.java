@@ -224,9 +224,10 @@ public class CursoController implements Serializable {
                     //abrir modal para aceptar la eliminacon de usuarios
                     abrirModal(2);
                 } else {
-                    elimnarUsuariosDelCurso();
-                    cursoFacadeLocal.remove(this.curso);
-                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
+                    if (elimnarUsuariosDelCurso()) {
+                        cursoFacadeLocal.remove(curso);
+                        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
+                    }
                 }
                 listarCursos();
             } else {
@@ -237,7 +238,7 @@ public class CursoController implements Serializable {
         }
     }
 
-    public void elimnarUsuariosDelCurso() {
+    public boolean elimnarUsuariosDelCurso() {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean bandera = true;
         try {
@@ -252,13 +253,12 @@ public class CursoController implements Serializable {
             bandera = false;
         }
 
-        if (bandera) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "No se pudo eliminar"));
-        } else {
+        if (!bandera) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Algunos usuarios no se eliminaron intentalo nuevamnte"));
         }
 
         ocultarModal(9);
+        return bandera;
     }
 
     //éste método asigna el curso que está llegando de la interfaz a la variable global de éste controlador llamada curso
@@ -425,7 +425,6 @@ public class CursoController implements Serializable {
                 break;
             case 9:
                 req.execute("PF('confirmarEliminacion').hide();");
-                init();
                 break;
             case 10:
                 req.execute("PF('graficaCurso').hide();");
