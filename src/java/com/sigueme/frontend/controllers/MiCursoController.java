@@ -323,7 +323,7 @@ public class MiCursoController implements Serializable {
                 bandera = true;
             } else {
                 if (usuarioCurso.getGrade() != null) {
-                    bandera = usuarioCurso.getGrade();
+                    bandera = !usuarioCurso.getGrade();
                 }
             }
         }
