@@ -17,6 +17,9 @@
                         <br/>
                         <h2><h:outputText value="Lista De Usuarios"/></h2>
                     </center>
+                    
+                    <p:growl id="growlUsuario" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+
                     <p:dataTable id="tablaUsuario" value="#{usuarioController.listaUsuarios}" var="usuario"
                                  emptyMessage="No se encontrarón registros"  reflow="true" 
                                  paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color">
@@ -150,7 +153,8 @@
 
                         <center>
                             <br/>
-                            <p:commandButton value="Guardar" action="#{usuarioController.editarUsuario()}">
+                            <p:commandButton value="Guardar" action="#{usuarioController.editarUsuario()}"
+                                             update="formUsuario:tablaUsuario, formUsuario:growlUsuario">
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Desea guardar los cambios realizado al usuario?" />
                             </p:commandButton>

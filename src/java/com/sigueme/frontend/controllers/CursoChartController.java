@@ -156,7 +156,7 @@ public class CursoChartController implements Serializable {
         generarGrafica();
     }
 
-    public int contarPersonasProGrupo(List<UserByCourse> lista, GroupCls grupo) {
+    public int contarPersonasPorGrupo(List<UserByCourse> lista, GroupCls grupo) {
         int cantidad = 0;
         for (UserByCourse item : lista) {
             if (Objects.equals(item.getUserId().getGroupId().getGroupId(), grupo.getGroupId())) {
@@ -175,7 +175,7 @@ public class CursoChartController implements Serializable {
         totalUsuarios.setLabel("Total Cuenta");
         //Se realiza un ciclo con todos los grupos que hay, y se cuentan los usuarios de ese grupo que están asignados al curso
         for (GroupCls grupo : listaGrupos) {
-            int cantidad = contarPersonasProGrupo(listaTotal, grupo);
+            int cantidad = contarPersonasPorGrupo(listaTotal, grupo);
             if (cantidad > 0) {
                 totalUsuarios.set(grupo.getGroupName(), cantidad);
             }
@@ -207,8 +207,8 @@ public class CursoChartController implements Serializable {
         BarChartSeries totalConEvidencia = new BarChartSeries();
         totalConEvidencia.setLabel("Con evidencia");
         for (GroupCls grupo : listaGrupos) {
-            int cantidadTotal = contarPersonasProGrupo(listaTotal, grupo);
-            int cantidadSinEvidencia = contarPersonasProGrupo(usuariosCursoSinEvidencia, grupo);
+            int cantidadTotal = contarPersonasPorGrupo(listaTotal, grupo);
+            int cantidadSinEvidencia = contarPersonasPorGrupo(usuariosCursoSinEvidencia, grupo);
             //al tene el total de persona de un grupo asignado a un curso y
             // el total de persona de ese grupo que no han enviado la evidencia
             //sabemos que la resta nos da el número de personas que ya subieron la evidencia del curso.
@@ -221,7 +221,7 @@ public class CursoChartController implements Serializable {
 
         barModel.setTitle("Rendimiento Curso");
         barModel.setLegendPosition("ne");
-        barModel.setMouseoverHighlight(false);
+        barModel.setMouseoverHighlight(true);
         barModel.setShowDatatip(false);
         barModel.setShowPointLabels(true);
         Axis yAxis = barModel.getAxis(AxisType.Y);

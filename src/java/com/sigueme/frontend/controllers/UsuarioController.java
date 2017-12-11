@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import org.primefaces.context.RequestContext;
@@ -82,13 +84,13 @@ public class UsuarioController implements Serializable {
         listaUsuarios = userFacadeLocal.filtrarPorTodosLosCampos(parametroBusqueda);
     }
 
-    public void limpiarFiltro(){
+    public void limpiarFiltro() {
         parametroBusqueda = "";
         listarUsuarios();
         listaGrupo = new ArrayList<>();
         listaRoles = new ArrayList<>();
     }
-    
+
     public void ocultarModal(int opcion) {
         RequestContext req = RequestContext.getCurrentInstance();
         String formulario = null;
@@ -113,7 +115,15 @@ public class UsuarioController implements Serializable {
     }
 
     public void editarUsuario() {
-
+        //Pregntar si se pueden registrar más de un OM
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            userFacadeLocal.edit(usuario);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos del usuarios han sido actualizados correctamente "));
+            ocultarModal(1);
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Los datos no se actualizaron, inténtalo más tarde"));
+        }
     }
 
     public List<GroupCls> listarGrupos() {
@@ -164,7 +174,5 @@ public class UsuarioController implements Serializable {
     public void setParametroBusqueda(String parametroBusqueda) {
         this.parametroBusqueda = parametroBusqueda;
     }
-    
-    
 
 }
