@@ -316,15 +316,17 @@ public class MiCursoController implements Serializable {
         RequestContext.getCurrentInstance().update("formMiCurso:miCursoTabla");
     }
 
-    public boolean validarSiCursoVencido(UserByCourse usuarioCurso) {
+    public boolean validarSiCursoVencido(UserByCourse usuarioCurso, int opcion) {
         boolean bandera = false;
-        if (usuarioCurso != null && usuarioCurso.getUserByCourseId() != null) {
-            if (determinarCalificacion(usuarioCurso).equals("Vencido")) {
-                bandera = true;
-            } else {
-                if (usuarioCurso.getGrade() != null) {
-                    bandera = !usuarioCurso.getGrade();
+        if (opcion == 1) {
+            if (usuarioCurso != null && usuarioCurso.getUserByCourseId() != null) {
+                if (determinarCalificacion(usuarioCurso).equals("Vencido")) {
+                    bandera = true;
                 }
+            }
+        } else {
+            if (usuarioCurso.getGrade() != null) {
+                bandera = usuarioCurso.getGrade();
             }
         }
         return bandera;

@@ -26,7 +26,7 @@
                     <p:dataTable id="miCursoTabla" value="#{miCursoController.misCursos}" var="curso"
                                  emptyMessage="No se encuentran registros" reflow="true" paginator="true"
                                  paginatorPosition="bottom" rows="10" 
-                                 rowStyleClass="#{miCursoController.validarSiCursoVencido(curso) ? 'cursoVencido' : 'row-color'}" >
+                                 rowStyleClass="#{miCursoController.validarSiCursoVencido(curso,1) ? 'cursoVencido' : 'row-color'}" >
 
                         <p:column headerText="Name" filterBy="#{curso.courseId.courseName}">
                             <h:outputText value="#{curso.courseId.courseName}">
@@ -65,7 +65,7 @@
                         <p:column headerText="Acciones" width="140">
                             <p:commandButton oncomplete="PF('subirEvidencia').show()" 
                                              actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia" icon="  ui-icon-folder-collapsed"
-                                             disabled="#{miCursoController.validarSiCursoVencido(curso)}"/>   
+                                             disabled="#{miCursoController.validarSiCursoVencido(curso,2)}"/>   
                             <p:commandButton oncomplete="PF('Descargar').show()" 
                                              actionListener="#{miCursoController.asignarUsuarioCursos(curso)}" update="Descargar" 
                                              disabled="#{curso.attached == null and curso.description == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   
