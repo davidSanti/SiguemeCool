@@ -302,7 +302,7 @@
                                                                       value="#{cursoController.gruposPersona}" filter="true"
                                                                       converter="grupoConverter" >
 
-                                                    <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
+                                                    <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
                                                                    itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:remoteCommand  name="ejecutarFiltroEditar"
@@ -367,12 +367,14 @@
                                 <h:outputText value="Descripcion"/>
                                 <h:outputText value="#{cursoController.curso.description}"/>
 
-                                <h:outputText value="Grafica"/>
-                                <p:commandLink oncomplete="PF('graficaCurso').show();" value="jsjsdjsijdsdi" 
-                                               actionListener="#{cursoChartController.listarUsuarios()}"
-                                               update=":formGrafica:gridGrafica"/>
-
-                                <h:outputText value="Usuarios"/>
+                                <p:panelGrid columns="1">
+                                    <h:outputText value="Usuarios"/>
+                                    <p:commandLink oncomplete="PF('graficaCurso').show();"  
+                                                   actionListener="#{cursoChartController.listarUsuarios()}"
+                                                   update=":formGrafica:gridGrafica">
+                                        <p:graphicImage url="/resources/img/probabilidad-y-estadistica-gif-6.gif" width="50"/>
+                                    </p:commandLink>
+                                </p:panelGrid>
                                 <p:dataTable id="usuariosTabla" reflow="true"
                                              value="#{cursoController.usuariosPorCurso}" var="usuariosCurso" 
                                              emptyMessage="No se encontrarón registros" 
@@ -385,7 +387,7 @@
                                                                   value="#{cursoController.gruposPersona}" filter="true"
                                                                   converter="grupoConverter" >
 
-                                                <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
+                                                <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
                                                                itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
                                             </p:selectCheckboxMenu>
                                             <p:remoteCommand  name="ejecutarFiltro"
@@ -495,7 +497,7 @@
                                                               value="#{cursoChartController.gruposPersona}" filter="true"
                                                               converter="grupoConverter" >
 
-                                            <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
+                                            <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
                                                            itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
                                         </p:selectCheckboxMenu>
                                         <p:remoteCommand  name="ejecutarFiltroGrafica"

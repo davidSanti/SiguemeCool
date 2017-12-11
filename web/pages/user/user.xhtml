@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../../resources/templates/plantilla.xhtml">
+
+            <ui:define name="content">
+
+                <h:form id="formUsuario">
+                    <center>
+                        <br/>
+                        <h2><h:outputText value="Lista De Usuarios"/></h2>
+                    </center>
+                    <p:dataTable id="tablaUsuario" value="#{usuarioController.listaUsuarios}" var="usuario"
+                                 emptyMessage="No se encontrarón registros"  reflow="true" 
+                                 paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color">
+
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Buscar por campos" />
+                                <p:inputText value="#{usuarioController.parametroBusqueda}"  style="width:250px">
+                                    <p:ajax event="keyup" update="tablaUsuario" 
+                                            listener="#{usuarioController.filtrarTodosLosCampos()}" />
+                                </p:inputText>
+                                <p:commandButton icon="ui-icon-closethick" update="tablaUsuario"
+                                                 action="#{usuarioController.limpiarFiltro()}"/>
+                            </p:outputPanel>
+                        </f:facet>
+                        <p:column filterBy="#{usuario.groupId.groupName}" filterMatchMode="in">
+                            <f:facet name="filter">
+                                <p:selectCheckboxMenu id="gruposUsuario" label="Grupos"     
+                                                      onHide="ejecutarFiltroGrupo();"
+                                                      value="#{usuarioController.listaGrupo}" filter="true"
+                                                      converter="grupoConverter" >
+
+                                    <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
+                                                   itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                </p:selectCheckboxMenu>
+                                <p:remoteCommand  name="ejecutarFiltroGrupo"
+                                                  update=":formUsuario:tablaUsuario" process="@this gruposUsuario"
+                                                  action="#{usuarioController.filtrarUsuarios()}"/> 
+                            </f:facet>
+
+                            <h:outputText value="#{usuario.groupId.groupName}"/>
+                        </p:column>
+
+                        <p:column filterBy="#{usuario.roleId.description}" filterMatchMode="in">
+                            <f:facet name="filter">
+                                <p:selectCheckboxMenu id="RolesUsuario" label="Rol"     
+                                                      onHide="ejecutarFiltroRol();"
+                                                      value="#{usuarioController.listaRoles}" filter="true"
+                                                      converter="rolConverter" >
+
+                                    <f:selectItems var="rol" value="#{usuarioController.listarRoles()}" 
+                                                   itemLabel="#{rol.description}" itemValue="#{rol}"/>
+                                </p:selectCheckboxMenu>
+                                <p:remoteCommand  name="ejecutarFiltroRol"
+                                                  update=":formUsuario:tablaUsuario" process="@this RolesUsuario"
+                                                  action="#{usuarioController.filtrarUsuarios()}"/> 
+                            </f:facet>
+                            <h:outputText value="#{usuario.roleId.description}"/>
+                        </p:column>
+
+                        <p:column headerText="People Soft">
+                            <h:outputText value="#{usuario.peopleSoft}"/>
+                        </p:column>
+
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{usuario.firstName}"/>
+                        </p:column>
+
+                        <p:column headerText="Apellido">
+                            <h:outputText value="#{usuario.lastName}"/>
+                        </p:column>
+
+                        <p:column headerText="Correo" >
+                            <h:outputText value="#{usuario.email}"/>
+                        </p:column>    
+
+                        <p:column headerText="Acciones">
+                            <p:commandButton icon="ui-icon-circle-zoomin"
+                                             actionListener="#{usuarioController.editarUsuario(usuario)}"
+                                             oncomplete="PF('verUsuario').show();" update="verUsuario"/>
+
+                            <p:commandButton  icon="ui-icon-trash">
+                                <p:confirm header="Confirmación" icon="ui-icon-alert"
+                                           message="Estas Seguro de eliminar este Usuario?" />
+                            </p:commandButton>
+                        </p:column>  
+
+                    </p:dataTable>
+                </h:form>
+
+                <p:dialog id="verUsuario"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="verUsuario" modal="true"
+                          showEffect="fade" hideEffect="fade">
+
+                    <h:form id="formVerUsuario">
+                        <center>
+                            <h1><h:outputText value="Ver Detalle Usuario"/></h1>
+                            <br/>
+                        </center>
+
+                        <p:panelGrid columns="2" id="gridVerUsuario">
+
+                            <h:outputText value="Grupo"/>
+                            <p:selectOneMenu id="grupoVer" label="Grupo"
+                                             value="#{usuarioController.usuario.groupId}" filter="true"
+                                             converter="grupoConverter" >
+
+                                <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
+                                               itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputText value="Rol"/>
+                            <p:selectOneMenu id="rolVer" label="Rol"
+                                             value="#{usuarioController.usuario.roleId}" filter="true"
+                                             converter="rolConverter" >
+
+                                <f:selectItems var="rol" value="#{usuarioController.listarRoles()}" 
+                                               itemLabel="#{rol.description}" itemValue="#{rol}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputText value="PeopleSoft"/>
+                            <h:outputText value="#{usuarioController.usuario.peopleSoft}"/>
+
+                            <h:outputText value="Cedula"/>
+                            <h:outputText value="#{usuarioController.usuario.identification}"/>
+
+                            <h:outputText value="Nombre"/>
+                            <h:outputText value="#{usuarioController.usuario.firstName}"/>
+
+                            <h:outputText value="Apellido"/>
+                            <h:outputText value="#{usuarioController.usuario.lastName}"/>
+
+                            <h:outputText value="Correo"/>
+                            <h:outputText value="#{usuarioController.usuario.email}"/>
+
+                            <h:outputText value="Dirección"/>
+                            <h:outputText value="#{usuarioController.usuario.address}"/>
+
+                        </p:panelGrid>
+
+                        <center>
+                            <br/>
+                            <p:commandButton value="Guardar" action="#{usuarioController.editarUsuario()}">
+                                <p:confirm header="Confirmación" icon="ui-icon-alert"
+                                           message="Desea guardar los cambios realizado al usuario?" />
+                            </p:commandButton>
+                            <p:commandButton value="Cerrar" immediate="true"
+                                             actionListener="#{usuarioController.ocultarModal(1)}"/>
+                        </center>
+                    </h:form>
+                </p:dialog>
+
+                <p:dialog id="editarUsuario"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="editarUsuario" modal="true"
+                          showEffect="fade" hideEffect="fade">
+
+                    <h:form id="formEditarUsuario">
+                        <center>
+                            <h1><h:outputText value="Editar Usuario"/></h1>
+                            <br/>
+                        </center>
+
+                        <h:panelGrid columns="2" id="gridEditarUsuario">
+
+                            <p:outputLabel value="Grupo"/>
+                            <h:outputText value="#{usuarioController.usuario.groupId.groupName}"/>
+
+                            <p:outputLabel value="Rol"/>
+                            <h:outputText value="#{usuarioController.usuario.roleId.description}"/>
+
+                            <p:outputLabel value="PeopleSoft"/>
+                            <p:inputText value="#{usuarioController.usuario.peopleSoft}"
+                                         disabled="true" />
+
+                            <p:outputLabel value="Cedula"/>
+                            <p:inputText value="#{usuarioController.usuario.identification}"
+                                         disabled="true"/>
+
+                            <p:outputLabel value="Nombre"/>
+                            <p:inputText value="#{usuarioController.usuario.firstName}"
+                                         disabled="true"/>
+
+                            <p:outputLabel value="Apellido"/>
+                            <p:inputText value="#{usuarioController.usuario.lastName}"
+                                         disabled="true"/>
+
+                            <p:outputLabel value="Correo"/>
+                            <p:inputText value="#{usuarioController.usuario.email}"
+                                         disabled="true"/>
+
+                            <p:outputLabel value="Dirección"/>
+                            <p:inputText value="#{usuarioController.usuario.address}"
+                                         disabled="true"/>
+
+
+
+                        </h:panelGrid>
+
+                        <center>
+                            <br/>
+                            <p:commandButton value="Cerrar" immediate="true"
+                                             actionListener="#{usuarioController.ocultarModal(2)}">
+
+                            </p:commandButton>
+                            <p:commandButton value="Cerrar" immediate="true"
+                                             actionListener="#{usuarioController.ocultarModal(2)}"/>
+                        </center>
+                    </h:form>
+                </p:dialog>
+
+                <h:form>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </h:form> 
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

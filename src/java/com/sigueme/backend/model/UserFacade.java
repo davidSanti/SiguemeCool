@@ -128,5 +128,18 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         }
         return lista;
     }
+    
+    @Override
+    public List<User> filtrarPorTodosLosCampos(String parametro) {
+        List<User> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.peopleSoft LIKE CONCAT('%',:parametro,'%') OR u.firstName LIKE CONCAT('%',:parametro,'%') OR u.lastName LIKE CONCAT('%',:parametro,'%') OR u.email LIKE CONCAT('%',:parametro,'%')");//  
+            query.setParameter("parametro", parametro);
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el metodo filtrarPorTodosLosCampos= " + e.getMessage());
+        }
+        return lista;
+    }
 
 }
