@@ -429,6 +429,10 @@ public class CursoController implements Serializable {
             case 10:
                 req.execute("PF('graficaCurso').hide();");
                 break;
+
+            case 11:
+                req.execute("PF('Grafica').hide();");
+                break;
             default:
                 break;
         }

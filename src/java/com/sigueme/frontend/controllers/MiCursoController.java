@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.chart.PieChart;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -35,6 +36,7 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
+import org.primefaces.model.chart.PieChartModel;
 
 /**
  *
@@ -55,6 +57,7 @@ public class MiCursoController implements Serializable {
     private StreamedContent downloadFile;
 
     private String filtrarEstado;
+    private PieChartModel pieModel;
 
     public MiCursoController() {
     }
@@ -64,6 +67,7 @@ public class MiCursoController implements Serializable {
         listraMisCursos();
         usuariosMiCurso = new UserByCourse();
         filtrarEstado = "";
+        createPieModels();
     }
 
     public UserByCourse getUsuariosMiCurso() {
@@ -110,6 +114,48 @@ public class MiCursoController implements Serializable {
 
     public void setFiltrarEstado(String filtrarEstado) {
         this.filtrarEstado = filtrarEstado;
+    }
+
+    public PieChartModel getPieModel() {
+        return pieModel;
+    }
+
+    public void setPieModel(PieChartModel pieModel) {
+        this.pieModel = pieModel;
+    }
+
+    public void createPieModels() {
+        createPieModel();
+    }
+
+    private void createPieModel() {
+        pieModel = new PieChartModel();
+
+        int cantidad = 0;
+        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(true, 1);
+        if (cantidad > 0) {
+            pieModel.set("Aprobado", cantidad);
+        }
+
+        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(false, 1);
+        if (cantidad > 0) {
+            pieModel.set("No Aprobado", cantidad);
+
+        }
+
+        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(false, 2);
+        if (cantidad > 0) {
+            pieModel.set("Sin Calificar", cantidad);
+        }
+
+        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(false, 3);
+        if (cantidad > 0) {
+            pieModel.set("Vencido", cantidad);
+        }
+
+        pieModel.setTitle("Grafica Mis Cursos");
+        pieModel.setShowDataLabels(true);
+        pieModel.setLegendPosition("w");
     }
 
     //Este metodo captura el usuario que esta en sesion y lista los cursos asginados a esa persona

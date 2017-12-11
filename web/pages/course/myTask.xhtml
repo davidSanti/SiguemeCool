@@ -23,6 +23,11 @@
                 <h:form id="formMiCurso">
                     <p:growl id="growlMiCurso" showDetail="true" showSummary="false" sticky="false" life="3000"/>
 
+                    <p:commandLink oncomplete="PF('Grafica').show();"  update="Grafica"
+                                   actionListener="#{miCursoController.createPieModels()}">
+                        <p:graphicImage url="/resources/img/bill-circular-scroll.gif" width="60"/>
+                    </p:commandLink>
+
                     <p:dataTable id="miCursoTabla" value="#{miCursoController.misCursos}" var="curso"
                                  emptyMessage="No se encuentran registros" reflow="true" paginator="true"
                                  paginatorPosition="bottom" rows="10" 
@@ -77,9 +82,10 @@
                             </p:commandButton>
                         </p:column>
                     </p:dataTable>
+
                 </h:form>
-                
-                
+
+
 
                 <p:dialog id="subirEvidencia" widgetVar="subirEvidencia" resizable="false" 
                           closeOnEscape="false" draggable="false" closable="false" 
@@ -167,12 +173,32 @@
 
                 </p:dialog>
 
+                <p:dialog id="Grafica" resizable="false" 
+                          closeOnEscape="false" draggable="false" closable="false" 
+                          widgetVar="Grafica" modal="true" showEffect="fold" hideEffect="fold"
+                          responsive="true" width="500" >
+
+                    <h1><h:outputText value="Grafica"/></h1>
+                    <h:form id="formGrafica">
+                        <center>
+                            <p:chart type="pie" model="#{miCursoController.pieModel}" style="width:400px;height:300px" />
+
+
+                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(11)}" immediate="true" update="Grafica" styleClass="correrBoton"/>   
+
+                        </center>
+                    </h:form>
+
+                </p:dialog>
+
+
                 <h:form>           
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                         <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
                         <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
                     </p:confirmDialog>
                 </h:form>
+
 
             </ui:define>
         </ui:composition>

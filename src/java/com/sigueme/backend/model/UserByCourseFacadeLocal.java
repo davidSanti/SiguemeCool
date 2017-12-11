@@ -33,10 +33,12 @@ public interface UserByCourseFacadeLocal {
     int count();
 
     List<UserByCourse> listarUsuariosPorCurso(Course curso);
-    
+
     List<UserByCourse> listarMisCursos(User user);
-    
-    List<UserByCourse> filtrarMisCursosPorCValificacion(User user, boolean grade,String option);
-    
+
+    List<UserByCourse> filtrarMisCursosPorCValificacion(User user, boolean grade, String option);
+
     List<User> listarUsuariosSinEvidencia(Course curso);
+
+    int listarMisCursosCalificados(boolean calificacion, int opcion);
 }
