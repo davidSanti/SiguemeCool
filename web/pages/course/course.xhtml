@@ -474,7 +474,7 @@
                 </p:dialog>
 
                 <p:dialog id="graficaCurso"  resizable="false"
-                          closeOnEscape="false" draggable="false" closable="false"
+                          closeOnEscape="true" draggable="false" closable="true"
                           widgetVar="graficaCurso" modal="true"  style="max-width: 1200px;"
                           showEffect="fold" hideEffect="fold" responsive="true">
                     <h:form id="formGrafica">
@@ -523,7 +523,7 @@
                         </h:panelGrid>
 
                         <center>
-                            <p:commandButton value="Cerrar" actionListener="#{cursoController.ocultarModal(10)}"/>
+                            <p:commandButton value="Cerrar" immediate="true" actionListener="#{cursoController.ocultarModal(10)}"/>
                         </center>
                     </h:form>
 
