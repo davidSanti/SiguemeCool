@@ -5,7 +5,6 @@
  */
 package com.sigueme.frontend.controllers;
 
-import com.sigueme.backend.entities.Course;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.entities.UserByCourse;
 import com.sigueme.backend.model.CourseFacadeLocal;
@@ -18,12 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
-import java.time.Instant;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.chart.PieChart;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -130,27 +128,34 @@ public class MiCursoController implements Serializable {
 
     private void createPieModel() {
         pieModel = new PieChartModel();
-
+        User usuarioEnSesion = devolverUsuarioEnSesion();
+        HashMap<String, Integer> tabla = new HashMap<>();
         int cantidad = 0;
-        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(true, 1);
+
+        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(usuarioEnSesion, true, 1);
         if (cantidad > 0) {
-            pieModel.set("Aprobado " + cantidad, cantidad);
+            tabla.put("Aprobado", cantidad);
         }
 
-        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(false, 1);
+        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(usuarioEnSesion, false, 1);
         if (cantidad > 0) {
-            pieModel.set("No Aprobado", cantidad);
-
+            tabla.put("No Aprobado", cantidad);
         }
 
-        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(false, 2);
+        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(usuarioEnSesion, false, 2);
         if (cantidad > 0) {
-            pieModel.set("Sin Calificar", cantidad);
+            tabla.put("Sin Calificar", cantidad);
         }
 
-        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(false, 3);
+        cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(usuarioEnSesion, false, 3);
         if (cantidad > 0) {
-            pieModel.set("Vencido", cantidad);
+            tabla.put("Vencido", cantidad);
+        }
+
+        for (Map.Entry<String, Integer> entry : tabla.entrySet()) {
+            String clave = entry.getKey();
+            Integer valor = entry.getValue();
+            pieModel.set(clave, valor);
         }
 
         pieModel.setTitle("Grafica Mis Cursos");

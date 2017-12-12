@@ -91,7 +91,7 @@
                                              actionListener="#{usuarioController.editarUsuario(usuario)}"
                                              oncomplete="PF('verUsuario').show();" update="verUsuario"/>
 
-                            <p:commandButton  icon="ui-icon-trash">
+                            <p:commandButton  icon="ui-icon-trash" action="#{usuarioController.eliminarUsuario(usuario)}">
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Estas Seguro de eliminar este Usuario?" />
                             </p:commandButton>

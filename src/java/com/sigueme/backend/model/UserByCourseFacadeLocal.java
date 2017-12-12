@@ -40,5 +40,7 @@ public interface UserByCourseFacadeLocal {
 
     List<User> listarUsuariosSinEvidencia(Course curso);
 
-    int listarMisCursosCalificados(boolean calificacion, int opcion);
+    int listarMisCursosCalificados(User user, boolean calificacion, int opcion);
+    
+    boolean eliminarCursosDelUsuario(User usuario);
 }

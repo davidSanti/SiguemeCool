@@ -105,23 +105,23 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
     }
 
     @Override
-    public int listarMisCursosCalificados(boolean calificacion, int opcion) {
+    public int listarMisCursosCalificados(User user, boolean calificacion, int opcion) {
         int cantidad = 0;
         try {
             Query query;
             switch (opcion) {
                 case 1:
-                    query = em.createQuery("SELECT uc FROM  UserByCourse uc WHERE uc.grade = :calificacion");
+                    query = em.createQuery("SELECT uc FROM  UserByCourse uc WHERE uc.userId = :user AND uc.grade = :calificacion");
                     query.setParameter("calificacion", calificacion);
                     break;
                 case 2:
-                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.grade IS NULL AND uc.attached IS NOT NULL AND uc.description IS NOT NULL");
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user AND uc.grade IS NULL AND uc.attached IS NOT NULL AND uc.description IS NOT NULL");
                     break;
                 default:
-                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE c.couseStatus = FALSE AND uc.attached IS NULL AND uc.description IS NULL");
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE uc.userId = :user AND c.couseStatus = FALSE AND uc.grade IS NULL AND uc.attached IS NULL AND uc.description IS NULL");
                     break;
             }
-
+            query.setParameter("user", user);
             if (!query.getResultList().isEmpty()) {
                 cantidad = query.getResultList().size();
             }
@@ -131,4 +131,17 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
         return cantidad;
     }
 
+    @Override
+    public boolean eliminarCursosDelUsuario(User usuario) {
+        boolean bandera = false;
+        try {
+            Query query = em.createQuery("DELETE FROM UserByCourse uc WHERE uc.userId = :usuario");
+            query.setParameter("usuario", usuario);
+            query.executeUpdate();
+            bandera = true;
+        } catch (Exception e) {
+            System.out.println("Error en el metodo eliminarCursosDelUsuario= " + e.getMessage());
+        }
+        return bandera;
+    }
 }

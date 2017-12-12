@@ -10,6 +10,7 @@ import com.sigueme.backend.entities.Role;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
+import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ public class UsuarioController implements Serializable {
     private GroupClsFacadeLocal groupFacadeLocal;
     @EJB
     private RoleFacadeLocal roleFacadeLocal;
+    @EJB
+    private UserByCourseFacadeLocal userByCourseFacadeLocal;
 
     private List<User> listaUsuarios;
     private List<GroupCls> listaGrupo;
@@ -124,6 +127,23 @@ public class UsuarioController implements Serializable {
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Los datos no se actualizaron, inténtalo más tarde"));
         }
+    }
+
+    public void eliminarUsuario(User user) {
+        this.usuario = user;
+        if (finalizarTodosLosProcesos()) {
+
+        }
+    }
+
+    public boolean finalizarTodosLosProcesos() {
+        //Aqui se referenciarían los métodos que elimian los procesos del usuario como los datos de la adherencia, aht, taxis, entre otros.
+        return eliminarCursosDelUsuario();
+    }
+
+    public boolean eliminarCursosDelUsuario() {
+        boolean bandera = userByCourseFacadeLocal.eliminarCursosDelUsuario(this.usuario);
+        return bandera;
     }
 
     public List<GroupCls> listarGrupos() {
