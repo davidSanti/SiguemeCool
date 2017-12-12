@@ -18,8 +18,10 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -131,7 +133,7 @@ public class MiCursoController implements Serializable {
         User usuarioEnSesion = devolverUsuarioEnSesion();
         HashMap<String, Integer> tabla = new HashMap<>();
         int cantidad = 0;
-
+        
         cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(usuarioEnSesion, true, 1);
         if (cantidad > 0) {
             tabla.put("Aprobado", cantidad);
@@ -157,7 +159,7 @@ public class MiCursoController implements Serializable {
             Integer valor = entry.getValue();
             pieModel.set(clave, valor);
         }
-
+        
         pieModel.setTitle("Grafica Mis Cursos");
         pieModel.setShowDataLabels(true);
         pieModel.setLegendPosition("w");
