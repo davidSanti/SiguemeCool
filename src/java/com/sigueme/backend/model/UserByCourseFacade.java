@@ -103,25 +103,32 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
         }
         return lista;
     }
-    
+
     @Override
-    public int listarMisCursosCalificados(boolean calificacion,int opcion) {
+    public int listarMisCursosCalificados(boolean calificacion, int opcion) {
         int cantidad = 0;
         try {
             Query query;
-            if(opcion==1){
-                query = em.createQuery("SELECT uc FROM  UserByCourse uc WHERE uc.grade = :calificacion");
-                query.setParameter("calificacion", calificacion);
-            }else if(opcion==2){
-                query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.grade IS NULL AND uc.attached IS NOT NULL AND uc.description IS NOT NULL");
-            }else{
-                query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE c.couseStatus = FALSE AND uc.attached IS NULL AND uc.description IS NULL");
+            switch (opcion) {
+                case 1:
+                    query = em.createQuery("SELECT uc FROM  UserByCourse uc WHERE uc.grade = :calificacion");
+                    query.setParameter("calificacion", calificacion);
+                    break;
+                case 2:
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.grade IS NULL AND uc.attached IS NOT NULL AND uc.description IS NOT NULL");
+                    break;
+                default:
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE c.couseStatus = FALSE AND uc.attached IS NULL AND uc.description IS NULL");
+                    break;
             }
-             cantidad = query.getResultList().size();
+
+            if (!query.getResultList().isEmpty()) {
+                cantidad = query.getResultList().size();
+            }
         } catch (Exception e) {
             System.out.println("Error en el metodo listarMisCursosCalificados= " + e.getMessage());
         }
         return cantidad;
     }
-    
+
 }

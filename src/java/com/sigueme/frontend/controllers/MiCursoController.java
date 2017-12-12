@@ -134,7 +134,7 @@ public class MiCursoController implements Serializable {
         int cantidad = 0;
         cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(true, 1);
         if (cantidad > 0) {
-            pieModel.set("Aprobado", cantidad);
+            pieModel.set("Aprobado " + cantidad, cantidad);
         }
 
         cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(false, 1);
