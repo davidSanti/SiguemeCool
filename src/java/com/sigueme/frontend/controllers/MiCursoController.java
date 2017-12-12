@@ -58,7 +58,7 @@ public class MiCursoController implements Serializable {
 
     private String filtrarEstado;
     private PieChartModel pieModel;
-    private Map<String,Integer> tabla;
+    private Map<String, Integer> tabla;
 
     public MiCursoController() {
     }
@@ -68,7 +68,7 @@ public class MiCursoController implements Serializable {
         listraMisCursos();
         usuariosMiCurso = new UserByCourse();
         filtrarEstado = "";
-        tabla= new HashMap();
+        tabla = new HashMap();
         createPieModels();
     }
 
@@ -142,7 +142,7 @@ public class MiCursoController implements Serializable {
         pieModel = new PieChartModel();
         User usuarioEnSesion = devolverUsuarioEnSesion();
         int cantidad = 0;
-        
+
         cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(usuarioEnSesion, true, 1);
         if (cantidad > 0) {
             tabla.put("Aprobado", cantidad);
@@ -168,10 +168,12 @@ public class MiCursoController implements Serializable {
             Integer valor = entry.getValue();
             pieModel.set(clave, valor);
         }
-        
+
         pieModel.setTitle("Grafica Mis Cursos");
         pieModel.setShowDataLabels(true);
         pieModel.setLegendPosition("w");
+        pieModel.setMouseoverHighlight(true);
+        pieModel.setShadow(true);
     }
 
     //Este metodo captura el usuario que esta en sesion y lista los cursos asginados a esa persona

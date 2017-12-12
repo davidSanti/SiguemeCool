@@ -119,7 +119,7 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
                     break;
 
                 case 3:
-                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE  uc.userId = :user AND c.couseStatus = FALSE AND uc.attached IS NULL AND uc.description IS NULL");
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE  uc.userId = :user AND c.couseStatus = FALSE AND uc.grade IS NULL AND uc.attached IS NULL AND uc.description IS NULL");
                     break;
 
                 default:
