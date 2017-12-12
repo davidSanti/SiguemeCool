@@ -199,10 +199,7 @@ public class MiCursoController implements Serializable {
             if (usuarioCurso != null) {
                 boolean bandera = false;
                 String url = usuarioCurso.getAttached();
-                String path = context.getExternalContext().getRealPath("/");
-                path = path.substring(0, path.indexOf("\\build\\"));
-                path += "\\Web\\" + url;
-
+                String path = context.getExternalContext().getRealPath("/") + url;
                 File f = new File(path);
                 InputStream stream = (InputStream) new FileInputStream(f);
                 stream.close();
@@ -231,59 +228,36 @@ public class MiCursoController implements Serializable {
     // Este metodo se encarga de la carga de archivos opteniendo el archivo desde intefaz y guardandolo en la carpeta archivos
     public String cargarAdjunto() {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("archivos");
-        path = path.substring(0, path.indexOf("\\build\\"));
-        path += "\\Web\\archivos\\";
+//        path = path.substring(0, path.indexOf("\\build\\"));
+//        path += "\\Web\\archivos\\";
         String pathReal = null;
 
         try {
-            String nombre = file.getFileName();
-            path += nombre;
-//            pathReal = "/archivos/" + nombre;
-            pathReal = "\\archivos\\" + nombre;
-            System.out.println("ruta " + pathReal);
+//            String nombre = file.getFileName();
+            String nombre = renombrarArchivo(file.getFileName());
+            pathReal = "archivos\\" + nombre;
+            path += "\\" + nombre;
             InputStream input = file.getInputstream();
             byte[] data = new byte[input.available()];
             input.read(data);
             FileOutputStream output = new FileOutputStream(path);
             output.write(data);
             output.close();
-            renombrarArchivo(pathReal);
+        } catch (IOException e) {
+            System.out.println("Error al cargar el arhcivo" + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error al cargar el arhcivo" + e.getMessage());
         }
         return pathReal;
     }
 
-    public void renombrarArchivo(String pathDB) {
-//        String nombreCurso = usuariosMiCurso.getCourseId().getCourseName();
-//        String cedula = usuariosMiCurso.getUserId().getIdentification();
-//        String archivo = nombreCurso.replaceAll(" ", "_") + "_" + cedula;
-//
-//        String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/") + pathDB;
-//        path = path.substring(0, path.indexOf("\\build\\"));
-//        path += "\\Web\\" + pathDB;
-//        File f = new File(path);
-//
-//        String rutaCompleta;
-//        if (f.exists()) {
-//            String url = path.substring(0, path.indexOf("\\archivos\\"));
-//            String extension = pathDB.substring(pathDB.lastIndexOf(".", pathDB.length()));
-//            
-//            rutaCompleta = url + "\\archivos\\" + archivo + extension;
-//            System.out.println(rutaCompleta);
-//            if (f.renameTo(new File(rutaCompleta))) {
-//                System.out.println("bo");
-//            }
-//        }
-
-        File f = new File("C:\\Users\\ZamudioL\\Desktop\\PROYECTO QUE I ESTA BIEN BONITO\\otro\\SiguemeKahe\\web\\archivos\\mua.txt");
-        if (f.exists()) {
-            System.out.println("ss");
-            boolean ff = f.renameTo(new File("C:\\Users\\ZamudioL\\Desktop\\PROYECTO QUE I ESTA BIEN BONITO\\otro\\SiguemeKahe\\web\\archivos\\hola.txt"));
-            if (ff) {
-                System.out.println("goog");
-            }
-        }
+    public String renombrarArchivo(String nombreOriginal) {
+        String nombreCurso = usuariosMiCurso.getCourseId().getCourseName();
+        String cedula = usuariosMiCurso.getUserId().getIdentification();
+        String archivo = nombreCurso.replaceAll(" ", "_") + "_" + cedula;
+        String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf(".", nombreOriginal.length()));
+        archivo += extension;
+        return archivo;
     }
 
     public void descargarAdjunto() {
@@ -292,8 +266,6 @@ public class MiCursoController implements Serializable {
             if (this.usuariosMiCurso.getAttached() != null) {
                 String url = this.usuariosMiCurso.getAttached();
                 String path = fc.getExternalContext().getRealPath("/") + url;
-                path = path.substring(0, path.indexOf("\\build\\"));
-                path += "\\Web\\" + url;
                 File f = new File(path);
                 InputStream stream = (InputStream) new FileInputStream(f);
 
