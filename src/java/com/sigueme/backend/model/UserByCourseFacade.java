@@ -111,18 +111,17 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
             Query query;
             switch (opcion) {
                 case 1:
-                    query = em.createQuery("SELECT uc FROM  UserByCourse uc WHERE uc.userId = :usuario AND uc.grade = :calificacion");
                     query = em.createQuery("SELECT uc FROM  UserByCourse uc WHERE uc.userId = :user AND uc.grade = :calificacion");
                     query.setParameter("calificacion", calificacion);
                     break;
                 case 2:
-                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :usuario AND uc.grade IS NULL AND uc.attached IS NOT NULL AND uc.description IS NOT NULL");
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.userId = :user AND uc.grade IS NULL AND uc.attached IS NOT NULL AND uc.description IS NOT NULL");
                     break;
                 default:
-                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE  uc.userId = :usuario AND c.couseStatus = FALSE AND uc.attached IS NULL AND uc.description IS NULL");
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE  uc.userId = :user AND c.couseStatus = FALSE AND uc.attached IS NULL AND uc.description IS NULL");
                     break;
             }
-            query.setParameter("usuario", user);
+            query.setParameter("user", user);
             
             if (!query.getResultList().isEmpty()) {
                 cantidad = query.getResultList().size();
