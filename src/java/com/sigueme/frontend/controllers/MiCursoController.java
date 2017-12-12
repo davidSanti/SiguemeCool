@@ -58,6 +58,7 @@ public class MiCursoController implements Serializable {
 
     private String filtrarEstado;
     private PieChartModel pieModel;
+    private Map<String,Integer> tabla;
 
     public MiCursoController() {
     }
@@ -67,6 +68,7 @@ public class MiCursoController implements Serializable {
         listraMisCursos();
         usuariosMiCurso = new UserByCourse();
         filtrarEstado = "";
+        tabla= new HashMap();
         createPieModels();
     }
 
@@ -102,6 +104,14 @@ public class MiCursoController implements Serializable {
         this.file = file;
     }
 
+    public Map<String, Integer> getTabla() {
+        return tabla;
+    }
+
+    public void setTabla(Map<String, Integer> tabla) {
+        this.tabla = tabla;
+    }
+
     public void asignarUsuarioCursos(UserByCourse usuarioCurso) {
         usuariosMiCurso = usuarioCurso;
 
@@ -131,7 +141,6 @@ public class MiCursoController implements Serializable {
     private void createPieModel() {
         pieModel = new PieChartModel();
         User usuarioEnSesion = devolverUsuarioEnSesion();
-        HashMap<String, Integer> tabla = new HashMap<>();
         int cantidad = 0;
         
         cantidad = userByCourseFacadeLocal.listarMisCursosCalificados(usuarioEnSesion, true, 1);

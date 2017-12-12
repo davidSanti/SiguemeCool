@@ -174,18 +174,34 @@
                 </p:dialog>
 
                 <p:dialog id="Grafica" resizable="false" 
-                          closeOnEscape="false" draggable="false" closable="false" 
+                          closeOnEscape="true" draggable="false" closable="true" 
                           widgetVar="Grafica" modal="true" showEffect="fold" hideEffect="fold"
-                          responsive="true" width="500" >
+                          responsive="true" width="800" >
 
                     <h1><h:outputText value="Grafica"/></h1>
                     <h:form id="formGrafica">
                         <center>
-                            <p:chart type="pie" model="#{miCursoController.pieModel}" style="width:400px;height:300px" />
+                            <p:panelGrid columns="2">
+                                <p:chart type="pie" model="#{miCursoController.pieModel}" style="width:400px;height:300px" />
+
+                                <p:dataTable id="tablaGrafica" value="#{miCursoController.tabla.entrySet().toArray()}" var="grafica"
+                                             emptyMessage="No se encuentran registros" reflow="true" paginator="true"
+                                             paginatorPosition="bottom" rows="10" 
+                                             rowStyleClass="row-color" >
+                                    <p:column headerText="Estado">
+                                        <h:outputText value="#{grafica.key}">
+                                        </h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Cantidad">
+                                        <h:outputText value="#{grafica.value}">
+                                        </h:outputText>
+                                    </p:column>
 
 
+                                </p:dataTable>
+                            </p:panelGrid>
                             <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(11)}" immediate="true" update="Grafica" styleClass="correrBoton"/>   
-
                         </center>
                     </h:form>
 
