@@ -103,14 +103,40 @@ public class UsuarioController implements Serializable {
                 formulario = "formVerUsuario:gridVerUsuario";
                 break;
             case 2:
-                req.execute("PF('editarUsuario').hide()");
-                formulario = "formEditarUsuario:gridEditarUsuario";
+                req.execute("PF('registrarUsuario').hide()");
+                formulario = "formRegistrarUsuario:gridRegistrarUsuario";
                 break;
             default:
                 break;
         }
-
+        init();
         req.reset(formulario);
+    }
+
+    public void registrarUsuario() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            //Create Operation Manager 2???
+            List<User> lista = new ArrayList<>();
+            lista = userFacadeLocal.buscarPorIdentificacion(usuario.getIdentification());
+            boolean validarCedula = lista.isEmpty();
+
+            lista = userFacadeLocal.buscarPorIdentificacion(usuario.getPeopleSoft());
+            boolean validarPeopleSoft = lista.isEmpty();
+
+            if (validarCedula && validarPeopleSoft) {
+                //Aqui se deberá invocar al método qe genera un password aleatorio y enviará la clave solo al email espeficado del usuario nuevo
+                usuario.setUserPassword(usuario.getIdentification());
+                userFacadeLocal.create(usuario);
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Usuario registrado correctamente"));
+                ocultarModal(2);
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Verifica la cédula o el people Soft por que ya existe un usuario con esa identificación"));
+            }
+
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "El usuario no se pudo registrar"));
+        }
     }
 
     public void editarUsuario(User user) {

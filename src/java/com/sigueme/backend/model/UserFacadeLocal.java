@@ -43,4 +43,6 @@ public interface UserFacadeLocal {
     List<User> buscarPersonaPorNombre(String nombre);
     
     List<User> filtrarPorTodosLosCampos(String parametro);
+    
+    List<User> buscarPorIdentificacion(String identificacion);
 }

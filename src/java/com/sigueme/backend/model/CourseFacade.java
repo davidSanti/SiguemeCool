@@ -66,10 +66,11 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
     public List<UserByCourse> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, Course curso, List<User> listaParaFiltrar) {
         List<UserByCourse> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT DISTINCT us FROM UserByCourse us JOIN us.userId u WHERE u.groupId IN :grupos AND us.courseId = :curso AND u IN :usuarios", UserByCourse.class);
+            Query query = em.createQuery("SELECT DISTINCT us FROM UserByCourse us JOIN us.userId u WHERE u.groupId IN :grupos AND us.courseId = :curso AND u IN :usuarios AND u.userStatusId.userStatusId <> :estadoUsuario", UserByCourse.class);
             query.setParameter("grupos", listaGrupos);
             query.setParameter("curso", curso);
             query.setParameter("usuarios", listaParaFiltrar);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
         } catch (Exception ex) {
             System.out.println("Error en el metodo filtrarUsuariosPorGrupo= " + ex.getMessage());
@@ -82,8 +83,9 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
         List<UserByCourse> lista = new ArrayList<>();
         boolean bandera = false;
         try {
-            Query query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.courseId = :curso and uc.attached IS NOT NULL", UserByCourse.class);
+            Query query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.userId u WHERE uc.courseId = :curso and uc.attached IS NOT NULL AND u.userStatusId.userStatusId <> :estadoUsuario", UserByCourse.class);
             query.setParameter("curso", curso);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
 
             bandera = lista.isEmpty();

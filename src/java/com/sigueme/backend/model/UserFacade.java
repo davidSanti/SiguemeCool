@@ -8,7 +8,6 @@ package com.sigueme.backend.model;
 import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.Role;
 import com.sigueme.backend.entities.User;
-import com.sigueme.backend.entities.UserByCourse;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -39,10 +38,10 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     public User iniciarSesion(User user) {
         User usuario = null;
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.identification = :cedula AND u.userPassword = :clave");
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.identification = :cedula AND u.userPassword = :clave AND u.userStatusId.userStatusId = :estadoUsuario");
             query.setParameter("cedula", user.getIdentification());
             query.setParameter("clave", user.getUserPassword());
-            //query.setParameter("estado", UserStatus.ACTIVE);
+            query.setParameter("estadoUsuario", 1);
 
             List<User> usuariosLista = query.getResultList();
             if (!usuariosLista.isEmpty()) {
@@ -60,12 +59,13 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         try {
             Query query;
             if (usuariosExcluidos.isEmpty()) {
-                query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos", User.class);
+                query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
             } else {
-                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u NOT IN :usuariosExcluidos", User.class);
+                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
                 query.setParameter("usuariosExcluidos", usuariosExcluidos);
             }
             query.setParameter("grupos", listaGrupos);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
 
         } catch (Exception ex) {
@@ -80,12 +80,13 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         try {
             Query query;
             if (usuariosExcluidos.isEmpty()) {
-                query = em.createQuery("SELECT u FROM User u WHERE u.roleId IN :roles");
+                query = em.createQuery("SELECT u FROM User u WHERE u.roleId IN :roles AND u.userStatusId.userStatusId <> :estadoUsuario");
             } else {
-                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.roleId IN :roles AND u NOT IN :usuariosExcluidos");
+                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.roleId IN :roles AND u NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario");
                 query.setParameter("usuariosExcluidos", usuariosExcluidos);
             }
             query.setParameter("roles", listaRoles);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
         } catch (Exception ex) {
             System.out.println("Error en el metodo filtrarUsuariosPorRol= " + ex.getMessage());
@@ -99,14 +100,15 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         try {
             Query query;
             if (usuariosExcluidos.isEmpty()) {
-                query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.roleId IN :roles");
+                query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.roleId IN :roles AND u.userStatusId.userStatusId <> :estadoUsuario");
 
             } else {
-                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u.roleId IN :roles AND u NOT IN :usuariosExcluidos");
+                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u.roleId IN :roles AND u NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario");
                 query.setParameter("usuariosExcluidos", usuariosExcluidos);
             }
             query.setParameter("grupos", listaGrupos);
             query.setParameter("roles", listaRoles);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
 
         } catch (Exception ex) {
@@ -120,24 +122,40 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     public List<User> buscarPersonaPorNombre(String nombre) {
         List<User> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.firstName LIKE CONCAT('%',:nombre,'%') OR u.lastName LIKE CONCAT('%',:nombre,'%')");
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.firstName LIKE CONCAT('%',:nombre,'%') OR u.lastName LIKE CONCAT('%',:nombre,'%') AND u.userStatusId.userStatusId <> :estadoUsuario");
             query.setParameter("nombre", nombre);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el metodo buscarPersonaPorNombre= " + e.getMessage());
         }
         return lista;
     }
-    
+
     @Override
     public List<User> filtrarPorTodosLosCampos(String parametro) {
         List<User> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.peopleSoft LIKE CONCAT('%',:parametro,'%') OR u.firstName LIKE CONCAT('%',:parametro,'%') OR u.lastName LIKE CONCAT('%',:parametro,'%') OR u.email LIKE CONCAT('%',:parametro,'%')");//  
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.peopleSoft LIKE CONCAT('%',:parametro,'%') OR u.firstName LIKE CONCAT('%',:parametro,'%') OR u.lastName LIKE CONCAT('%',:parametro,'%') OR u.email LIKE CONCAT('%',:parametro,'%') AND u.userStatusId.userStatusId <> :estadoUsuario");
             query.setParameter("parametro", parametro);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el metodo filtrarPorTodosLosCampos= " + e.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<User> buscarPorIdentificacion(String identificacion) {
+        List<User> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.identification = :identificacion OR u.peopleSoft = :identificacion AND u.userStatusId.userStatusId <> :estadoUsuario");
+            query.setParameter("identificacion", identificacion);
+            query.setParameter("estadoUsuario", 2);
+            lista = query.getResultList();            
+        } catch (Exception e) {
+            System.out.println("Error en el metodo buscarPorCedula= " + e.getMessage());
         }
         return lista;
     }

@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "User.findByAddress", query = "SELECT u FROM User u WHERE u.address = :address")
     , @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email")
     , @NamedQuery(name = "User.findByUserPassword", query = "SELECT u FROM User u WHERE u.userPassword = :userPassword")
-    , @NamedQuery(name = "User.findByUserStatus", query = "SELECT u FROM User u WHERE u.userStatus = :userStatus")})
+    , @NamedQuery(name = "User.findByUserStatus", query = "SELECT u FROM User u WHERE u.userStatusId = :userStatus")})
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -77,7 +77,6 @@ public class User implements Serializable {
     private String lastName;
 
     @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "address")
     private String address;
@@ -94,12 +93,10 @@ public class User implements Serializable {
     @Size(min = 1, max = 100)
     @Column(name = "user_password")
     private String userPassword;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2147483647)
-    @Column(name = "user_status")
-    private String userStatus;
+    
+    @JoinColumn(name = "user_status_id", referencedColumnName = "user_status_id")
+    @ManyToOne(optional = false)
+    private UserStatus userStatusId;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private List<UserByCourse> userByCourse;
@@ -119,7 +116,7 @@ public class User implements Serializable {
         this.userId = userId;
     }
 
-    public User(Integer userId, String identification, String peopleSoft, String firstName, String lastName, String address, String email, String userPassword, String userStatus) {
+    public User(Integer userId, String identification, String peopleSoft, String firstName, String lastName, String address, String email, String userPassword) {
         this.userId = userId;
         this.identification = identification;
         this.peopleSoft = peopleSoft;
@@ -128,7 +125,6 @@ public class User implements Serializable {
         this.address = address;
         this.email = email;
         this.userPassword = userPassword;
-        this.userStatus = userStatus;
     }
 
     public Integer getUserId() {
@@ -195,12 +191,12 @@ public class User implements Serializable {
         this.userPassword = userPassword;
     }
 
-    public String getUserStatus() {
-        return userStatus;
+    public UserStatus getUserStatusId() {
+        return userStatusId;
     }
 
-    public void setUserStatus(String userStatus) {
-        this.userStatus = userStatus;
+    public void setUserStatusId(UserStatus userStatusId) {
+        this.userStatusId = userStatusId;
     }
 
     @XmlTransient

@@ -36,7 +36,7 @@ public interface UserByCourseFacadeLocal {
 
     List<UserByCourse> listarMisCursos(User user);
 
-    List<UserByCourse> filtrarMisCursosPorCValificacion(User user, boolean grade, String option);
+    List<UserByCourse> filtrarMisCursosPorCalificacion(User user, boolean grade, String option);
 
     List<User> listarUsuariosSinEvidencia(Course curso);
 

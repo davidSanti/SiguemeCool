@@ -329,19 +329,19 @@ public class MiCursoController implements Serializable {
 
         switch (filtrarEstado) {
             case "aprobado":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, true, "calificado");
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCalificacion(usuarioEnSeison, true, "calificado");
                 break;
             case "no_Aprobado":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "calificado");
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCalificacion(usuarioEnSeison, false, "calificado");
                 break;
             case "pendiente":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "pendiente");
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCalificacion(usuarioEnSeison, false, "pendiente");
                 break;
             case "sin_Evidencia":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, true, "sin_Evidencia");
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCalificacion(usuarioEnSeison, true, "sin_Evidencia");
                 break;
             case "vencido":
-                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCValificacion(usuarioEnSeison, false, "sin_Evidencia");
+                misCursos = userByCourseFacadeLocal.filtrarMisCursosPorCalificacion(usuarioEnSeison, false, "sin_Evidencia");
                 break;
             case "todos":
                 listraMisCursos();

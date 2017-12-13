@@ -38,8 +38,9 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
     public List<UserByCourse> listarUsuariosPorCurso(Course curso) {
         List<UserByCourse> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT uc FROM UserByCourse uc WHERE uc.courseId = :curso ");
+            Query query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.userId u WHERE uc.courseId = :curso AND u.userStatusId.userStatusId <> :estadoUsuario");
             query.setParameter("curso", curso);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
         } catch (Exception ex) {
             System.out.println("Error en el metodo listarUsuariosPorCurso= " + ex.getMessage());
@@ -61,7 +62,7 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
     }
 
     @Override
-    public List<UserByCourse> filtrarMisCursosPorCValificacion(User user, boolean grade, String option) {
+    public List<UserByCourse> filtrarMisCursosPorCalificacion(User user, boolean grade, String option) {
         List<UserByCourse> lista = new ArrayList<>();
         try {
             Query query = null;
