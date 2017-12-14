@@ -9,6 +9,7 @@ import com.sigueme.backend.entities.Course;
 import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.entities.UserByCourse;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -42,4 +43,8 @@ public interface CourseFacadeLocal {
     boolean validarEvidenciaUsuariosCurso(Course curso);
 
     void vencerCursos();
+
+    List<UserByCourse> filtrarPorNombre(String nombre);
+
+    List<UserByCourse> filtrarPorFechas(Date fechaInicio, Date fechaFin, User usuario);
 }

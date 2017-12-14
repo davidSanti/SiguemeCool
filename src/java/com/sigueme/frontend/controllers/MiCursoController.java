@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import java.util.List;
@@ -59,6 +61,9 @@ public class MiCursoController implements Serializable {
     private String filtrarEstado;
     private PieChartModel pieModel;
     private Map<String, Integer> tabla;
+    private String busqueda;
+    private Date fechaInicio;
+    private Date fechaFin;
 
     public MiCursoController() {
     }
@@ -70,6 +75,30 @@ public class MiCursoController implements Serializable {
         filtrarEstado = "";
         tabla = new HashMap();
         createPieModels();
+    }
+
+    public Date getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
+    public String getBusqueda() {
+        return busqueda;
+    }
+
+    public void setBusqueda(String busqueda) {
+        this.busqueda = busqueda;
     }
 
     public UserByCourse getUsuariosMiCurso() {
@@ -367,4 +396,23 @@ public class MiCursoController implements Serializable {
         }
         return bandera;
     }
+
+    public void filtrarPorCurso() {
+//        misCursos = new ArrayList<>();
+        misCursos = cursoFacadeLocal.filtrarPorNombre(busqueda);
+    }
+
+    public void filtrarPorFechas() {
+        misCursos = new ArrayList<>();
+        if (fechaInicio == null && fechaFin == null) {
+            listraMisCursos();
+        } else {
+            if (fechaInicio != null || fechaFin != null) {
+                misCursos = cursoFacadeLocal.filtrarPorFechas(fechaInicio, fechaFin, devolverUsuarioEnSesion());
+            } else {
+                listraMisCursos();
+            }
+        }
+    }
+
 }
