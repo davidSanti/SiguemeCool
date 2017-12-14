@@ -10,11 +10,13 @@ import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.entities.UserByCourse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 /**
  *
@@ -104,6 +106,49 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
         } catch (Exception e) {
             System.out.println("Error en el metodo ValidarEvidenciaUsuariosCurso = " + e.getMessage());
         }
+    }
+
+    @Override
+    public List<UserByCourse> filtrarPorNombre(String nombre) {
+        List<UserByCourse> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE c.courseName LIKE CONCAT('%',:nombre,'%') ORDER BY uc.userByCourseId DESC");
+            query.setParameter("nombre", nombre);
+            lista = query.getResultList();
+
+        } catch (Exception ex) {
+            System.out.println("Error en el metodo filtrarPorNombre = " + ex.getMessage());
+        }
+        return lista;
+
+    }
+
+    @Override
+    public List<UserByCourse> filtrarPorFechas(Date fechaInicio, Date fechaFin,User usuario) {
+        List<UserByCourse> lista = new ArrayList<>();
+        try {
+            Query query;
+            if (fechaInicio != null) {
+                if (fechaFin != null) {
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE c.startDate >= :fechaInicio AND c.finishDate <= :fechaFin AND uc.userId = :usuario ORDER BY uc.userByCourseId DESC");
+                    query.setParameter("fechaInicio", fechaInicio, TemporalType.DATE);
+                    query.setParameter("fechaFin", fechaFin, TemporalType.DATE);
+                } else {
+                    query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE c.startDate >= :fechaInicio AND uc.userId = :usuario  ORDER BY uc.userByCourseId DESC");
+                    query.setParameter("fechaInicio", fechaInicio, TemporalType.DATE);
+                }
+            } else {
+                query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE c.finishDate >= :fechaFin  AND uc.userId = :usuario ORDER BY uc.userByCourseId DESC");
+                query.setParameter("fechaFin", fechaFin, TemporalType.DATE);
+            }
+            query.setParameter("usuario",usuario);
+            
+            lista = query.getResultList();
+        } catch (Exception ex) {
+            System.out.println("Error en el metodo filtrarPorFecha = " + ex.getMessage());
+        }
+        return lista;
+
     }
 
 }
