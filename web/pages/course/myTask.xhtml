@@ -33,6 +33,8 @@
                                  paginatorPosition="bottom" rows="10" 
                                  rowStyleClass="#{miCursoController.validarSiCursoVencido(curso,1) ? 'cursoVencido' : 'row-color'}" >
 
+
+
                         <p:column headerText="Name" filterBy="#{curso.courseId.courseName}" filterMatchMode="in">
 
                             <f:facet name="filter">
@@ -45,6 +47,7 @@
                             <h:outputText value="#{curso.courseId.courseName}"> 
                             </h:outputText>
                         </p:column>
+
 
                         <p:column headerText="Fecha Inicio" filterBy="#{curso.courseId.startDate}">
 
