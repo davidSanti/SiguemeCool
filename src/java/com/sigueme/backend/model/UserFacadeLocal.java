@@ -45,4 +45,6 @@ public interface UserFacadeLocal {
     List<User> filtrarPorTodosLosCampos(String parametro);
     
     List<User> buscarPorIdentificacion(String identificacion);
+    
+    List<User> listarUsuariosSiteManager();
 }

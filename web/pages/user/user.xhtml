@@ -162,7 +162,7 @@
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Desea guardar los cambios realizado al usuario?" />
                             </p:commandButton>
-                            <p:commandButton value="Cerrar" immediate="true"
+                            <p:commandButton value="Cerrar" immediate="true" update="formUsuario:tablaUsuario"
                                              actionListener="#{usuarioController.ocultarModal(1)}"/>
                         </center>
                     </h:form>
