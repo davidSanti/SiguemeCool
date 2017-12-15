@@ -12,6 +12,7 @@ import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
+import com.sigueme.backend.model.UserStatusFacadeLocal;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,8 @@ public class UsuarioController implements Serializable {
     private RoleFacadeLocal roleFacadeLocal;
     @EJB
     private UserByCourseFacadeLocal userByCourseFacadeLocal;
+    @EJB
+    private UserStatusFacadeLocal userStatusFacadeLocal;
 
     private List<User> listaUsuarios;
     private List<GroupCls> listaGrupo;
@@ -217,8 +220,17 @@ public class UsuarioController implements Serializable {
 
     public void eliminarUsuario(User user) {
         this.usuario = user;
-        if (finalizarTodosLosProcesos()) {
-
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (finalizarTodosLosProcesos()) {
+                user.setUserStatusId(userStatusFacadeLocal.find(2));
+                userFacadeLocal.edit(user);
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos del usuarios han sido eliminados correctamente "));
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Los datos  del usuario no se eliminaron"));
+            }
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Los datos no se eliminaron, inténtalo más tarde"));
         }
     }
 
