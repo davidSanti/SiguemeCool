@@ -25,8 +25,9 @@
                         <f:facet name="options">
                             <p:menubar>
                                 <p:submenu label="#{menuController.retornarNombreUsuario()}">
-                                    <p:menuitem value="Modificar Cuenta" 
-                                                icon="ui-icon-pencil"/>
+                                    <p:menuitem value="Modificar Cuenta" icon="ui-icon-pencil"
+                                                oncomplete="PF('modificarCuenta').show()" update=":modificarCuenta" 
+                                                actionListener="#{usuarioController.asignarUsuario()}"/>
                                     <p:menuitem value="Cerrar Sesión"
                                                 action="#{menuController.cerrarSesion()}"
                                                 icon="ui-icon-power"/>
@@ -35,12 +36,84 @@
                         </f:facet>
                     </p:menubar>
                 </h:form>
+                 <p:dialog id="modificarCuenta"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="modificarCuenta" modal="true"
+                          showEffect="fade" hideEffect="fade">
+
+                    <h:form id="formModificarCuenta">
+                         <p:growl id="growlmodificarCuenta" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+                        <center>
+                            <h1><h:outputText value="Modificar Cuenta"/></h1>
+                            <br/>
+                        </center>
+
+                        <h:panelGrid columns="2" id="gridModificarCuenta">                         
+
+                            <p:outputLabel value="Cedula" for="cedula"/>
+                            <p:inputText id="cedula" value="#{usuarioController.usuario.identification}"
+                                         required="true" requiredMessage="La Cedula es un campo obligatorio"
+                                         maxlength="10" pt:type="number" validatorMessage="la Cedula debe contener entre 8 y 10 caracteres"
+                                         pt:minlength="8" pt:maxlength="10" pt:required="true">
+                                <f:validateLength minimum="8" maximum="10"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="PeopleSoft" for="peoplSoft"/>
+                            <p:inputText id="peoplSoft" value="#{usuarioController.usuario.peopleSoft}"
+                                         required="true" requiredMessage="El PeopleSoft es un campo obligatorio"
+                                         maxlength="6" validatorMessage="El PeopleSoft debe ser de 6 caracteres"
+                                         pt:type="number" pt:minlength="6" pt:maxlength="6" pt:required="true">
+                                <f:validateLength minimum="6" maximum="6"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Nombre" for="nombre"/>
+                            <p:inputText id="nombre" value="#{usuarioController.usuario.firstName}"
+                                         required="true" requiredMessage="El Nombre es un campo obligatorio"
+                                         maxlength="50" validatorMessage="El Nombre debe contener entre 3 y 50 caracteres"
+                                         pt:minlength="3" pt:maxlength="50" pt:required="true">
+                                <f:validateLength minimum="3" maximum="50"/>
+                                <f:validateRegex pattern="^[a-zA-Z\s]+$"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Apellido" for="apellido"/>
+                            <p:inputText id="apellido" value="#{usuarioController.usuario.lastName}"
+                                         required="true" requiredMessage="El Apellido es un campo obligatorio"
+                                         maxlength="50" validatorMessage="El Apellido debe contener entre 3 y 50 caracteres"
+                                         pt:minlength="3" pt:maxlength="50" pt:required="true">
+                                <f:validateLength minimum="3" maximum="50"/>
+                                <f:validateRegex pattern="^[a-zA-Z\s]+$"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Correo" for="correo"/>
+                            <p:inputText id="correo" value="#{usuarioController.usuario.email}"
+                                         required="true" requiredMessage="El Correo es un campo obligatorio"
+                                         pt:type="email" pt:minlength="15" pt:maxlength="100" pt:required="true"
+                                         maxlength="100" validatorMessage="El Correo debe contener entre 15 y 100 caracteres">
+                                <f:validateLength minimum="15" maximum="100"/>
+                                <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                            </p:inputText>
+
+                        </h:panelGrid>
+
+                        <center>
+                            <br/>
+                            <p:commandButton value="Guardar"
+                                             actionListener="#{usuarioController.modificarUsuario()}"
+                                             update="formModificarCuenta, formModificarCuenta:growlmodificarCuenta"/>
+
+                            <p:commandButton value="Cerrar" immediate="true"
+                                             actionListener="#{usuarioController.ocultarModal(3)}"/>
+                        </center>
+                    </h:form>
+                </p:dialog>
+                
             </ui:insert>
         </div>
 
         <div id="content" class="center_content">
             <ui:insert name="content">
 
+                   
             </ui:insert>
         </div>
 

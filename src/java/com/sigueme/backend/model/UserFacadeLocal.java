@@ -41,10 +41,12 @@ public interface UserFacadeLocal {
     List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos, List<User> usuariosExcluidos);
 
     List<User> buscarPersonaPorNombre(String nombre);
-    
+
     List<User> filtrarPorTodosLosCampos(String parametro);
-    
+
     List<User> buscarPorIdentificacion(String identificacion);
-    
+
     List<User> listarUsuariosSiteManager();
+
+    List<User> listarUsuarios();
 }

@@ -89,13 +89,18 @@
                         <p:column headerText="Correo" >
                             <h:outputText value="#{usuario.email}"/>
                         </p:column>    
+                        
+                        <p:column headerText="Estado" >
+                            <h:outputText value="#{usuario.userStatusId.description}"/>
+                        </p:column>    
 
                         <p:column headerText="Acciones">
                             <p:commandButton icon="ui-icon-circle-zoomin"
                                              actionListener="#{usuarioController.editarUsuario(usuario)}"
                                              oncomplete="PF('verUsuario').show();" update="verUsuario"/>
 
-                            <p:commandButton  icon="ui-icon-trash" action="#{usuarioController.eliminarUsuario(usuario)}">
+                            <p:commandButton  icon="ui-icon-trash" action="#{usuarioController.eliminarUsuario(usuario)}"
+                                              update="tablaUsuario, :formUsuario:growlUsuario" >
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Estas Seguro de eliminar este Usuario?" />
                             </p:commandButton>
