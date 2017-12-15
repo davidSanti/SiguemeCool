@@ -73,9 +73,7 @@ public class MenuController implements Serializable {
         String path = ((HttpServletRequest) context.getExternalContext().getRequest()).getContextPath();
         Role rol = retornarRolEnSesion();
         if (rol != null) {
-            System.out.println("aqui" + rol);
             permisos = permissionRoleFacadeLocal.listarPermisosPorRol(rol);
-            System.out.println("aqui" + permisos.size());
         }
         if (permisos.isEmpty() || permisos == null) {
             try {

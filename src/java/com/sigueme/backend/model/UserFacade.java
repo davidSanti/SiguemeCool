@@ -153,7 +153,21 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
             Query query = em.createQuery("SELECT u FROM User u WHERE u.identification = :identificacion OR u.peopleSoft = :identificacion AND u.userStatusId.userStatusId <> :estadoUsuario");
             query.setParameter("identificacion", identificacion);
             query.setParameter("estadoUsuario", 2);
-            lista = query.getResultList();            
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el metodo buscarPorCedula= " + e.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<User> listarUsuariosSiteManager() {
+        List<User> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.roleId.roleId = :rol AND u.userStatusId.userStatusId <> :estadoUsuario");
+            query.setParameter("rol", 1);
+            query.setParameter("estadoUsuario", 2);
+            lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el metodo buscarPorCedula= " + e.getMessage());
         }
