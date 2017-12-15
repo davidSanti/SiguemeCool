@@ -398,8 +398,8 @@ public class MiCursoController implements Serializable {
     }
 
     public void filtrarPorCurso() {
-//        misCursos = new ArrayList<>();
-        misCursos = cursoFacadeLocal.filtrarPorNombre(busqueda);
+        misCursos = new ArrayList<>();
+        misCursos = cursoFacadeLocal.filtrarMisCursosPorNombre(busqueda,devolverUsuarioEnSesion());
     }
 
     public void filtrarPorFechas() {
@@ -408,7 +408,7 @@ public class MiCursoController implements Serializable {
             listraMisCursos();
         } else {
             if (fechaInicio != null || fechaFin != null) {
-                misCursos = cursoFacadeLocal.filtrarPorFechas(fechaInicio, fechaFin, devolverUsuarioEnSesion());
+                misCursos = cursoFacadeLocal.filtrarMisCursosPorFechas(fechaInicio, fechaFin, devolverUsuarioEnSesion());
             } else {
                 listraMisCursos();
             }

@@ -44,7 +44,11 @@ public interface CourseFacadeLocal {
 
     void vencerCursos();
 
-    List<UserByCourse> filtrarPorNombre(String nombre);
+    List<UserByCourse> filtrarMisCursosPorNombre(String nombre,User usuario);
 
-    List<UserByCourse> filtrarPorFechas(Date fechaInicio, Date fechaFin, User usuario);
+    List<UserByCourse> filtrarMisCursosPorFechas(Date fechaInicio, Date fechaFin, User usuario);
+
+    List<Course> filtrarPorNombre(String nombre);
+
+    List<Course> filtrarPorFechas(Date fechaInicio, Date fechaFin);
 }

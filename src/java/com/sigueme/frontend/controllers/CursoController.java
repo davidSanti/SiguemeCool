@@ -76,6 +76,9 @@ public class CursoController implements Serializable {
     private String filtrarEstado;
     private UserByCourse usuarioPorCursoActual;
     private StreamedContent file;
+    private Date fechaInicio;
+    private Date fechaFin;
+    private String busqueda;
 
     @Inject
     CursoChartController cursoGraficaController;
@@ -96,6 +99,30 @@ public class CursoController implements Serializable {
     }
 
     public CursoController() {
+    }
+
+    public String getBusqueda() {
+        return busqueda;
+    }
+
+    public void setBusqueda(String busqueda) {
+        this.busqueda = busqueda;
+    }
+
+    public Date getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
     public Course getCurso() {
@@ -741,6 +768,23 @@ public class CursoController implements Serializable {
         }
         return bandera;
     }
-    
-   
+
+    public void filtrarPorCurso() {
+//        misCursos = new ArrayList<>();
+        cursos = cursoFacadeLocal.filtrarPorNombre(busqueda);
+    }
+
+    public void filtrarPorFechas() {
+        cursos = new ArrayList<>();
+        if (fechaInicio == null && fechaFin == null) {
+            listarCursos();
+        } else {
+            if (fechaInicio != null || fechaFin != null) {
+                cursos = cursoFacadeLocal.filtrarPorFechas(fechaInicio, fechaFin);
+            } else {
+                listarCursos();
+            }
+        }
+    }
+
 }

@@ -38,11 +38,26 @@
                                  paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color">
 
                         <p:column headerText="Nombre" filterBy="#{curso.courseName}" filterMatchMode="contains">
+                            <f:facet name="filter">
+                                <p:inputText  value="#{cursoController.busqueda}">
+                                    <p:ajax event="keyup" update="tablaCurso" 
+                                            listener="#{cursoController.filtrarPorCurso()}" />
+                                </p:inputText>
+                            </f:facet>
+
                             <h:outputText value="#{curso.courseName}">
                             </h:outputText>
                         </p:column>
 
                         <p:column headerText="Fecha Inicio" filterBy="#{curso.startDate}">
+                            <f:facet name="filter">
+                                <p:calendar  value="#{cursoController.fechaInicio}">
+                                    <p:ajax event="dateSelect" update="tablaCurso" 
+                                            listener="#{cursoController.filtrarPorFechas()}" />
+                                    <p:ajax event="change" update="tablaCurso" 
+                                            listener="#{cursoController.filtrarPorFechas()}" />
+                                </p:calendar>
+                            </f:facet>
                             <h:outputText  value="#{curso.startDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy">
                                 </f:convertDateTime>
@@ -50,6 +65,14 @@
                         </p:column>
 
                         <p:column headerText="Fecha Fin" filterBy="#{curso.finishDate}">
+                            <f:facet name="filter">
+                                <p:calendar  value="#{cursoController.fechaFin}">
+                                    <p:ajax event="dateSelect" update="tablaCurso" 
+                                            listener="#{cursoController.filtrarPorFechas()}" />
+                                    <p:ajax event="change" update="tablaCurso" 
+                                            listener="#{cursoController.filtrarPorFechas()}" />
+                                </p:calendar>
+                            </f:facet>
                             <h:outputText  value="#{curso.finishDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy">
                                 </f:convertDateTime>
