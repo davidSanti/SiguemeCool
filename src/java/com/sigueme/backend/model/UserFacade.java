@@ -174,4 +174,16 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         return lista;
     }
 
+    @Override
+    public List<User> listarUsuarios() {
+        List<User> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT u FROM User u ORDER BY u.userId DESC");
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el metodo buscarPorCedula= " + e.getMessage());
+        }
+        return lista;
+    }
+
 }

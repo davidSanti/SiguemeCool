@@ -63,7 +63,7 @@ public class UsuarioController implements Serializable {
 
     public void listarUsuarios() {
 //        listaUsuarios = new ArrayList<>();
-        listaUsuarios = userFacadeLocal.findAll();
+        listaUsuarios = userFacadeLocal.listarUsuarios();
     }
 
     public void filtrarUsuarios() {
@@ -109,6 +109,10 @@ public class UsuarioController implements Serializable {
                 req.execute("PF('registrarUsuario').hide()");
                 formulario = "formRegistrarUsuario:gridRegistrarUsuario";
                 break;
+            case 3:
+                req.execute("PF('modificarCuenta').hide()");
+                formulario = "formModificarCuenta:gridModificarCuenta";
+                break;
             default:
                 break;
         }
@@ -119,15 +123,7 @@ public class UsuarioController implements Serializable {
     public void registrarUsuario() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-            //Create Operation Manager 2???
-            List<User> lista = new ArrayList<>();
-            lista = userFacadeLocal.buscarPorIdentificacion(usuario.getIdentification());
-            boolean validarCedula = lista.isEmpty();
-
-            lista = userFacadeLocal.buscarPorIdentificacion(usuario.getPeopleSoft());
-            boolean validarPeopleSoft = lista.isEmpty();
-
-            if (validarCedula && validarPeopleSoft) {
+            if (verificarIdentificacion()) {
                 if (verificarRol()) {
                     //Aqui se deberá invocar al método qe genera un password aleatorio y enviará la clave solo al email espeficado del usuario nuevo
                     usuario.setUserPassword(usuario.getIdentification());
@@ -144,6 +140,25 @@ public class UsuarioController implements Serializable {
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "El usuario no se pudo registrar"));
         }
+    }
+
+    public boolean verificarIdentificacion() {
+        List<User> lista = new ArrayList<>();
+        lista = userFacadeLocal.buscarPorIdentificacion(usuario.getIdentification());
+        boolean validarCedula = lista.isEmpty();
+
+        lista = userFacadeLocal.buscarPorIdentificacion(usuario.getPeopleSoft());
+        boolean validarPeopleSoft = lista.isEmpty();
+
+        boolean bandera = validarCedula && validarPeopleSoft;
+        return bandera;
+    }
+
+    public boolean verificarIdentificacion(String identificacion) {
+        List<User> lista = new ArrayList<>();
+        lista = userFacadeLocal.buscarPorIdentificacion(identificacion);
+        boolean validarIdentificacion = lista.size() <= 1;
+        return validarIdentificacion;
     }
 
     //Solo debería existe un Site Manager, por lo cosniguiente no se debe registrar otro usuario con el mismo rol
@@ -171,13 +186,29 @@ public class UsuarioController implements Serializable {
     public void editarUsuario() {
         //Pregntar si se pueden registrar más de un OM
         FacesContext context = FacesContext.getCurrentInstance();
+        boolean validacion = false;
         try {
-            if (verificarRol()) {
-                userFacadeLocal.edit(usuario);
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos del usuarios han sido actualizados correctamente "));
-                ocultarModal(1);
+            boolean validarRol = true;
+            if (usuario.getRoleId().getRoleId() == 1) {
+                validarRol = verificarRol();
+            }
+            if (validarRol) {
+                //Validar Cedula
+                if (verificarIdentificacion(usuario.getIdentification())) {
+                    //Validar People Soft
+                    if (verificarIdentificacion(usuario.getPeopleSoft())) {
+                        validacion = true;
+                        userFacadeLocal.edit(usuario);
+                        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos del usuarios han sido actualizados correctamente "));
+                        ocultarModal(1);
+                    }
+                }
             } else {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", " Ya existe un usuario con Rol de Site Manager no puede existir otro"));
+            }
+
+            if (!validacion) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Verifica la cédula o el people Soft por que ya existe un usuario con esa identificación"));
             }
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Los datos no se actualizaron, inténtalo más tarde"));
@@ -216,6 +247,35 @@ public class UsuarioController implements Serializable {
 
         User usuarioEnSesion = (User) sesion.getAttribute("usuario");
         return usuarioEnSesion;
+    }
+
+    public void asignarUsuario() {
+        this.usuario = retornarUsuarioEnSesion();
+    }
+
+    public void modificarUsuario() {
+        //Pregntar si se pueden registrar más de un OM
+        FacesContext context = FacesContext.getCurrentInstance();
+        boolean validacion = false;
+        try {
+            //Validar Cedula
+            if (verificarIdentificacion(usuario.getIdentification())) {
+                //Validar People Soft
+                if (verificarIdentificacion(usuario.getPeopleSoft())) {
+                    validacion = true;
+                    userFacadeLocal.edit(usuario);
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tus datos se modificaron correctamente "));
+                    ocultarModal(3);
+                }
+            }
+
+            if (!validacion) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Verifica la cédula o el people Soft por que ya existe un usuario con esa identificación"));
+            }
+
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Los datos no se actualizaron, inténtalo más tarde"));
+        }
     }
 
     //Método Getter y Setter
