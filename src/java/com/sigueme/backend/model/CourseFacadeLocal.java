@@ -48,7 +48,7 @@ public interface CourseFacadeLocal {
 
     List<UserByCourse> filtrarMisCursosPorFechas(Date fechaInicio, Date fechaFin, User usuario);
 
-    List<Course> filtrarPorNombre(String nombre);
+    List<Course> filtrarPorNombre(String nombre, List<Integer> cursosPorFiltrar);
 
-    List<Course> filtrarPorFechas(Date fechaInicio, Date fechaFin);
+    List<Course> filtrarPorFechas(Date fechaInicio, Date fechaFin, List<Integer> cursosPorFiltrar);
 }

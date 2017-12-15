@@ -109,7 +109,7 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
     }
 
     @Override
-    public List<UserByCourse> filtrarMisCursosPorNombre(String nombre,User usuario) {
+    public List<UserByCourse> filtrarMisCursosPorNombre(String nombre, User usuario) {
         List<UserByCourse> lista = new ArrayList<>();
         try {
             Query query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.courseId c WHERE c.courseName LIKE CONCAT('%',:nombre,'%') AND uc.userId = :usuario ORDER BY uc.userByCourseId DESC");
@@ -143,6 +143,7 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
                 query.setParameter("fechaFin", fechaFin, TemporalType.DATE);
             }
             query.setParameter("usuario", usuario);
+//            query.setParameter("cursosPorFiltrar", cursosPorFiltrar);
 
             lista = query.getResultList();
         } catch (Exception ex) {
@@ -153,11 +154,12 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
     }
 
     @Override
-    public List<Course> filtrarPorNombre(String nombre) {
+    public List<Course> filtrarPorNombre(String nombre, List<Integer> cursosPorFiltrar) {
         List<Course> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT c FROM Course c  WHERE c.courseName LIKE CONCAT('%',:nombre,'%') ORDER BY c.courseId DESC");
+            Query query = em.createQuery("SELECT c FROM Course c  WHERE c.courseName LIKE CONCAT('%',:nombre,'%') AND c.courseId IN :cursosPorFiltrar ORDER BY c.courseId DESC");
             query.setParameter("nombre", nombre);
+            query.setParameter("cursosPorFiltrar", cursosPorFiltrar);
             lista = query.getResultList();
 
         } catch (Exception ex) {
@@ -168,23 +170,28 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
     }
 
     @Override
-    public List<Course> filtrarPorFechas(Date fechaInicio, Date fechaFin) {
+    public List<Course> filtrarPorFechas(Date fechaInicio, Date fechaFin, List<Integer> cursosPorFiltrar) {
         List<Course> lista = new ArrayList<>();
         try {
             Query query;
             if (fechaInicio != null) {
                 if (fechaFin != null) {
-                    query = em.createQuery("SELECT c FROM Course c WHERE c.startDate >= :fechaInicio AND c.finishDate <= :fechaFin  ORDER BY c.courseId DESC");
+                    query = em.createQuery("SELECT c FROM Course c WHERE c.startDate >= :fechaInicio AND c.finishDate <= :fechaFin AND c.courseId IN :cursosPorFiltrar ORDER BY c.courseId DESC");
                     query.setParameter("fechaInicio", fechaInicio, TemporalType.DATE);
                     query.setParameter("fechaFin", fechaFin, TemporalType.DATE);
+                    System.out.println("las dos");
                 } else {
-                    query = em.createQuery("SELECT c FROM Course c WHERE c.startDate >= :fechaInicio ORDER BY c.courseId DESC");
+                    query = em.createQuery("SELECT c FROM Course c WHERE c.startDate >= :fechaInicio AND c.courseId IN :cursosPorFiltrar  ORDER BY c.courseId DESC");
                     query.setParameter("fechaInicio", fechaInicio, TemporalType.DATE);
+                    System.out.println("solo inicio");
+
                 }
             } else {
-                query = em.createQuery("SELECT c FROM Course c WHERE c.finishDate >= :fechaFin  ORDER BY c.courseId DESC");
+                query = em.createQuery("SELECT c FROM Course c WHERE c.finishDate >= :fechaFin AND c.courseId IN :cursosPorFiltrar ORDER BY c.courseId DESC");
                 query.setParameter("fechaFin", fechaFin, TemporalType.DATE);
+                System.out.println("solo fin");
             }
+            query.setParameter("cursosPorFiltrar", cursosPorFiltrar);
 
             lista = query.getResultList();
         } catch (Exception ex) {

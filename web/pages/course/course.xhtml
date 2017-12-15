@@ -41,8 +41,10 @@
                             <f:facet name="filter">
                                 <p:inputText  value="#{cursoController.busqueda}">
                                     <p:ajax event="keyup" update="tablaCurso" 
-                                            listener="#{cursoController.filtrarPorCurso()}" />
+                                            listener="#{cursoController.filtrarCurso()}" />
                                 </p:inputText>
+                                <p:commandButton icon="ui-icon-closethick" update="tablaCurso"
+                                                 action="#{cursoController.limpiarFiltro(1)}"/>
                             </f:facet>
 
                             <h:outputText value="#{curso.courseName}">
@@ -53,10 +55,12 @@
                             <f:facet name="filter">
                                 <p:calendar  value="#{cursoController.fechaInicio}">
                                     <p:ajax event="dateSelect" update="tablaCurso" 
-                                            listener="#{cursoController.filtrarPorFechas()}" />
+                                            listener="#{cursoController.filtrarCurso()}" />
                                     <p:ajax event="change" update="tablaCurso" 
-                                            listener="#{cursoController.filtrarPorFechas()}" />
+                                            listener="#{cursoController.filtrarCurso()}" />
                                 </p:calendar>
+                                <p:commandButton icon="ui-icon-closethick" update="tablaCurso"
+                                                 action="#{cursoController.limpiarFiltro(2)}"/>
                             </f:facet>
                             <h:outputText  value="#{curso.startDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy">
@@ -68,10 +72,12 @@
                             <f:facet name="filter">
                                 <p:calendar  value="#{cursoController.fechaFin}">
                                     <p:ajax event="dateSelect" update="tablaCurso" 
-                                            listener="#{cursoController.filtrarPorFechas()}" />
+                                            listener="#{cursoController.filtrarCurso()}" />
                                     <p:ajax event="change" update="tablaCurso" 
-                                            listener="#{cursoController.filtrarPorFechas()}" />
+                                            listener="#{cursoController.filtrarCurso()}" />
                                 </p:calendar>
+                                <p:commandButton icon="ui-icon-closethick" update="tablaCurso"
+                                                 action="#{cursoController.limpiarFiltro(3)}"/>
                             </f:facet>
                             <h:outputText  value="#{curso.finishDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy">

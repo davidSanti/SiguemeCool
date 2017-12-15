@@ -67,6 +67,7 @@ public class CursoController implements Serializable {
     List<User> usuariosLista;
     List<User> usuariosPorCursoEditar;
     List<Course> cursos;
+    List<Integer> listaCursosTemporal;
     List<UserByCourse> usuariosPorCurso;
     List<UserByCourse> usuariosTemporalesPorCurso;
     List<GroupCls> listaGrupos;
@@ -94,6 +95,7 @@ public class CursoController implements Serializable {
         gruposPersona = new ArrayList<>();
         listaRoles = new ArrayList<>();
         usuarioPorCursoActual = new UserByCourse();
+        listaCursosTemporal = new ArrayList<>();
         listarCursos();
         filtrarEstado = new String();
     }
@@ -376,7 +378,16 @@ public class CursoController implements Serializable {
     public List<Course> listarCursos() {
         vencerCursos();
         cursos = cursoFacadeLocal.listarCursos();
+        listaCursosTemporal = new ArrayList<>();
+        asignarListaTemoral();
         return cursos;
+    }
+
+    public void asignarListaTemoral() {
+        listaCursosTemporal = new ArrayList<>();
+        for (Course item : cursos) {
+            listaCursosTemporal.add(item.getCourseId());
+        }
     }
 
     public void vencerCursos() {
@@ -769,22 +780,71 @@ public class CursoController implements Serializable {
         return bandera;
     }
 
-    public void filtrarPorCurso() {
-//        misCursos = new ArrayList<>();
-        cursos = cursoFacadeLocal.filtrarPorNombre(busqueda);
+    public void verificarListaCursosTemporal() {
+        if (listaCursosTemporal.isEmpty()) {
+            listarCursos();
+        }
+    }
+
+    public void filtrarCurso() {
+        System.out.println("entro");
+        boolean validacion = true;
+        verificarListaCursosTemporal();
+        if (busqueda != null && (!busqueda.equals(""))) {
+            filtrarPorNombre();
+            asignarListaTemoral();
+            System.out.println("filtro por nombre: " + busqueda);
+            if (fechaInicio != null || fechaFin != null) {
+                verificarListaCursosTemporal();
+                filtrarPorFechas();
+                System.out.println("filtro por nombre y fecha");
+            } else {
+                validacion = false;
+            }
+        } else if (fechaInicio != null || fechaFin != null) {
+            listarCursos();
+            filtrarPorFechas();
+            System.out.println("filtro por fecha no sam");
+
+        } else {
+            listarCursos();
+            System.out.println("listo todo por que  paila");
+
+            validacion = false;
+        }
+
+        if (validacion) {
+            System.out.println("asignadmos");
+            asignarListaTemoral();
+        }
+    }
+
+    public void filtrarPorNombre() {
+        cursos = new ArrayList<>();
+        cursos = cursoFacadeLocal.filtrarPorNombre(busqueda, listaCursosTemporal);
     }
 
     public void filtrarPorFechas() {
         cursos = new ArrayList<>();
-        if (fechaInicio == null && fechaFin == null) {
-            listarCursos();
-        } else {
-            if (fechaInicio != null || fechaFin != null) {
-                cursos = cursoFacadeLocal.filtrarPorFechas(fechaInicio, fechaFin);
-            } else {
-                listarCursos();
-            }
+        cursos = cursoFacadeLocal.filtrarPorFechas(fechaInicio, fechaFin, listaCursosTemporal);
+    }
+
+    public void limpiarFiltro(int opcion) {
+        switch (opcion) {
+            case 1:
+                busqueda = "";
+                break;
+            case 2:
+                fechaInicio = null;
+                break;
+            case 3:
+                fechaFin = null;
+                break;
+            default:
+                break;
         }
+
+        filtrarCurso();
     }
 
 }
