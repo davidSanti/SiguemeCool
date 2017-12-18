@@ -416,7 +416,7 @@
                                                                   value="#{cursoController.gruposPersona}" filter="true"
                                                                   converter="grupoConverter" >
 
-                                                <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
+                                                <f:selectItems var="grupo" value="#{cursoChartController.listarGrupos()}" 
                                                                itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
                                             </p:selectCheckboxMenu>
                                             <p:remoteCommand  name="ejecutarFiltro"

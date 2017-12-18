@@ -9,6 +9,7 @@ import com.sigueme.backend.entities.Course;
 import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.entities.UserByCourse;
+import java.security.acl.Group;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
@@ -44,11 +45,13 @@ public interface CourseFacadeLocal {
 
     void vencerCursos();
 
-    List<UserByCourse> filtrarMisCursosPorNombre(String nombre,User usuario);
+    List<UserByCourse> filtrarMisCursosPorNombre(String nombre, User usuario);
 
     List<UserByCourse> filtrarMisCursosPorFechas(Date fechaInicio, Date fechaFin, User usuario);
 
     List<Course> filtrarPorNombre(String nombre, List<Integer> cursosPorFiltrar);
 
     List<Course> filtrarPorFechas(Date fechaInicio, Date fechaFin, List<Integer> cursosPorFiltrar);
+
+    List<GroupCls> listarGrupos(Course curso);
 }

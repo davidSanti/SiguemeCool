@@ -200,5 +200,18 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
         return lista;
 
     }
+    @Override
+    public List<GroupCls> listarGrupos(Course curso){
+        List<GroupCls> gruposLista=new ArrayList<>();
+       
+        try{
+            Query query= em.createQuery("SELECT g FROM UserByCourse uc INNER JOIN uc.userId  u INNER JOIN u.groupId g  WHERE uc.courseId = :curso");
+            query.setParameter("curso", curso);
+            gruposLista=query.getResultList();
+        }catch(Exception ex){
+               System.out.println("Error en el metodo listarGrupos = " + ex.getMessage());
+        }
+        return  gruposLista;
+    }
 
 }

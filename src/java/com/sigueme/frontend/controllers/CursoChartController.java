@@ -226,5 +226,10 @@ public class CursoChartController implements Serializable {
         barModel.setShowPointLabels(true);
         Axis yAxis = barModel.getAxis(AxisType.Y);
     }
+    
+    public List<GroupCls> listarGrupos() {
+        System.out.println("aqui perro" + cursoFacadeLocal.listarGrupos(curso).size());
+        return cursoFacadeLocal.listarGrupos(curso);
+    }
 
 }
