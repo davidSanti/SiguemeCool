@@ -93,8 +93,8 @@ public class User implements Serializable {
     @Size(min = 1, max = 100)
     @Column(name = "user_password")
     private String userPassword;
-    
-    @JoinColumn(name = "user_status_id", referencedColumnName = "user_status_id")
+  
+    @JoinColumn(name = "user_status_id", referencedColumnName = "user_status_id", insertable = false, updatable = true)
     @ManyToOne(optional = false)
     private UserStatus userStatusId;
 
