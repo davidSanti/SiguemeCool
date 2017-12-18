@@ -29,5 +29,7 @@ public interface UserStatusFacadeLocal {
     List<UserStatus> findRange(int[] range);
 
     int count();
-    
+
+    List<UserStatus> listarEstados();
+
 }

@@ -89,7 +89,7 @@
                         <p:column headerText="Correo" >
                             <h:outputText value="#{usuario.email}"/>
                         </p:column>    
-                        
+
                         <p:column headerText="Estado" >
                             <h:outputText value="#{usuario.userStatusId.description}"/>
                         </p:column>    
@@ -140,8 +140,22 @@
                                                itemLabel="#{rol.description}" itemValue="#{rol}"/>
                             </p:selectOneMenu>
 
-                            <h:outputText value="PeopleSoft"/>
-                            <h:outputText value="#{usuarioController.usuario.peopleSoft}"/>
+                            <p:outputLabel for="estado" value="Estado"/>
+                            <p:selectOneMenu id="estado" value="#{usuarioController.usuario.userStatusId}"
+                                             converter="estadoUsuarioConverter">
+
+                                <f:selectItems value="#{usuarioController.listaEstadosUsuario}" var="estado"
+                                               itemLabel="#{estado.description}" itemValue="#{estado}"/>
+
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="PeopleSoft" for="peoplSoft"/>
+                            <p:inputText id="peoplSoft" value="#{usuarioController.usuario.peopleSoft}"
+                                         required="true" requiredMessage="El PeopleSoft es un campo obligatorio"
+                                         maxlength="6" validatorMessage="El PeopleSoft debe ser de 6 caracteres"
+                                         pt:type="number" pt:minlength="6" pt:maxlength="6" pt:required="true">
+                                <f:validateLength minimum="6" maximum="6"/>
+                            </p:inputText>
 
                             <h:outputText value="Cedula"/>
                             <h:outputText value="#{usuarioController.usuario.identification}"/>
@@ -163,7 +177,7 @@
                         <center>
                             <br/>
                             <p:commandButton value="Guardar" action="#{usuarioController.editarUsuario()}"
-                                             update="formUsuario:tablaUsuario, formUsuario:growlUsuario">
+                                             update="formUsuario:tablaUsuario, formUsuario:growlUsuario, formVerUsuario">
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Desea guardar los cambios realizado al usuario?" />
                             </p:commandButton>

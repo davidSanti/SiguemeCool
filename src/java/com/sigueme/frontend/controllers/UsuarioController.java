@@ -8,6 +8,7 @@ package com.sigueme.frontend.controllers;
 import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.Role;
 import com.sigueme.backend.entities.User;
+import com.sigueme.backend.entities.UserStatus;
 import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
@@ -52,12 +53,14 @@ public class UsuarioController implements Serializable {
     private User usuario;
 
     private String parametroBusqueda;
+    private List<UserStatus> listaEstadosUsuario;
 
     @PostConstruct
     public void init() {
         usuario = new User();
         listaGrupo = new ArrayList<>();
         listaRoles = new ArrayList<>();
+        listarEstadosUsuario();
         listarUsuarios();
     }
 
@@ -127,9 +130,15 @@ public class UsuarioController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
             if (verificarIdentificacion()) {
-                if (verificarRol()) {
+                boolean validarRol = true;
+                if (usuario.getRoleId().getRoleId() == 1) {
+                    validarRol = verificarRol();
+                }
+                if (validarRol) {
                     //Aqui se deberá invocar al método qe genera un password aleatorio y enviará la clave solo al email espeficado del usuario nuevo
                     usuario.setUserPassword(usuario.getIdentification());
+                    //Aqui se le asigna el estado por defecto que es Activo (1)
+                    usuario.setUserStatusId(userStatusFacadeLocal.find(1));
                     userFacadeLocal.create(usuario);
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Usuario registrado correctamente"));
                     ocultarModal(2);
@@ -184,6 +193,7 @@ public class UsuarioController implements Serializable {
 
     public void editarUsuario(User user) {
         this.usuario = user;
+        verificarSiUsuarioActivo();
     }
 
     public void editarUsuario() {
@@ -252,6 +262,10 @@ public class UsuarioController implements Serializable {
         return roleFacadeLocal.findAll();
     }
 
+    public void listarEstadosUsuario() {
+        listaEstadosUsuario = userStatusFacadeLocal.listarEstados();
+    }
+
     public User retornarUsuarioEnSesion() {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpSession sesion = (HttpSession) context.getExternalContext().getSession(true);
@@ -287,6 +301,21 @@ public class UsuarioController implements Serializable {
 
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Los datos no se actualizaron, inténtalo más tarde"));
+        }
+    }
+
+    public boolean verificarSiUsuarioActivo() {
+        if (usuario != null && usuario.getUserStatusId() != null) {
+            boolean bandera = usuario.getUserStatusId().getUserStatusId() == 1;
+            if (usuario.getUserStatusId().getUserStatusId() == 2) {
+                listaEstadosUsuario = new ArrayList<>();
+                listaEstadosUsuario.add(userStatusFacadeLocal.find(1));
+            } else {
+                listarEstadosUsuario();
+            }
+            return bandera;
+        } else {
+            return false;
         }
     }
 
@@ -331,4 +360,12 @@ public class UsuarioController implements Serializable {
         this.parametroBusqueda = parametroBusqueda;
     }
 
+    public List<UserStatus> getListaEstadosUsuario() {
+        return listaEstadosUsuario;
+    }
+
+    public void setListaEstadosUsuario(List<UserStatus> listaEstadosUsuario) {
+        this.listaEstadosUsuario = listaEstadosUsuario;
+    }    
+    
 }
