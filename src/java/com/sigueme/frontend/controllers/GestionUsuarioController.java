@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
@@ -58,7 +59,6 @@ public class GestionUsuarioController {
         listarGrupos();
         listarRoles();
         listarPermisos();
-//listaPermisos = new ArrayList<>();
 
         grupo = new GroupCls();
         rol = new Role();
@@ -79,7 +79,9 @@ public class GestionUsuarioController {
 
     public void listarPermisos() {
         listaPermisosRol = new ArrayList<>();
+        listaPermisos = new ArrayList<>();
         this.listaPermisosRol = permissionRoleFacadeLocal.findAll();
+        this.listaPermisos = permissionFacadeLocal.findAll();
     }
 
     public void registrarGrupo() {
@@ -112,17 +114,48 @@ public class GestionUsuarioController {
         return bandera;
     }
 
-    public boolean verificarNombre(List<?> lista, String verificar) {
-//        List<GroupCls> lista = groupFacadeLocal.findAll();
+    public boolean verificarNombreGrupo(List<GroupCls> lista) {
         boolean bandera = true;
-        
-        for (int i = 0; i <= lista.size(); i++) {
-            lista.get(i).getClass().
-//            if (item.getGroupName().equals(verificar)) {
-//                if (!Objects.equals(item.getGroupId(), grupo.getGroupId())) {
-//                    bandera = false;
-//                }
-//            }
+
+        String nombreOriginal = grupo.getGroupName().replaceAll(" ", "");
+        nombreOriginal = nombreOriginal.toLowerCase();
+
+        System.out.println("nombre:" + nombreOriginal);
+        for (GroupCls item : lista) {
+            String nombreItem = item.getGroupName().toLowerCase();
+            nombreItem = nombreItem.replaceAll(" ", "");
+            System.out.println("nombre:" + nombreItem);
+
+            if (nombreItem.equals(nombreOriginal)) {
+                if (!Objects.equals(item.getGroupId(), grupo.getGroupId())) {
+                    bandera = false;
+                }
+            }
+        }
+        return bandera;
+    }
+
+    public void registrarRole() {
+
+    }
+
+    public boolean verificarNombreRol(List<Role> lista) {
+        boolean bandera = true;
+
+        String nombreOriginal = rol.getDescription().replaceAll(" ", "");
+        nombreOriginal = nombreOriginal.toLowerCase();
+
+        System.out.println("nombre:" + nombreOriginal);
+        for (Role item : lista) {
+            String nombreItem = item.getDescription().toLowerCase();
+            nombreItem = nombreItem.replaceAll(" ", "");
+            System.out.println("nombre:" + nombreItem);
+
+            if (nombreItem.equals(nombreOriginal)) {
+                if (!Objects.equals(item.getRoleId(), rol.getRoleId())) {
+                    bandera = false;
+                }
+            }
         }
         return bandera;
     }
@@ -137,30 +170,76 @@ public class GestionUsuarioController {
 
             if (verificarNombreGrupo(grupo.getGroupName())) {
                 groupFacadeLocal.edit(grupo);
-                //Mensaje: Los datos del grupo se han actualizado correctamente   
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                        "Los datos del grupo se han actualizado correctamente "));
             } else {
-//                    Ya se encuentra registrado un Grupo con ese nombre
-//                    , verifica y vulve a intentarlo
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "Ya se encuentra registrado un Grupo con ese nombre, verifica y vulve a intentarlo"));
+
             }
 
         } catch (Exception e) {
-            //Mensaje: Ha ocurrido un error al editar el grupo, intenta más tarde
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al editar el grupo, intenta más tarde"));
         }
 
     }
 
-//    public boolean verificarNombreGrupo(String nombre) {
-//
-//        String nombreOriginial = grupo.toLowerCase();
-//        String nombre = nombreOriginial.strim(" ", "");
-//
-//        return verificarGrupo(2, nombre);
-//
-//    }
-    public boolean verificarNombreRol(String Rol) {
+    //Getter y setter
+    public List<GroupCls> getListaGrupos() {
+        return listaGrupos;
+    }
 
-//String nombreOriginial = 
-        return true;
+    public void setListaGrupos(List<GroupCls> listaGrupos) {
+        this.listaGrupos = listaGrupos;
+    }
+
+    public List<Role> getListaRoles() {
+        return listaRoles;
+    }
+
+    public void setListaRoles(List<Role> listaRoles) {
+        this.listaRoles = listaRoles;
+    }
+
+    public List<Permission> getListaPermisos() {
+        return listaPermisos;
+    }
+
+    public void setListaPermisos(List<Permission> listaPermisos) {
+        this.listaPermisos = listaPermisos;
+    }
+
+    public List<PermissionRole> getListaPermisosRol() {
+        return listaPermisosRol;
+    }
+
+    public void setListaPermisosRol(List<PermissionRole> listaPermisosRol) {
+        this.listaPermisosRol = listaPermisosRol;
+    }
+
+    public Role getRol() {
+        return rol;
+    }
+
+    public void setRol(Role rol) {
+        this.rol = rol;
+    }
+
+    public Permission getPermiso() {
+        return permiso;
+    }
+
+    public void setPermiso(Permission permiso) {
+        this.permiso = permiso;
+    }
+
+    public PermissionRole getPermisoRol() {
+        return permisoRol;
+    }
+
+    public void setPermisoRol(PermissionRole permisoRol) {
+        this.permisoRol = permisoRol;
     }
 
 }

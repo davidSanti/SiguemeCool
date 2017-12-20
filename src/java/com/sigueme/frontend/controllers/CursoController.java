@@ -843,7 +843,8 @@ public class CursoController implements Serializable {
             default:
                 break;
         }
-
+        //Esto se realiza para que se reetee la lista y realice el filtro de nuevo
+        listaCursosTemporal = new ArrayList<>();
         filtrarCurso();
     }
 

@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./../../resources/templates/plantilla.xhtml">
+
+            <ui:define name="content">
+
+                <h:form>
+                    <p:growl id="growlManageUser" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+                </h:form>
+
+                <h:form>
+                    <center>
+                        <br/>
+                        <h2><h:outputText value="Grupo"/></h2>
+                    </center>
+                    <p:dataTable value="#{gestionUsuarioController.listaGrupos}" var="grupo">
+
+                        <p:column headerText="Grupos">
+                            <h:outputText value="#{grupo.groupName}"/>
+                        </p:column>
+
+                        <p:column headerText="Grupos">
+                            <h:outputText value="#{grupo.averageAht}"/>
+                        </p:column>
+
+                        <p:column headerText="Acciones">
+                            <p:commandButton icon="ui-icon-circle-zoomin"/>
+                            <p:commandButton icon="ui-icon-pencil"/>
+                            <p:commandButton icon="ui-icon-trash"/>
+                        </p:column>
+
+                    </p:dataTable>
+                </h:form>
+
+
+                <h:form>
+                    <center>
+                        <br/>
+                        <h2><h:outputText value="Roles y Permisos"/></h2>
+                    </center>
+                    <h:panelGrid columns="2">
+                        <p:dataTable value="#{gestionUsuarioController.listaRoles}" var="rol">
+
+                            <p:column headerText="Rol">
+                                <h:outputText value="#{rol.description}"/>
+                            </p:column>
+
+                            <p:column headerText="Acciones">
+                                <p:commandButton icon="ui-icon-circle-zoomin"/>
+                                <p:commandButton icon="ui-icon-pencil"/>
+                                <p:commandButton icon="ui-icon-trash"/>
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <p:dataTable value="#{gestionUsuarioController.listaPermisos}" var="permiso">
+
+                            <p:column headerText="Permiso">
+                                <h:outputText value="#{permiso.description}"/>
+                            </p:column>
+
+                            <p:column headerText="Dependencia">
+                                <h:outputText value="#{permiso.dependency.description}"/>
+                            </p:column>
+
+                            <p:column headerText="Acciones">
+                                <p:commandButton icon="ui-icon-circle-zoomin"/>
+                                <p:commandButton icon="ui-icon-pencil"/>
+                                <p:commandButton icon="ui-icon-trash"/>
+                            </p:column>
+
+                        </p:dataTable>
+                    </h:panelGrid>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
