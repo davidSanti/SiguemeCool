@@ -69,22 +69,9 @@
                 <h:form>
                     <center>
                         <br/>
-                        <h2><h:outputText value="Roles y Permisos"/></h2>
+                        <h2><h:outputText value="Permisos"/></h2>
                     </center>
                     <h:panelGrid columns="2">
-                        <p:dataTable value="#{gestionUsuarioController.listaRoles}" var="rol">
-
-                            <p:column headerText="Rol">
-                                <h:outputText value="#{rol.description}"/>
-                            </p:column>
-
-                            <p:column headerText="Acciones">
-                                <p:commandButton icon="ui-icon-circle-zoomin"/>
-                                <p:commandButton icon="ui-icon-pencil"/>
-                                <p:commandButton icon="ui-icon-trash"/>
-                            </p:column>
-
-                        </p:dataTable>
 
                         <p:dataTable value="#{gestionUsuarioController.listaPermisos}" var="permiso">
 
@@ -104,6 +91,27 @@
 
                         </p:dataTable>
                     </h:panelGrid>
+                </h:form>
+
+
+                <h:form>
+                     <center>
+                        <br/>
+                        <h2><h:outputText value="Roles"/></h2>
+                    </center>
+                    <p:dataTable value="#{gestionUsuarioController.listaRoles}" var="rol">
+
+                        <p:column headerText="Rol">
+                            <h:outputText value="#{rol.description}"/>
+                        </p:column>
+
+                        <p:column headerText="Acciones">
+                            <p:commandButton icon="ui-icon-circle-zoomin"/>
+                            <p:commandButton icon="ui-icon-pencil"/>
+                            <p:commandButton icon="ui-icon-trash"/>
+                        </p:column>
+
+                    </p:dataTable>
                 </h:form>
             </ui:define>
 
