@@ -13,6 +13,7 @@ import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.PermissionFacadeLocal;
 import com.sigueme.backend.model.PermissionRoleFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +30,7 @@ import javax.faces.view.ViewScoped;
  */
 @Named(value = "gestionUsuarioController")
 @ViewScoped
-public class GestionUsuarioController {
+public class GestionUsuarioController implements  Serializable{
 
     @EJB
     private GroupClsFacadeLocal groupFacadeLocal;
@@ -242,4 +243,12 @@ public class GestionUsuarioController {
         this.permisoRol = permisoRol;
     }
 
+    public GroupCls getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(GroupCls grupo) {
+        this.grupo = grupo;
+    }
+    
 }

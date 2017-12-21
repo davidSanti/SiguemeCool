@@ -3,7 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"      
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
     <body>
 
@@ -20,23 +22,47 @@
                         <br/>
                         <h2><h:outputText value="Grupo"/></h2>
                     </center>
-                    <p:dataTable value="#{gestionUsuarioController.listaGrupos}" var="grupo">
+                    <h:panelGrid columns="2">
 
-                        <p:column headerText="Grupos">
-                            <h:outputText value="#{grupo.groupName}"/>
-                        </p:column>
+                        <h:form>
+                            <h:panelGrid columns="2">
+                                <p:outputLabel value="Nombre" for="GrupoName" />
+                                <p:inputText id="GrupoName" value="#{gestionUsuarioController.grupo.groupName}" title="Nombre Grupo" 
+                                             required="true" requiredMessage="El campo nombre es obligatorio" maxlength="50">
+                                    <f:validateLength minimum="6" maximum="50"/>
+                                </p:inputText>
 
-                        <p:column headerText="Grupos">
-                            <h:outputText value="#{grupo.averageAht}"/>
-                        </p:column>
+                                <p:outputLabel value="Aht" for="aht" />
+                                <p:inputText id="aht" value="#{gestionUsuarioController.grupo.averageAht}" title="Aht Grupo" 
+                                             required="true" requiredMessage="El Aht nombre es obligatorio" maxlength="30"
+                                             pt:type="number" pt:minlength="1" pt:maxlength="10" pt:required="true">
+                                    <f:validateLength minimum="1" maximum="30"/>
+                                </p:inputText>                                
 
-                        <p:column headerText="Acciones">
-                            <p:commandButton icon="ui-icon-circle-zoomin"/>
-                            <p:commandButton icon="ui-icon-pencil"/>
-                            <p:commandButton icon="ui-icon-trash"/>
-                        </p:column>
+                            </h:panelGrid>
 
-                    </p:dataTable>
+                            <p:commandButton value="Registrar"/>
+                        </h:form>
+                        <p:dataTable id="tablaGrupo" value="#{gestionUsuarioController.listaGrupos}" var="grupo"
+                                     emptyMessage="No se encontrarón registros"  reflow="true" 
+                                     paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color">
+
+                            <p:column headerText="Grupos">
+                                <h:outputText value="#{grupo.groupName}"/>
+                            </p:column>
+
+                            <p:column headerText="Aht">
+                                <h:outputText value="#{grupo.averageAht}"/>
+                            </p:column>
+
+                            <p:column headerText="Acciones">
+                                <p:commandButton icon="ui-icon-circle-zoomin"/>
+                                <p:commandButton icon="ui-icon-pencil"/>
+                                <p:commandButton icon="ui-icon-trash"/>
+                            </p:column>
+
+                        </p:dataTable>
+                    </h:panelGrid>
                 </h:form>
 
 

@@ -131,6 +131,7 @@
                                          required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90">
                                 <f:validateLength minimum="10" maximum="90"/>
                             </p:inputText>
+                            
                             <p:outputLabel value="Fecha Inicio" for="startDate" />
                             <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" required="true" 
                                         requiredMessage="El campo fecha inicio es obligatorio"  showOn="button" effect="fold"
