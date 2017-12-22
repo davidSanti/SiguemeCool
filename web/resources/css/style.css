@@ -34,6 +34,15 @@
     background: rgb(255,185,185);
     /*color: #ffffff;*/ 
 }
+
+.manageUser-table {
+    width: 80%; 
+}
+
+.top-formTable{
+    margin-top: 4%;
+}
+
 /*.ui-widget-overlay{
     background-color: #1f2226 !important;
     opacity: .60;

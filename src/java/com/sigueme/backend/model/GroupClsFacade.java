@@ -43,4 +43,16 @@ public class GroupClsFacade extends AbstractFacade<GroupCls> implements GroupCls
         }
         return lista;
     }
+    
+    @Override
+    public List<GroupCls> findAll() {
+        List<GroupCls> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT g FROM GroupCls g ORDER BY g.groupId ASC");
+            lista = query.getResultList();
+        } catch (Exception ex) {
+            System.out.println("Error en el metodo findAll Grupos= " + ex.getMessage());
+        }
+        return lista;
+    }
 }

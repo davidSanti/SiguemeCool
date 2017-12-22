@@ -5,10 +5,14 @@
  */
 package com.sigueme.backend.model;
 
+import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.Role;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -29,4 +33,15 @@ public class RoleFacade extends AbstractFacade<Role> implements RoleFacadeLocal 
         super(Role.class);
     }
     
+    @Override
+    public List<Role> findAll() {
+        List<Role> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT r FROM Role r ORDER BY r.roleId ASC");
+            lista = query.getResultList();
+        } catch (Exception ex) {
+            System.out.println("Error en el metodo findAll Roles= " + ex.getMessage());
+        }
+        return lista;
+    }
 }

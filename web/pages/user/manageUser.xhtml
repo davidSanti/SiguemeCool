@@ -13,39 +13,20 @@
 
             <ui:define name="content">
 
-                <h:form>
-                    <p:growl id="growlManageUser" showDetail="true" showSummary="false" sticky="false" life="3000"/>
-                </h:form>
+                <center>
+                    <h:form id="growlForm">
+                        <p:growl id="growlManageUser" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+                    </h:form>
 
-                <h:form>
-                    <center>
+                    <h:form id="formGroupTable" styleClass="top-formTable">
+                        <p:commandButton value="Registrar" oncomplete="PF('registrarGrupo').show()" update="registrarGrupo"/>
                         <br/>
                         <h2><h:outputText value="Grupo"/></h2>
-                    </center>
-                    <h:panelGrid columns="2">
 
-                        <h:form>
-                            <h:panelGrid columns="2">
-                                <p:outputLabel value="Nombre" for="GrupoName" />
-                                <p:inputText id="GrupoName" value="#{gestionUsuarioController.grupo.groupName}" title="Nombre Grupo" 
-                                             required="true" requiredMessage="El campo nombre es obligatorio" maxlength="50">
-                                    <f:validateLength minimum="6" maximum="50"/>
-                                </p:inputText>
-
-                                <p:outputLabel value="Aht" for="aht" />
-                                <p:inputText id="aht" value="#{gestionUsuarioController.grupo.averageAht}" title="Aht Grupo" 
-                                             required="true" requiredMessage="El Aht nombre es obligatorio" maxlength="30"
-                                             pt:type="number" pt:minlength="1" pt:maxlength="10" pt:required="true">
-                                    <f:validateLength minimum="1" maximum="30"/>
-                                </p:inputText>                                
-
-                            </h:panelGrid>
-
-                            <p:commandButton value="Registrar"/>
-                        </h:form>
                         <p:dataTable id="tablaGrupo" value="#{gestionUsuarioController.listaGrupos}" var="grupo"
                                      emptyMessage="No se encontrarón registros"  reflow="true" 
-                                     paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color">
+                                     paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color"
+                                     styleClass="manageUser-table">
 
                             <p:column headerText="Grupos">
                                 <h:outputText value="#{grupo.groupName}"/>
@@ -56,24 +37,24 @@
                             </p:column>
 
                             <p:column headerText="Acciones">
-                                <p:commandButton icon="ui-icon-circle-zoomin"/>
-                                <p:commandButton icon="ui-icon-pencil"/>
-                                <p:commandButton icon="ui-icon-trash"/>
+
+                                <p:commandButton icon="ui-icon-pencil" actionListener="#{gestionUsuarioController.editarGrupo(grupo)}"
+                                                 oncomplete="PF('EditarGrupo').show();" update="EditarGrupo"/>
+                                <p:commandButton icon="ui-icon-trash"  actionListener="#{gestionUsuarioController.eliminarGrupo(grupo)}" 
+                                                 update="formGroupTable:tablaGrupo,growlForm "/>
                             </p:column>
 
                         </p:dataTable>
-                    </h:panelGrid>
-                </h:form>
+                    </h:form>
 
-
-                <h:form>
-                    <center>
+                    <h:form styleClass="top-formTable" id="formTablePermission">
                         <br/>
                         <h2><h:outputText value="Permisos"/></h2>
-                    </center>
-                    <h:panelGrid columns="2">
 
-                        <p:dataTable value="#{gestionUsuarioController.listaPermisos}" var="permiso">
+                        <p:dataTable value="#{gestionUsuarioController.listaPermisos}" var="permiso" id="permisoTabla"
+                                     emptyMessage="No se encontrarón registros"  reflow="true" 
+                                     paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color"
+                                     styleClass="manageUser-table">
 
                             <p:column headerText="Permiso">
                                 <h:outputText value="#{permiso.description}"/>
@@ -85,34 +66,153 @@
 
                             <p:column headerText="Acciones">
                                 <p:commandButton icon="ui-icon-circle-zoomin"/>
+                                <p:commandButton icon="ui-icon-pencil" actionListener="#{gestionUsuarioController.editarPermiso(permiso)}"
+                                                 oncomplete="PF('EditarPermiso').show();" update="EditarPermiso"/>
+                                <p:commandButton icon="ui-icon-trash"/>
+                            </p:column>
+
+                        </p:dataTable>
+                    </h:form>
+
+
+                    <h:form styleClass="top-formTable">
+                        <br/>
+                        <h2><h:outputText value="Roles"/></h2>
+
+                        <p:dataTable value="#{gestionUsuarioController.listaRoles}" var="rol"
+                                     emptyMessage="No se encontrarón registros"  reflow="true" 
+                                     paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color"
+                                     styleClass="manageUser-table">
+
+                            <p:column headerText="Rol">
+                                <h:outputText value="#{rol.description}"/>
+                            </p:column>
+
+                            <p:column headerText="Acciones">
+                                <p:commandButton icon="ui-icon-circle-zoomin"/>
                                 <p:commandButton icon="ui-icon-pencil"/>
                                 <p:commandButton icon="ui-icon-trash"/>
                             </p:column>
 
                         </p:dataTable>
-                    </h:panelGrid>
-                </h:form>
+                    </h:form>
+                </center>
 
+                <!--Inicio de Código para las ventanas modales (Dialog) del módulo Grupos-->
+                <p:dialog id="registrarGrupo"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="registrarGrupo" modal="true"
+                          showEffect="fade" hideEffect="fade">
+                    <h:form id="formRegistrarGrupo">
+                        <center>
+                            <h1><h:outputText value="Registrar Grupo"/></h1>
+                            <br/>
+                        </center>
+                        <h:panelGrid columns="2" id="gridRegistrarGrupo">
+                            <p:outputLabel value="Nombre" for="GrupoName" />
+                            <p:inputText id="GrupoName" value="#{gestionUsuarioController.grupo.groupName}" title="Nombre Grupo" 
+                                         required="true" requiredMessage="El campo nombre es obligatorio" maxlength="50">
+                                <f:validateLength minimum="3" maximum="50"/>
+                            </p:inputText>
 
-                <h:form>
-                     <center>
-                        <br/>
-                        <h2><h:outputText value="Roles"/></h2>
-                    </center>
-                    <p:dataTable value="#{gestionUsuarioController.listaRoles}" var="rol">
+                            <p:outputLabel value="Aht" for="aht" />
+                            <p:inputText id="aht" value="#{gestionUsuarioController.grupo.averageAht}" title="Aht Grupo" 
+                                         required="true" requiredMessage="El Aht nombre es obligatorio" maxlength="30"
+                                         pt:type="number" pt:minlength="1" pt:maxlength="10" pt:required="true">
+                                <f:validateLength minimum="1" maximum="30"/>
+                            </p:inputText>                                
 
-                        <p:column headerText="Rol">
-                            <h:outputText value="#{rol.description}"/>
-                        </p:column>
+                        </h:panelGrid>
 
-                        <p:column headerText="Acciones">
-                            <p:commandButton icon="ui-icon-circle-zoomin"/>
-                            <p:commandButton icon="ui-icon-pencil"/>
-                            <p:commandButton icon="ui-icon-trash"/>
-                        </p:column>
+                        <p:commandButton value="Registrar" action="#{gestionUsuarioController.registrarGrupo()}"
+                                         update=":growlForm, :formGroupTable:tablaGrupo, formRegistrarGrupo"/>
+                        <p:commandButton value="Cerrar" immediate="true"
+                                         actionListener="#{gestionUsuarioController.ocultarModal(1)}"/>
+                    </h:form>
+                </p:dialog>
 
-                    </p:dataTable>
-                </h:form>
+                <p:dialog id="EditarGrupo"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="EditarGrupo" modal="true"
+                          showEffect="fade" hideEffect="fade">
+                    <h:form id="formEditarGrupo">
+                        <center>
+                            <h1><h:outputText value="Editar Grupo"/></h1>
+                            <br/>
+                        </center>
+                        <h:panelGrid columns="2" id="gridEditarGrupo">
+                            <p:outputLabel value="Nombre" for="GrupoName" />
+                            <p:inputText id="GrupoName" value="#{gestionUsuarioController.grupo.groupName}" title="Nombre Grupo" 
+                                         required="true" requiredMessage="El campo nombre es obligatorio" maxlength="50">
+                                <f:validateLength minimum="3" maximum="50"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Aht" for="aht" />
+                            <p:inputText id="aht" value="#{gestionUsuarioController.grupo.averageAht}" title="Aht Grupo" 
+                                         required="true" requiredMessage="El Aht nombre es obligatorio" maxlength="30"
+                                         pt:type="number" pt:minlength="1" pt:maxlength="10" pt:required="true">
+                                <f:validateLength minimum="1" maximum="30"/>
+                            </p:inputText>                                
+
+                        </h:panelGrid>
+
+                        <p:commandButton value="Guardar" action="#{gestionUsuarioController.editarGrupo()}"
+                                         update=":growlForm, :formGroupTable:tablaGrupo, formEditarGrupo "/>
+
+                        <p:commandButton value="Cerrar" immediate="true"
+                                         actionListener="#{gestionUsuarioController.ocultarModal(2)}"
+                                         update=":formGroupTable:tablaGrupo"/>
+                    </h:form>
+                </p:dialog>
+                <!--Fin de Código para las ventanas modales (Dialog) del módulo Grupos-->
+
+                <!--Inicio de Código para las ventanas modales (Dialog) del módulo Permisos-->
+
+                <p:dialog id="EditarPermiso"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="EditarPermiso" modal="true"
+                          showEffect="fade" hideEffect="fade">
+                    <h:form id="formEditarPermiso">
+                        <center>
+                            <h1><h:outputText value="Editar Permiso"/></h1>
+                            <br/>
+                        </center>
+                        <h:panelGrid columns="2" id="gridEditarPermiso">
+
+                            <p:outputLabel value="Descripción" for="descripcion" />
+                            <p:inputText id="descripcion" value="#{gestionUsuarioController.permiso.description}" title="Descripción Permiso" 
+                                         required="true" requiredMessage="El campo Descripción es obligatorio" maxlength="100">
+                                <f:validateLength minimum="3" maximum="100"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Dependencia" for="dependencia" />
+                            <p:selectOneMenu id="dependencia" label="Dependencia"     
+                                             value="#{gestionUsuarioController.permiso.dependency}" filter="true"
+                                             converter="permisoConverter" >
+
+                                <f:selectItem value="#{null}" noSelectionOption="true" itemLabel="-- Seleciona un Permiso --" />
+                                <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisos}" 
+                                               itemLabel="#{permiso.description}" itemValue="#{permiso}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Url" for="aht" />
+                            <p:inputText id="aht" value="#{gestionUsuarioController.permiso.url}" title="Url Permiso" 
+                                         required="true" requiredMessage="El Aht nombre es obligatorio" maxlength="100"
+                                         pt:minlength="10" pt:maxlength="100" pt:required="true">
+                                <f:validateLength minimum="10" maximum="100"/>
+                            </p:inputText>                                
+
+                        </h:panelGrid>
+
+                        <p:commandButton value="Guardar" action="#{gestionUsuarioController.editarPermiso()}"
+                                         update=":growlForm, :formTablePermission:permisoTabla, formEditarPermiso "/>
+
+                        <p:commandButton value="Cerrar" immediate="true"
+                                         actionListener="#{gestionUsuarioController.ocultarModal(4)}"
+                                         update=":formTablePermission:permisoTabla"/>
+                    </h:form>
+                </p:dialog>
+
             </ui:define>
 
         </ui:composition>

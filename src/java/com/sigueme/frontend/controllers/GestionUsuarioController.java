@@ -23,6 +23,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -30,7 +31,7 @@ import javax.faces.view.ViewScoped;
  */
 @Named(value = "gestionUsuarioController")
 @ViewScoped
-public class GestionUsuarioController implements  Serializable{
+public class GestionUsuarioController implements Serializable {
 
     @EJB
     private GroupClsFacadeLocal groupFacadeLocal;
@@ -85,47 +86,36 @@ public class GestionUsuarioController implements  Serializable{
         this.listaPermisos = permissionFacadeLocal.findAll();
     }
 
+    /*Inicio método Módulo Grupos*/
     public void registrarGrupo() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-            if (verificarNombreGrupo(grupo.getGroupName())) {
+            if (verificarNombreGrupo()) {
                 groupFacadeLocal.create(grupo);
-                //Mensaje: El grupo se ha registrado correctamente   
+                listarGrupos();
+                ocultarModal(1);
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "El grupo se ha registrado correctamente "));
             } else {
-                //Mensaje: El "algo" ya se encuentra registrado en otro Grupo, verifica y vulve a intentarlo
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "Ya se encuentra un Grupo registrado con ese nombre, verifica y vuelve a intentarlo"));
             }
 
         } catch (Exception e) {
-            //Mensaje: Ha ocurrido un error al registrar el grupo, intenta más tarde
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al registrar el grupo, intenta más tarde"));
         }
 
     }
 
-    public boolean verificarNombreGrupo(String verificar) {
+    public boolean verificarNombreGrupo() {
+        boolean bandera = true;
         List<GroupCls> lista = groupFacadeLocal.findAll();
-        boolean bandera = true;
-
-        for (GroupCls item : lista) {
-            if (item.getGroupName().equals(verificar)) {
-                if (!Objects.equals(item.getGroupId(), grupo.getGroupId())) {
-                    bandera = false;
-                }
-            }
-        }
-        return bandera;
-    }
-
-    public boolean verificarNombreGrupo(List<GroupCls> lista) {
-        boolean bandera = true;
-
         String nombreOriginal = grupo.getGroupName().replaceAll(" ", "");
         nombreOriginal = nombreOriginal.toLowerCase();
 
-        System.out.println("nombre:" + nombreOriginal);
         for (GroupCls item : lista) {
             String nombreItem = item.getGroupName().toLowerCase();
             nombreItem = nombreItem.replaceAll(" ", "");
-            System.out.println("nombre:" + nombreItem);
 
             if (nombreItem.equals(nombreOriginal)) {
                 if (!Objects.equals(item.getGroupId(), grupo.getGroupId())) {
@@ -136,13 +126,179 @@ public class GestionUsuarioController implements  Serializable{
         return bandera;
     }
 
-    public void registrarRole() {
+    public void registrarRol() {
 
     }
 
-    public boolean verificarNombreRol(List<Role> lista) {
-        boolean bandera = true;
+    public void editarGrupo(GroupCls grupo) {
+        this.grupo = grupo;
+    }
 
+    public void eliminarGrupo(GroupCls grupo) {
+        this.grupo = grupo;
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            groupFacadeLocal.remove(this.grupo);
+            listarGrupos();
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                    "El grupo se han eliminado correctamente "));
+        } catch (Exception ex) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al eliminar el grupo, intenta más tarde"));
+
+        }
+    }
+
+    public void editarGrupo() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+
+            if (verificarNombreGrupo()) {
+                groupFacadeLocal.edit(grupo);
+                ocultarModal(2);
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                        "Los datos del grupo se han actualizado correctamente "));
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "Ya se encuentra registrado un Grupo con ese nombre, verifica y vuelve a intentarlo"));
+
+            }
+
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al editar el grupo, intenta más tarde"));
+        }
+    }
+
+    /*Fin método Módulo Grupos*/
+
+ /*Inicio método Módulo Permiso*/
+    public void registrarPermiso() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+
+            if (verificarNombrePermiso()) {
+                if (verificarUrlPermiso()) {
+                    groupFacadeLocal.create(grupo);
+                    ocultarModal(2);
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                            "El permiso Se ha registrado correctamente"));
+                } else {
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                            "Ya se encuentra registrado un permiso con la misma url, verifica y vuelve a intentarlo"));
+                }
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "Ya se encuentra registrado un permiso con ese nombre, verifica y vuelve a intentarlo"));
+            }
+
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al Registrar el permiso, intenta más tarde"));
+        }
+    }
+
+    public void editarPermiso(Permission permiso) {
+        this.permiso = permiso;
+    }
+
+    public void editarPermiso() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+
+            if (verificarNombrePermiso()) {
+                if (verificarUrlPermiso()) {
+                    groupFacadeLocal.edit(grupo);
+                    ocultarModal(2);
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                            "Los datos del permiso se han actualizado correctamente "));
+                } else {
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                            "Ya se encuentra registrado un permiso con la misma url, verifica y vuelve a intentarlo"));
+                }
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "Ya se encuentra registrado un permiso con ese nombre, verifica y vuelve a intentarlo"));
+            }
+
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al editar el permiso, intenta más tarde"));
+        }
+    }
+
+    public boolean verificarUrlPermiso() {
+        boolean bandera = true;
+        List<Permission> lista = permissionFacadeLocal.findAll();
+        String nombreOriginal = permiso.getUrl().replaceAll(" ", "");
+        nombreOriginal = nombreOriginal.toLowerCase();
+
+        for (Permission item : lista) {
+            String nombreItem = item.getUrl().toLowerCase();
+            nombreItem = nombreItem.replaceAll(" ", "");
+
+            if (nombreItem.equals(nombreOriginal)) {
+                if (!Objects.equals(item.getPermissionId(), permiso.getPermissionId())) {
+                    bandera = false;
+                }
+            }
+        }
+        return bandera;
+    }
+
+    public boolean verificarNombrePermiso() {
+        boolean bandera = true;
+        List<Permission> lista = permissionFacadeLocal.findAll();
+        String nombreOriginal = permiso.getDescription().replaceAll(" ", "");
+        nombreOriginal = nombreOriginal.toLowerCase();
+
+        for (Permission item : lista) {
+            String nombreItem = item.getDescription().toLowerCase();
+            nombreItem = nombreItem.replaceAll(" ", "");
+
+            if (nombreItem.equals(nombreOriginal)) {
+                if (!Objects.equals(item.getPermissionId(), permiso.getPermissionId())) {
+                    bandera = false;
+                }
+            }
+        }
+        return bandera;
+    }
+
+    /*Fin método Módulo Permiso*/
+    public void ocultarModal(int opcion) {
+        RequestContext req = RequestContext.getCurrentInstance();
+        String formulario = null;
+        switch (opcion) {
+            case 1:
+                req.execute("PF('registrarGrupo').hide()");
+                formulario = "formRegistrarGrupo:gridRegistrarGrupo";
+                break;
+            case 2:
+                req.execute("PF('EditarGrupo').hide()");
+                formulario = ":formEditarGrupo:gridEditarGrupo";
+                listarGrupos();
+                break;
+            case 3:
+                //Aqui el registrar
+                req.execute("PF('').hide()");
+                formulario = "::";
+                break;
+            case 4:
+                req.execute("PF('EditarPermiso').hide()");
+                formulario = ":formEditarPermiso:gridEditarPermiso";
+                listarGrupos();
+                break;
+            default:
+                break;
+        }
+        req.reset(formulario);
+    }
+
+    /*Inicio Módulo Rol*/
+    public boolean verificarNombreRol() {
+        boolean bandera = true;
+        List<Role> lista = roleFacadeLocal.findAll();
         String nombreOriginal = rol.getDescription().replaceAll(" ", "");
         nombreOriginal = nombreOriginal.toLowerCase();
 
@@ -161,30 +317,7 @@ public class GestionUsuarioController implements  Serializable{
         return bandera;
     }
 
-    public void editarGrupo(GroupCls grupo) {
-        this.grupo = grupo;
-    }
-
-    public void editarGrupo() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        try {
-
-            if (verificarNombreGrupo(grupo.getGroupName())) {
-                groupFacadeLocal.edit(grupo);
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                        "Los datos del grupo se han actualizado correctamente "));
-            } else {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
-                        "Ya se encuentra registrado un Grupo con ese nombre, verifica y vulve a intentarlo"));
-
-            }
-
-        } catch (Exception e) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
-                    "Ha ocurrido un error al editar el grupo, intenta más tarde"));
-        }
-
-    }
+    /*Inicio Módulo Rol*/
 
     //Getter y setter
     public List<GroupCls> getListaGrupos() {
@@ -250,5 +383,5 @@ public class GestionUsuarioController implements  Serializable{
     public void setGrupo(GroupCls grupo) {
         this.grupo = grupo;
     }
-    
+
 }
