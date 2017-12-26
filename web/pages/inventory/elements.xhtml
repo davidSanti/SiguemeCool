@@ -1,14 +1,114 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
         <ui:composition template="./../../resources/templates/plantilla.xhtml">
 
             <ui:define name="content">
-            
+                <h:form id="formElementos">
+                    <center>
+                        <br/>
+                        <h2><h:outputText value="Lista De Elementos"/></h2> 
+                    </center>
+
+                    <p:commandButton value="Registrar" onclick="PF('registrarElementos').show()"/>
+                    
+                    <p:dataTable id="tablaElmentos" emptyMessage="No se encontrarón registros"
+                                 var="elemento" value="#{elementoController.elementosLista}"
+                                 paginator="true" paginatorPosition="bottom" rows="10" reflow="true" 
+                                 rowStyleClass="row-color">
+
+                        <p:column headerText="Tipo">
+                            <h:outputLabel value="#{elemento.typeId.description}"/>
+                        </p:column>
+
+                        <p:column headerText="Serial Code">
+                            <h:outputLabel value="#{elemento.serialCode}"/>
+                        </p:column>
+
+                        <p:column headerText="Placa Inventario">
+                            <h:outputLabel value="#{elemento.inventoryPlaque}"/>
+                        </p:column>
+
+                        <p:column headerText="Marca">
+                            <h:outputLabel value="#{elemento.brand}"/>    
+
+                        </p:column>
+
+                        <p:column headerText="Modelo">
+                            <h:outputLabel value="#{elemento.model}"/>    
+                        </p:column>
+
+                        <p:column headerText="Acciones" width="80">
+                            <p:commandButton value="Ver" icon="ui-icon-circle-zoomin" 
+                                             oncomplete="PF('').show()" update=""/>
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <p:growl id="growlCurso" showDetail="true" showSummary="false" sticky="false"
+                             life="3000"/>
+
+                </h:form>
+
+                <p:dialog id="registrarElementos"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="registrarElementos" modal="true"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+                    <h:form id="formRegistrar">
+
+                        <h1><h:outputText value="Registrar"/></h1>
+                        <h:panelGrid columns="2" id="gridRegistrar">
+
+                            <p:outputLabel value="Tipo Elemento" for="type" />
+                            <p:inputText id="type" value="#{elementoController.elemento.typeId}" title="CourseName" 
+                                         required="true" requiredMessage="El campo Tipo Elemento es obligatorio" maxlength="90">
+                                <f:validateLength minimum="10" maximum="90"/>
+                            </p:inputText>
+
+                            <p:outputLabel value="Marca" for="brand" />
+                            <p:inputText id="brand" value="#{elementoController.elemento.brand}" title="brand" required="true" 
+                                         requiredMessage="El campo Marca es obligatorio" >                             
+                            </p:inputText>
+
+                            <p:outputLabel value="Serial Code" for="serialCode" />
+                            <p:inputText id="serialCode" value="#{elementoController.elemento.serialCode}" title="serialCode" 
+                                         required="true" requiredMessage="El campo serial Code  es obligatorio." >          
+                            </p:inputText>
+
+                            <p:outputLabel value="Placa" for="inventoryPlaque" />
+                            <p:inputTextarea id="inventoryPlaque" value="#{elementoController.elemento.inventoryPlaque}" title="inventoryPlaque" 
+                                             required="true" requiredMessage="La Placa es obligatoria" >
+
+                            </p:inputTextarea>
+
+                            <p:outputLabel value="Modelo" for="Modelo" />
+                            <p:inputTextarea id="Modelo" value="#{elementoController.elemento.model}" title="" 
+                                             required="true" requiredMessage="La  es obligatoria" >
+                            </p:inputTextarea>
+
+
+                            <p:outputLabel value="Descripción" for="description" />
+                            <p:inputTextarea id="description" value="#{elementoController.elemento.description}" title="Description" 
+                                             required="true" requiredMessage="La descripción es obligatoria" maxlength="500"
+                                             cols="22" autoResize="false">
+                                <f:validateLength minimum="10" maximum="500"/>
+                            </p:inputTextarea>
+
+
+                            <p:commandButton value="Enviar" action="#{cursoController.registrarCurso()}"
+                                             update="formRegistrar:gridRegistrar"/>   
+                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(1)}" immediate="true" update="formRegistrar"/>
+                        </h:panelGrid>
+
+                    </h:form>
+                </p:dialog>
             </ui:define>
 
         </ui:composition>
