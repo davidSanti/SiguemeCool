@@ -188,7 +188,7 @@
                             <p:outputLabel value="Dependencia" for="dependencia" />
                             <p:selectOneMenu id="dependencia" label="Dependencia"     
                                              value="#{gestionUsuarioController.permiso.dependency}" filter="true"
-                                             converter="permisoConverter" >
+                                             converter="permisoConverter" onchange="" >
 
                                 <f:selectItem value="#{null}" noSelectionOption="true" itemLabel="-- Seleciona un Permiso --" />
                                 <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisos}" 

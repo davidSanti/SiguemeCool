@@ -51,6 +51,7 @@ public class GestionUsuarioController implements Serializable {
     private Role rol;
     private Permission permiso;
     private PermissionRole permisoRol;
+    private boolean validacionDependencia; //Se creo esta variable para validar si un permiso tiene dependencia no 
 
     public GestionUsuarioController() {
     }
@@ -200,6 +201,12 @@ public class GestionUsuarioController implements Serializable {
 
     public void editarPermiso(Permission permiso) {
         this.permiso = permiso;
+        listarDependecia();
+    }
+
+    public void listarDependecia() {
+        listaPermisos = permissionFacadeLocal.findAll();
+        listaPermisos.remove(permiso);
     }
 
     public void editarPermiso() {
@@ -265,6 +272,14 @@ public class GestionUsuarioController implements Serializable {
         return bandera;
     }
 
+    public boolean verificarDependencia() {
+        if (this.permiso.getDependency() != null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /*Fin método Módulo Permiso*/
     public void ocultarModal(int opcion) {
         RequestContext req = RequestContext.getCurrentInstance();
@@ -318,7 +333,6 @@ public class GestionUsuarioController implements Serializable {
     }
 
     /*Inicio Módulo Rol*/
-
     //Getter y setter
     public List<GroupCls> getListaGrupos() {
         return listaGrupos;
