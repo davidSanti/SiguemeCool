@@ -199,14 +199,14 @@ public class GestionUsuarioController implements Serializable {
         }
     }
 
-    public void editarPermiso(Permission permiso) {
-        this.permiso = permiso;
-        listarDependecia();
+    public void editarPermiso(Permission permission) {
+        this.permiso = permission;
+//        listarDependecia(permission);
     }
 
-    public void listarDependecia() {
+    public void listarDependecia(Permission permission) {
         listaPermisos = permissionFacadeLocal.findAll();
-        listaPermisos.remove(permiso);
+        listaPermisos.remove(permission);
     }
 
     public void editarPermiso() {
@@ -215,8 +215,8 @@ public class GestionUsuarioController implements Serializable {
 
             if (verificarNombrePermiso()) {
                 if (verificarUrlPermiso()) {
-                    groupFacadeLocal.edit(grupo);
-                    ocultarModal(2);
+                    permissionFacadeLocal.edit(permiso);
+                    ocultarModal(4);
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
                             "Los datos del permiso se han actualizado correctamente "));
                 } else {
@@ -231,6 +231,7 @@ public class GestionUsuarioController implements Serializable {
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Ha ocurrido un error al editar el permiso, intenta más tarde"));
+            System.out.println("cul es el puto erro'" + e.getMessage() + e.getLocalizedMessage());
         }
     }
 
@@ -241,12 +242,15 @@ public class GestionUsuarioController implements Serializable {
         nombreOriginal = nombreOriginal.toLowerCase();
 
         for (Permission item : lista) {
-            String nombreItem = item.getUrl().toLowerCase();
-            nombreItem = nombreItem.replaceAll(" ", "");
+            if (item.getUrl() != null && !item.getUrl().equals("")) {
+                String nombreItem = item.getUrl().toLowerCase();
+                nombreItem = nombreItem.replaceAll(" ", "");
 
-            if (nombreItem.equals(nombreOriginal)) {
-                if (!Objects.equals(item.getPermissionId(), permiso.getPermissionId())) {
-                    bandera = false;
+                if (nombreItem.equals(nombreOriginal)) {
+                    if (!Objects.equals(item.getPermissionId(), permiso.getPermissionId())) {
+                        System.out.println("aaaaa entro");
+                        bandera = false;
+                    }
                 }
             }
         }
@@ -302,7 +306,7 @@ public class GestionUsuarioController implements Serializable {
             case 4:
                 req.execute("PF('EditarPermiso').hide()");
                 formulario = ":formEditarPermiso:gridEditarPermiso";
-                listarGrupos();
+                listarPermisos();
                 break;
             default:
                 break;
