@@ -45,8 +45,8 @@ public class PermissionFacade extends AbstractFacade<Permission> implements Perm
         }
         return pe;
     }
-    
-        @Override
+
+    @Override
     public List<Permission> findAll() {
         List<Permission> lista = new ArrayList<>();
         try {
@@ -54,6 +54,18 @@ public class PermissionFacade extends AbstractFacade<Permission> implements Perm
             lista = query.getResultList();
         } catch (Exception ex) {
             System.out.println("Error en el metodo findAll Permisos= " + ex.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<Permission> listarPermisosSinDependencia() {
+        List<Permission> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT p FROM Permission p  WHERE p.dependency IS NULL ORDER BY p.permissionId ASC");
+            lista = query.getResultList();
+        } catch (Exception ex) {
+            System.out.println("Error en el metodo listarPermisosSinDependencia= " + ex.getMessage());
         }
         return lista;
     }

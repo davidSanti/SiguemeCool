@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import org.primefaces.context.RequestContext;
@@ -51,7 +52,7 @@ public class GestionUsuarioController implements Serializable {
     private Role rol;
     private Permission permiso;
     private PermissionRole permisoRol;
-    private boolean validacionDependencia; //Se creo esta variable para validar si un permiso tiene dependencia no 
+    private boolean validacionDependencia = false; //Se creo esta variable para validar si un permiso tiene dependencia DEBE TENER URL
 
     public GestionUsuarioController() {
     }
@@ -201,11 +202,12 @@ public class GestionUsuarioController implements Serializable {
 
     public void editarPermiso(Permission permission) {
         this.permiso = permission;
-//        listarDependecia(permission);
+        listarDependecia(permission);
+        verificarDependencia();
     }
 
     public void listarDependecia(Permission permission) {
-        listaPermisos = permissionFacadeLocal.findAll();
+        listaPermisos = permissionFacadeLocal.listarPermisosSinDependencia();
         listaPermisos.remove(permission);
     }
 
@@ -276,12 +278,23 @@ public class GestionUsuarioController implements Serializable {
         return bandera;
     }
 
+    public boolean verificarDependencia(ValueChangeEvent event) {
+        System.out.println("estoy entradno");
+        if (this.permiso.getDependency() != null) {
+            validacionDependencia = false;
+        } else {
+            validacionDependencia = true;
+        }
+        return validacionDependencia;
+    }
+
     public boolean verificarDependencia() {
         if (this.permiso.getDependency() != null) {
-            return false;
+            validacionDependencia = false;
         } else {
-            return true;
+            validacionDependencia = true;
         }
+        return validacionDependencia;
     }
 
     /*Fin método Módulo Permiso*/
@@ -294,7 +307,7 @@ public class GestionUsuarioController implements Serializable {
                 formulario = "formRegistrarGrupo:gridRegistrarGrupo";
                 break;
             case 2:
-                req.execute("PF('EditarGrupo').hide()");
+                req.execute("PF('editarGrupo').hide()");
                 formulario = ":formEditarGrupo:gridEditarGrupo";
                 listarGrupos();
                 break;
@@ -304,7 +317,7 @@ public class GestionUsuarioController implements Serializable {
                 formulario = "::";
                 break;
             case 4:
-                req.execute("PF('EditarPermiso').hide()");
+                req.execute("PF('editarPermiso').hide()");
                 formulario = ":formEditarPermiso:gridEditarPermiso";
                 listarPermisos();
                 break;
@@ -400,6 +413,14 @@ public class GestionUsuarioController implements Serializable {
 
     public void setGrupo(GroupCls grupo) {
         this.grupo = grupo;
+    }
+
+    public boolean isValidacionDependencia() {
+        return validacionDependencia;
+    }
+
+    public void setValidacionDependencia(boolean validacionDependencia) {
+        this.validacionDependencia = validacionDependencia;
     }
 
 }

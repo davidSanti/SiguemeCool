@@ -29,7 +29,9 @@ public interface PermissionFacadeLocal {
     List<Permission> findRange(int[] range);
 
     int count();
-    
+
     List<Permission> buscarDependenciasPorPermiso(Permission permiso);
-    
+
+    List<Permission> listarPermisosSinDependencia();
+
 }

@@ -39,7 +39,7 @@
                             <p:column headerText="Acciones">
 
                                 <p:commandButton icon="ui-icon-pencil" actionListener="#{gestionUsuarioController.editarGrupo(grupo)}"
-                                                 oncomplete="PF('EditarGrupo').show();" update="EditarGrupo"/>
+                                                 oncomplete="PF('editarGrupo').show();" update="editarGrupo"/>
                                 <p:commandButton icon="ui-icon-trash"  actionListener="#{gestionUsuarioController.eliminarGrupo(grupo)}" 
                                                  update="formGroupTable:tablaGrupo,growlForm "/>
                             </p:column>
@@ -67,7 +67,7 @@
                             <p:column headerText="Acciones">
                                 <p:commandButton icon="ui-icon-circle-zoomin"/>
                                 <p:commandButton icon="ui-icon-pencil" actionListener="#{gestionUsuarioController.editarPermiso(permiso)}"
-                                                 oncomplete="PF('EditarPermiso').show();" update="EditarPermiso"/>
+                                                 oncomplete="PF('editarPermiso').show();" update="editarPermiso"/>
                                 <p:commandButton icon="ui-icon-trash"/>
                             </p:column>
 
@@ -131,9 +131,9 @@
                     </h:form>
                 </p:dialog>
 
-                <p:dialog id="EditarGrupo"  resizable="false" responsive="true"
+                <p:dialog id="editarGrupo"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="EditarGrupo" modal="true"
+                          widgetVar="editarGrupo" modal="true"
                           showEffect="fade" hideEffect="fade">
                     <h:form id="formEditarGrupo">
                         <center>
@@ -168,9 +168,9 @@
 
                 <!--Inicio de Código para las ventanas modales (Dialog) del módulo Permisos-->
 
-                <p:dialog id="EditarPermiso"  resizable="false" responsive="true"
+                <p:dialog id="editarPermiso"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="EditarPermiso" modal="true"
+                          widgetVar="editarPermiso" modal="true"
                           showEffect="fade" hideEffect="fade">
                     <h:form id="formEditarPermiso">
                         <center>
@@ -188,17 +188,19 @@
                             <p:outputLabel value="Dependencia" for="dependencia" />
                             <p:selectOneMenu id="dependencia" label="Dependencia"     
                                              value="#{gestionUsuarioController.permiso.dependency}" filter="true"
-                                             converter="permisoConverter" onchange="" >
+                                             converter="permisoConverter" >
 
                                 <f:selectItem value="#{null}" noSelectionOption="true" itemLabel="-- Seleciona un Permiso --" />
                                 <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisos}" 
-                                               itemLabel="#{permiso.description}" itemValue="#{permiso}"/>
+                                               itemLabel="#{permiso.description}" itemValue="#{permiso}"/>                             
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Url" for="aht" />
                             <p:inputText id="aht" value="#{gestionUsuarioController.permiso.url}" title="Url Permiso" 
-                                         required="true" requiredMessage="El Aht nombre es obligatorio" maxlength="100"
-                                         pt:minlength="10" pt:maxlength="100" pt:required="true">
+                                         maxlength="100"
+                                         pt:minlength="10" pt:maxlength="100" 
+                                         >
+                                <!--required="true" requiredMessage="El Aht nombre es obligatorio" pt:required="true"-->
                                 <f:validateLength minimum="10" maximum="100"/>
                             </p:inputText>                                
 
