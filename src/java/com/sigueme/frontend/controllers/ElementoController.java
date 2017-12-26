@@ -60,5 +60,9 @@ public class ElementoController implements Serializable {
         elementosLista = new ArrayList<>();
         elementosLista=elementFacadeLocal.findAll();
     }
+    public void cosa(){
+        elementosLista = new ArrayList<>();
+        elementosLista=elementFacadeLocal.findAll();
+    }
 
 }
