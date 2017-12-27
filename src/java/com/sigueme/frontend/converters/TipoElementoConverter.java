@@ -5,8 +5,8 @@
  */
 package com.sigueme.frontend.converters;
 
-import com.sigueme.backend.entities.Element;
-import com.sigueme.backend.model.ElementFacadeLocal;
+import com.sigueme.backend.entities.ElementType;
+import com.sigueme.backend.model.ElementTypeFacadeLocal;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ViewScoped;
@@ -19,20 +19,21 @@ import javax.faces.convert.FacesConverter;
  *
  * @author RobayoDa
  */
-@FacesConverter(value = "elementoConverter")
+@FacesConverter(value = "tipoElementoConverter")
 @ViewScoped
-public class ElementoConverter implements Converter{
-    @EJB
-    private ElementFacadeLocal elementFacadeLocal;
+public class TipoElementoConverter implements Converter {
 
-    public ElementoConverter() {
+    @EJB
+    private ElementTypeFacadeLocal elementTypeFacadeLocal;
+
+    public TipoElementoConverter() {
     }
 
     @Override
     public Object getAsObject(FacesContext contexto, UIComponent componente, String valor) {
-        List<Element> elementos = this.elementFacadeLocal.findAll();
-        for (Element objeto : elementos) {
-            if (objeto.getElementId()== Integer.parseInt(valor)) {
+        List<ElementType> tipos = this.elementTypeFacadeLocal.findAll();
+        for (ElementType objeto : tipos) {
+            if (objeto.getElementTypeId() == Integer.parseInt(valor)) {
                 return objeto;
             }
         }
@@ -42,7 +43,7 @@ public class ElementoConverter implements Converter{
     @Override
     public String getAsString(FacesContext contexto, UIComponent componente, Object objeto) {
         if (objeto != null) {
-            return ((Element) objeto).getElementId().toString();
+            return ((ElementType) objeto).getElementTypeId().toString();
         } else {
             return "";
         }

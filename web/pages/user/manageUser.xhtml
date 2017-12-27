@@ -177,7 +177,7 @@
                             <h1><h:outputText value="Editar Permiso"/></h1>
                             <br/>
                         </center>
-                        <h:panelGrid columns="2" id="gridEditarPermiso">
+                        <h:panelGrid columns="2" id="gridEditarPermiso" >
 
                             <p:outputLabel value="Descripción" for="descripcion" />
                             <p:inputText id="descripcion" value="#{gestionUsuarioController.permiso.description}" title="Descripción Permiso" 
@@ -192,7 +192,7 @@
 
                                 <f:selectItem value="#{null}" noSelectionOption="true" itemLabel="-- Seleciona un Permiso --" />
                                 <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisos}" 
-                                               itemLabel="#{permiso.description}" itemValue="#{permiso}"/>                             
+                                               itemLabel="#{permiso.description}" itemValue="#{permiso}"/>                                  
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Url" for="aht" />

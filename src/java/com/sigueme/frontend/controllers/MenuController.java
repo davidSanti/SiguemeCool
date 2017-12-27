@@ -78,6 +78,7 @@ public class MenuController implements Serializable {
         if (permisos.isEmpty() || permisos == null) {
             try {
                 context.getExternalContext().redirect(path + "/faces/index.xhtml");
+//                cerrarSesion();
                 context.addMessage(
                         null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "El usuario no tiene permisos"));
 
@@ -117,7 +118,7 @@ public class MenuController implements Serializable {
     //que tenga, es decir, si hay algún registro que su dependencia sea ese permiso
     public boolean esPadre(Permission permiso) {
         List<Permission> dependencias = permissionFacadeLocal.buscarDependenciasPorPermiso(permiso);
-        boolean bandera = dependencias.isEmpty() ? true : false;
+        boolean bandera = dependencias.isEmpty();
         return bandera;
     }
 

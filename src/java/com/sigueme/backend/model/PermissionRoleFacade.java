@@ -38,7 +38,7 @@ public class PermissionRoleFacade extends AbstractFacade<PermissionRole> impleme
     public List<Permission> listarPermisosPorRol(Role rol) {
         List<Permission> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT p FROM PermissionRole pr JOIN pr.permissionId p WHERE pr.roleId = :rol", Permission.class);
+            Query query = em.createQuery("SELECT p FROM PermissionRole pr JOIN pr.permissionId p WHERE pr.roleId = :rol ORDER BY p.permissionId ASC", Permission.class);
             query.setParameter("rol", rol);
 
             lista = query.getResultList();                        

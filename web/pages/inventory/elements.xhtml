@@ -18,7 +18,7 @@
                     </center>
 
                     <p:commandButton value="Registrar" onclick="PF('registrarElementos').show()"/>
-                    
+
                     <p:dataTable id="tablaElmentos" emptyMessage="No se encontrarón registros"
                                  var="elemento" value="#{elementoController.elementosLista}"
                                  paginator="true" paginatorPosition="bottom" rows="10" reflow="true" 
@@ -66,11 +66,20 @@
                         <h1><h:outputText value="Registrar"/></h1>
                         <h:panelGrid columns="2" id="gridRegistrar">
 
-                            <p:outputLabel value="Tipo Elemento" for="type" />
-                            <p:inputText id="type" value="#{elementoController.elemento.typeId}" title="CourseName" 
-                                         required="true" requiredMessage="El campo Tipo Elemento es obligatorio" maxlength="90">
-                                <f:validateLength minimum="10" maximum="90"/>
-                            </p:inputText>
+                            <p:outputLabel value="Tipo" for="type" />
+                            <p:selectOneMenu id="type" label="Tipo Elemento"     
+                                             value="#{elementoController.elemento.typeId}"
+                                             required="true" requiredMessage="El campo Tipo Elemento es obligatorio" 
+                                             converter="tipoElementoConverter" >
+
+                                <f:selectItem itemLabel="-- Seleciona un tipo --" noSelectionOption="true" itemDisabled="true"/>
+
+                                <f:selectItems var="tipo" value="#{elementoController.tipoElementosLista}" 
+                                               itemLabel="#{tipo.description}" itemValue="#{tipo}"/>         
+                                <f:ajax event="change" listener="#{elementoController.asignarMarcaSegunTipoElemento}" 
+                                        render="brand"/>
+
+                            </p:selectOneMenu>
 
                             <p:outputLabel value="Marca" for="brand" />
                             <p:inputText id="brand" value="#{elementoController.elemento.brand}" title="brand" required="true" 
@@ -83,15 +92,15 @@
                             </p:inputText>
 
                             <p:outputLabel value="Placa" for="inventoryPlaque" />
-                            <p:inputTextarea id="inventoryPlaque" value="#{elementoController.elemento.inventoryPlaque}" title="inventoryPlaque" 
-                                             required="true" requiredMessage="La Placa es obligatoria" >
+                            <p:inputText id="inventoryPlaque" value="#{elementoController.elemento.inventoryPlaque}" title="inventoryPlaque" 
+                                         required="true" requiredMessage="La Placa es obligatoria" >
 
-                            </p:inputTextarea>
+                            </p:inputText>
 
                             <p:outputLabel value="Modelo" for="Modelo" />
-                            <p:inputTextarea id="Modelo" value="#{elementoController.elemento.model}" title="" 
-                                             required="true" requiredMessage="La  es obligatoria" >
-                            </p:inputTextarea>
+                            <p:inputText id="Modelo" value="#{elementoController.elemento.model}" title="" 
+                                         required="true" requiredMessage="La  es obligatoria" >
+                            </p:inputText>
 
 
                             <p:outputLabel value="Descripción" for="description" />
