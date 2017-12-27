@@ -78,7 +78,7 @@ public class MenuController implements Serializable {
         if (permisos.isEmpty() || permisos == null) {
             try {
                 context.getExternalContext().redirect(path + "/faces/index.xhtml");
-//                cerrarSesion();
+                cerrarSesion();
                 context.addMessage(
                         null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "El usuario no tiene permisos"));
 
