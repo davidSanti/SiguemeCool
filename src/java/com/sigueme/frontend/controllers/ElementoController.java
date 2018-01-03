@@ -13,6 +13,7 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -189,12 +190,23 @@ public class ElementoController implements Serializable {
 
     public boolean verificarIdentificacionElemento(int opcion) {
         List<Element> lista = new ArrayList<>();
+        boolean bandera = false;
         if (opcion == 1) {
             lista = elementFacadeLocal.verificarIdentification(elemento.getSerialCode(), 1);
         } else if (opcion == 2) {
             lista = elementFacadeLocal.verificarIdentification(elemento.getInventoryPlaque(), 2);
         }
-        return lista.isEmpty();
+        if (!lista.isEmpty()) {
+            for (Element element : lista) {
+                if (Objects.equals(element.getElementId(), this.elemento.getElementId())) {
+                    bandera = true;
+                    break;
+                }
+            }
+        } else {
+            bandera = true;
+        }
+        return bandera;
     }
 
     public void ocultarModal(int opcion) {
