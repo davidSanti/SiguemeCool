@@ -253,7 +253,7 @@ public class CursoController implements Serializable {
                     //abrir modal para aceptar la eliminacon de usuarios
                     abrirModal(2);
                 } else {
-                    if (elimnarUsuariosDelCurso()) {
+                    if (eliminarUsuariosDelCurso()) {
                         cursoFacadeLocal.remove(curso);
                         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
                     }
@@ -267,7 +267,14 @@ public class CursoController implements Serializable {
         }
     }
 
-    public boolean elimnarUsuariosDelCurso() {
+    public void eliminarTodosLosUsuariosDelCurso() {
+        if (eliminarUsuariosDelCurso()) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "los usuarios se han removido correctamente"));
+        }
+    }
+
+    public boolean eliminarUsuariosDelCurso() {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean bandera = true;
         try {

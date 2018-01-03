@@ -143,7 +143,6 @@ public class MiCursoController implements Serializable {
 
     public void asignarUsuarioCursos(UserByCourse usuarioCurso) {
         usuariosMiCurso = usuarioCurso;
-
         descargarAdjunto();
     }
 
@@ -248,15 +247,18 @@ public class MiCursoController implements Serializable {
                 String url = usuarioCurso.getAttached();
                 String path = context.getExternalContext().getRealPath("/") + url;
                 File f = new File(path);
-                InputStream stream = (InputStream) new FileInputStream(f);
-                stream.close();
+//                InputStream stream = (InputStream) new FileInputStream(f);
+//                stream.close();
                 if (f.exists()) {
                     if (f.delete()) {
+
                         usuarioCurso.setDescription(null);
                         usuarioCurso.setAttached(null);
                         userByCourseFacadeLocal.edit(usuarioCurso);
                         bandera = true;
                     }
+                } else {
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "La ruta del archivo no se ha encontrado en el sistema"));
                 }
                 if (bandera) {
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado correctamente"));
@@ -314,14 +316,17 @@ public class MiCursoController implements Serializable {
                 String url = this.usuariosMiCurso.getAttached();
                 String path = fc.getExternalContext().getRealPath("/") + url;
                 File f = new File(path);
-                InputStream stream = (InputStream) new FileInputStream(f);
-
-                downloadFile = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
-
+                downloadFile = null;
+                if (f.exists()) {
+                    InputStream stream = (InputStream) new FileInputStream(f);
+                    downloadFile = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
+                }
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
             Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -351,6 +356,10 @@ public class MiCursoController implements Serializable {
     //y debemos asignar de nuevo el archivo parta que no arroje error
     public void descargarAdjuntoDeNuevo() {
         descargarAdjunto();
+        if (downloadFile == null) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Al parecer el archivo se ha eliminado"));
+        }
     }
 
     public void filtrarPorEstado(AjaxBehaviorEvent event) {
@@ -399,7 +408,7 @@ public class MiCursoController implements Serializable {
 
     public void filtrarPorCurso() {
         misCursos = new ArrayList<>();
-        misCursos = cursoFacadeLocal.filtrarMisCursosPorNombre(busqueda,devolverUsuarioEnSesion());
+        misCursos = cursoFacadeLocal.filtrarMisCursosPorNombre(busqueda, devolverUsuarioEnSesion());
     }
 
     public void filtrarPorFechas() {

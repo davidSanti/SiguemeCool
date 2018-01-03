@@ -190,7 +190,8 @@
                             <h:outputText value="#{miCursoController.determinarCalificacion(miCursoController.usuariosMiCurso)}"></h:outputText>
 
                             <p:outputLabel value="Adjunto"/>
-                            <p:commandButton ajax="false" immediate="true" value="Descargar" action="#{miCursoController.descargarAdjuntoDeNuevo()}">
+                            <p:commandButton ajax="false" immediate="true" value="Descargar" action="#{miCursoController.descargarAdjuntoDeNuevo()}"
+                                             update=":formMiCurso:growlMiCurso">
                                 <p:fileDownload value="#{miCursoController.downloadFile}"/>
                             </p:commandButton> 
 

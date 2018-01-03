@@ -142,16 +142,34 @@ public class MenuController implements Serializable {
     //este método verifica que un usuario tenga permisos para ingresar a un página, a partir de la ulr de la misma
     //De no validar ésto cualquier usuario que tenga una url válida puede ingresar abruptamente a cualquier página
     public boolean tienePermiso(String url) {
+        boolean bandera = false;
         if (url.equals("/pages/system/home.xhtml")) {
-            return true;
-        }
-        for (Permission p : permisos) {
-            if (p.getUrl() != null && p.getUrl().endsWith(url.replaceFirst("/", ""))) {
-                return true;
+            bandera = true;
+        } else {
+            listarPermisos();
+            for (Permission p : permisos) {
+                if (p.getUrl() != null && p.getUrl().equals(url.replaceFirst("/", ""))) {
+                    bandera = true;
+                    break;
+                }
             }
         }
-        return false;
+        return bandera;
     }
+//    public boolean tienePermiso(String url) {
+//        System.out.println("valido permiso" + url);
+//        if (url.equals("/pages/system/home.xhtml")) {
+//            return true;
+//        } else {
+//            for (Permission p : permisos) {
+//                if (p.getUrl() != null && p.getUrl().endsWith(url.replaceFirst("/", ""))) {
+//                    System.out.println("retorna true a la pagina");
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
+//    }
 
     //éste método devuelve el nombre del usuario que se encuentra actualmente en sesión.
     //ésto lo vemos reflejado en el nombre que aparece en la parte derecha de la barra de navegación

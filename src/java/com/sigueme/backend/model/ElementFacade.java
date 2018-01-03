@@ -31,17 +31,35 @@ public class ElementFacade extends AbstractFacade<Element> implements ElementFac
     public ElementFacade() {
         super(Element.class);
     }
-    
+
     @Override
-    public List<Element> listarElementosMsc(){
+    public List<Element> listarElementosMsc() {
         List<Element> lista = new ArrayList<>();
         try {
-                Query query = em.createQuery("SELECT e FROM Desk d LEFT JOIN d.elements e WHERE e.elementId IS NULL");
+            Query query = em.createQuery("SELECT e FROM Desk d LEFT JOIN d.elements e WHERE e.elementId IS NULL");
             System.out.println("tamaño" + query.getResultList());
         } catch (Exception e) {
             System.out.println("Error en el método listarElementosMsc = " + e.getMessage());
         }
         return lista;
     }
-    
+
+    @Override
+    public List<Element> verificarIdentification(String identification, int option) {
+        List<Element> lista = new ArrayList<>();
+        try {
+            Query query = null;
+            if (option == 1) {
+                query = em.createQuery("SELECT e FROM Element e WHERE e.serialCode = :identification");
+            } else if (option == 2) {
+                query = em.createQuery("SELECT e FROM Element e WHERE e.inventoryPlaque = :identification");
+            }
+            query.setParameter("identification", identification);
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el método verificarIdentification = " + e.getMessage());
+        }
+        return lista;
+    }   
+
 }

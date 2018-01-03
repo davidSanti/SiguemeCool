@@ -31,4 +31,6 @@ public interface ElementFacadeLocal {
     int count();
 
     List<Element> listarElementosMsc();
+
+    List<Element> verificarIdentification(String identification, int option);
 }

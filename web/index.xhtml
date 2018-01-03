@@ -11,28 +11,32 @@
     <h:body>
         <h:form id="login">
             <p:growl id="growlLogin" showDetail="true" showSummary="false" sticky="false" life="2000"/> 
-            <h:panelGrid columns="2">
+            <center>
+                <h1>Inicio de Sesión</h1>
+                <p:separator/>
+                <h:panelGrid columns="2">
 
-                <p:outputLabel for="cedula" value="Cedula"/>
-                <p:inputText id="cedula" required="true" requiredMessage="La cedula es un campo obligatorio"
-                             value="#{loginController.user.identification}" styleClass="form-control">
-                    <f:validateLength minimum="8" maximum="10"/>
-                </p:inputText>
+                    <p:outputLabel for="cedula" value="Cedula"/>
+                    <p:inputText id="cedula" required="true" requiredMessage="La cedula es un campo obligatorio"
+                                 value="#{loginController.user.identification}" styleClass="form-control">
+                        <f:validateLength minimum="8" maximum="10"/>
+                    </p:inputText>
 
-                <p:outputLabel for="password" value="Clave"/>
-                <p:password id="password" required="true" requiredMessage="La contraseña es un campo obligatorio"
-                            value="#{loginController.user.userPassword}" styleClass="form-control" onkeypress="isCapslock(event);">
-                </p:password>
+                    <p:outputLabel for="password" value="Clave"/>
+                    <p:password id="password" required="true" requiredMessage="La contraseña es un campo obligatorio"
+                                value="#{loginController.user.userPassword}" styleClass="form-control" onkeypress="isCapslock(event);">
+                    </p:password>
 
 
-                <p:commandButton id="iniciarSesion" value="Ingresar" 
-                                 action="#{loginController.autenticarUsuario()}"   
-                                 styleClass="btn waves-effect waves-light"
-                                 update="login">
-                </p:commandButton><br></br><br></br>
-                <p:commandLink style="margin-left: 17px;" value="#{msgs['Index.ForgotPassword']}" oncomplete="PF('password').show()"/>
+                    <p:commandButton id="iniciarSesion" value="Ingresar" 
+                                     action="#{loginController.autenticarUsuario()}"   
+                                     styleClass="btn waves-effect waves-light"
+                                     update="login">
+                    </p:commandButton><br></br><br></br>
+                    <p:commandLink style="margin-left: 17px;" value="#{msgs['Index.ForgotPassword']}" oncomplete="PF('password').show()"/>
 
-            </h:panelGrid>
+                </h:panelGrid>
+            </center>
 
         </h:form>
     </h:body>
