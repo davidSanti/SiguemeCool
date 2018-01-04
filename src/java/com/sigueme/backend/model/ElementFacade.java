@@ -33,6 +33,18 @@ public class ElementFacade extends AbstractFacade<Element> implements ElementFac
     }
 
     @Override
+    public List<Element> findAll() {
+        List<Element> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT e FROM Element e ORDER BY e.elementId ASC");
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el método findAll = " + e.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
     public List<Element> listarElementosMsc() {
         List<Element> lista = new ArrayList<>();
         try {

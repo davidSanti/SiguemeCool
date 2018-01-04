@@ -223,9 +223,14 @@ public class MiCursoController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         if (file != null && !file.getFileName().equals("")) {
             String archivo = cargarAdjunto();
+            System.out.println("arcio" + archivo);
+            System.out.println("arcioss" + usuariosMiCurso.getAttached());
+            if(usuariosMiCurso.getAttached()!= null && !archivo.equals(usuariosMiCurso.getAttached())){
+                System.out.println("eliminar anterior archivo");
+            }
             this.usuariosMiCurso.setAttached(archivo);
             try {
-                userByCourseFacadeLocal.edit(usuariosMiCurso);
+                //userByCourseFacadeLocal.edit(usuariosMiCurso);
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha cargado correctamente"));
 
             } catch (Exception e) {

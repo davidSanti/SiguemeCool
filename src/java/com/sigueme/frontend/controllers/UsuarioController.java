@@ -5,6 +5,8 @@
  */
 package com.sigueme.frontend.controllers;
 
+import com.sigueme.backend.utilities.Mailer;
+
 import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.Role;
 import com.sigueme.backend.entities.User;
@@ -14,10 +16,16 @@ import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
 import com.sigueme.backend.model.UserStatusFacadeLocal;
+import com.sigueme.backend.utilities.Crypto;
+import com.sigueme.backend.utilities.Mail;
+import com.sigueme.backend.utilities.PasswordGenerator;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -68,7 +76,7 @@ public class UsuarioController implements Serializable {
     }
 
     public void listarUsuarios() {
-//        listaUsuarios = new ArrayList<>();
+        listaUsuarios = new ArrayList<>();
         listaUsuarios = userFacadeLocal.listarUsuarios();
     }
 
@@ -103,29 +111,6 @@ public class UsuarioController implements Serializable {
         listaRoles = new ArrayList<>();
     }
 
-    public void ocultarModal(int opcion) {
-        RequestContext req = RequestContext.getCurrentInstance();
-        String formulario = null;
-        switch (opcion) {
-            case 1:
-                req.execute("PF('verUsuario').hide()");
-                formulario = "formVerUsuario:gridVerUsuario";
-                break;
-            case 2:
-                req.execute("PF('registrarUsuario').hide()");
-                formulario = "formRegistrarUsuario:gridRegistrarUsuario";
-                break;
-            case 3:
-                req.execute("PF('modificarCuenta').hide()");
-                formulario = "formModificarCuenta:gridModificarCuenta";
-                break;
-            default:
-                break;
-        }
-        init();
-        req.reset(formulario);
-    }
-
     public void registrarUsuario() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
@@ -136,10 +121,19 @@ public class UsuarioController implements Serializable {
                 }
                 if (validarRol) {
                     //Aqui se deberá invocar al método qe genera un password aleatorio y enviará la clave solo al email espeficado del usuario nuevo
+                    String claveGenerada = PasswordGenerator.getPassword();
+                    System.out.println("clave generada" + claveGenerada);
+                    System.out.println("clave generada" + Crypto.Encriptar(claveGenerada));
+//                    usuario.setUserPassword(Crypto.Encriptar(claveGenerada));
                     usuario.setUserPassword(usuario.getIdentification());
                     //Aqui se le asigna el estado por defecto que es Activo (1)
                     usuario.setUserStatusId(userStatusFacadeLocal.find(1));
-                    userFacadeLocal.create(usuario);
+                    // userFacadeLocal.create(usuario);
+                    List<User> list = new ArrayList();
+                    User user1 = new User();
+                    user1.setEmail("dsrobayo80@misena.edu.co");
+                    list.add(user1);
+                    Mail.send(list, "Cosas", "su calve es: " + claveGenerada);
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Usuario registrado correctamente"));
                     ocultarModal(2);
                 } else {
@@ -177,7 +171,6 @@ public class UsuarioController implements Serializable {
     public boolean verificarRol() {
         List<User> lista = userFacadeLocal.listarUsuariosSiteManager();
         boolean bandera = false;
-        System.out.println("lis" + lista.size());
         if (lista.isEmpty()) {
             bandera = true;
         } else {
@@ -189,6 +182,15 @@ public class UsuarioController implements Serializable {
             }
         }
         return bandera;
+    }
+
+    public void enviarCorreo() {
+        try {
+            Mailer.send("David.Robayo@unisys.com", "cositas", "otras cositas");
+        } catch (UnsupportedEncodingException ex) {
+            System.out.println("errrro" + ex.getMessage());
+            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void editarUsuario(User user) {
@@ -319,6 +321,29 @@ public class UsuarioController implements Serializable {
         }
     }
 
+    public void ocultarModal(int opcion) {
+        RequestContext req = RequestContext.getCurrentInstance();
+        String formulario = null;
+        switch (opcion) {
+            case 1:
+                req.execute("PF('verUsuario').hide()");
+                formulario = "formVerUsuario:gridVerUsuario";
+                break;
+            case 2:
+                req.execute("PF('registrarUsuario').hide()");
+                formulario = "formRegistrarUsuario:gridRegistrarUsuario";
+                break;
+            case 3:
+                req.execute("PF('modificarCuenta').hide()");
+                formulario = "formModificarCuenta:gridModificarCuenta";
+                break;
+            default:
+                break;
+        }
+        init();
+        req.reset(formulario);
+    }
+
     //Método Getter y Setter
     public List<User> getListaUsuarios() {
         return listaUsuarios;
@@ -366,6 +391,6 @@ public class UsuarioController implements Serializable {
 
     public void setListaEstadosUsuario(List<UserStatus> listaEstadosUsuario) {
         this.listaEstadosUsuario = listaEstadosUsuario;
-    }    
-    
+    }
+
 }
