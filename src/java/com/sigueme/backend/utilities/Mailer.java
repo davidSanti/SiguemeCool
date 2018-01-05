@@ -1,4 +1,3 @@
-
 package com.sigueme.backend.utilities;
 
 import java.io.UnsupportedEncodingException;
@@ -38,15 +37,14 @@ public class Mailer {
 //2nd paso)compose message
         try {
 
-            BodyPart adjunto = new MimeBodyPart();
-            adjunto.setDataHandler(new DataHandler(new FileDataSource("i:/cartagena.txt")));
-            adjunto.setFileName("cartagena.txt");
-
+//            BodyPart adjunto = new MimeBodyPart();
+//            adjunto.setDataHandler(new DataHandler(new FileDataSource("i:/cartagena.txt")));
+//            adjunto.setFileName("cartagena.txt");
             BodyPart texto = new MimeBodyPart();
             texto.setText(mensaje);
             MimeMultipart multiparte = new MimeMultipart();
             multiparte.addBodyPart(texto);
-            multiparte.addBodyPart(adjunto);
+//            multiparte.addBodyPart(adjunto);
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(user, "Nelson Rodriguez"));
             InternetAddress[] destinatarios = {

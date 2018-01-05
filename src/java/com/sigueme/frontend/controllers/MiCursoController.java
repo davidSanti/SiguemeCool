@@ -5,10 +5,14 @@
  */
 package com.sigueme.frontend.controllers;
 
+import com.sigueme.backend.entities.Course;
+import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.entities.UserByCourse;
 import com.sigueme.backend.model.CourseFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
+import com.sigueme.backend.model.UserFacadeLocal;
+import com.sigueme.backend.utilities.Mail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,13 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-
 import java.util.List;
 import java.util.Map;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -52,6 +55,8 @@ public class MiCursoController implements Serializable {
     private UserByCourseFacadeLocal userByCourseFacadeLocal;
     @EJB
     private CourseFacadeLocal cursoFacadeLocal;
+    @EJB
+    private UserFacadeLocal userFacadeLocal;
 
     List<UserByCourse> misCursos;
     private UserByCourse usuariosMiCurso;
@@ -221,16 +226,18 @@ public class MiCursoController implements Serializable {
     // con el archivo la descrpcion proporcionada por un usuario asignado a un curso en particular
     public void subirEvidencia() {
         FacesContext context = FacesContext.getCurrentInstance();
+            eliminarEvidencia(2);
         if (file != null && !file.getFileName().equals("")) {
+//            String path = context.getExternalContext().getRealPath("/") + url;
+//            File f = new File(path);
             String archivo = cargarAdjunto();
-            System.out.println("arcio" + archivo);
-            System.out.println("arcioss" + usuariosMiCurso.getAttached());
-            if(usuariosMiCurso.getAttached()!= null && !archivo.equals(usuariosMiCurso.getAttached())){
+            if (usuariosMiCurso.getAttached() != null && !archivo.equals(usuariosMiCurso.getAttached())) {
                 System.out.println("eliminar anterior archivo");
             }
             this.usuariosMiCurso.setAttached(archivo);
             try {
-                //userByCourseFacadeLocal.edit(usuariosMiCurso);
+                userByCourseFacadeLocal.edit(usuariosMiCurso);
+                enviarCorreoAlEnviarEvidencia(usuariosMiCurso.getUserId());
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha cargado correctamente"));
 
             } catch (Exception e) {
@@ -244,31 +251,85 @@ public class MiCursoController implements Serializable {
 
     }
 
+    public void enviarCorreoAlEnviarEvidencia(User user) {
+        try {
+            List<User> listaUsuarios;
+            GroupCls grupoUsuarioEnSesion = user.getGroupId();
+            //Como el correo se debe enviar al jefe, si el rol es de supervisor, el correo va dirigido al Site Manager
+            if (grupoUsuarioEnSesion.getGroupId() == 1) {
+                listaUsuarios = userFacadeLocal.listarUsuariosSiteManager();
+            } else {
+                listaUsuarios = userFacadeLocal.listarSupervisorPorGrupo(grupoUsuarioEnSesion);
+            }
+//           Aquí se puede añadir uno o varios usuarios(Correos) si no solo se quiere enviar el correo al supervisor (Ej. Copia al practicante)
+//            listaUsuarios.add();
+            String nombreUsuario = user.getFirstName() + " " + user.getLastName();
+            this.enviarCorreo(listaUsuarios,
+                    "Envío de Evidencia de " + nombreUsuario,
+                    "El Asesor " + nombreUsuario + "Envío la actividad correpondiente al siguiente curso: ");
+
+        } catch (Exception e) {
+            System.out.println("Error al enviar correo enviarCorreoAlEnviarEvidencia: " + e.getMessage());
+        }
+    }
+
+    public void enviarCorreo(List<User> usuariosCorreo, String asunto, String mensaje) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        SimpleDateFormat fecha = new SimpleDateFormat("dd-MM-yyyy");
+        Course curso = usuariosMiCurso.getCourseId();
+        try {
+            System.out.println(asunto + mensaje
+                    + "\n\nNombre: " + curso.getCourseName()
+                    + "\nDescripción: " + curso.getDescription()
+                    + "\nFecha de Finalizacion: " + fecha.format(curso.getFinishDate()));
+//            Mail.send(usuariosCorreo, asunto, mensaje
+//                    + "\n\nNombre: " + curso.getCourseName()
+//                    + "\nDescripción: " + curso.getDescription()
+//                    + "\nFecha de Finalizacion: " + fecha.format(curso.getFinishDate()));
+            context.addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Correo enviado exitosamente"));
+        } catch (Exception e) {
+            context.addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No se pudo enviar el correo electrónico"));
+        }
+    }
+
     public void eliminarEvidencia(UserByCourse usuarioCurso) {
         FacesContext context = FacesContext.getCurrentInstance();
+        usuariosMiCurso = usuarioCurso;
+
+        if (eliminarEvidencia(1)) {
+            usuariosMiCurso = new UserByCourse();
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado correctamente"));
+        } else {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Tu evidencia no se pudo eliminar, intenta más tarde"));
+        }
+    }
+
+    public boolean eliminarEvidencia(int opcion) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        boolean bandera = false;
         try {
-            if (usuarioCurso != null) {
-                boolean bandera = false;
-                String url = usuarioCurso.getAttached();
+            if (usuariosMiCurso != null) {
+                String url = usuariosMiCurso.getAttached();
                 String path = context.getExternalContext().getRealPath("/") + url;
                 File f = new File(path);
-//                InputStream stream = (InputStream) new FileInputStream(f);
-//                stream.close();
-                if (f.exists()) {
-                    if (f.delete()) {
 
-                        usuarioCurso.setDescription(null);
-                        usuarioCurso.setAttached(null);
-                        userByCourseFacadeLocal.edit(usuarioCurso);
+                InputStream stream = (InputStream) new FileInputStream(f);
+                stream.close();
+                if (f.exists()) {
+                    System.out.println("if exist");
+                    if (f.delete()) {
+                        System.out.println("if dele");
+                        if (opcion == 1) {
+                            usuariosMiCurso.setDescription(null);
+                            usuariosMiCurso.setAttached(null);
+                            userByCourseFacadeLocal.edit(usuariosMiCurso);
+                        }
                         bandera = true;
                     }
                 } else {
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "La ruta del archivo no se ha encontrado en el sistema"));
-                }
-                if (bandera) {
-                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado correctamente"));
-                } else {
-                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Tu evidencia no se pudo eliminar, intenta más tarde"));
                 }
             }
 
@@ -276,7 +337,7 @@ public class MiCursoController implements Serializable {
             System.out.println("" + e.getMessage());
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ha ocurrido un error al elminar tu evidencia"));
         }
-
+        return bandera;
     }
 
     // Este metodo se encarga de la carga de archivos opteniendo el archivo desde intefaz y guardandolo en la carpeta archivos

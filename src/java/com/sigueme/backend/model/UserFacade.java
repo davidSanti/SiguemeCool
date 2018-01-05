@@ -155,7 +155,7 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
             query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
         } catch (Exception e) {
-            System.out.println("Error en el metodo buscarPorCedula= " + e.getMessage());
+            System.out.println("Error en el metodo buscarPorIdentificacion= " + e.getMessage());
         }
         return lista;
     }
@@ -169,7 +169,7 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
             query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
         } catch (Exception e) {
-            System.out.println("Error en el metodo buscarPorCedula= " + e.getMessage());
+            System.out.println("Error en el metodo listarUsuariosSiteManager= " + e.getMessage());
         }
         return lista;
     }
@@ -179,6 +179,19 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         List<User> lista = new ArrayList<>();
         try {
             Query query = em.createQuery("SELECT u FROM User u ORDER BY u.userId DESC");
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el metodo listarUsuarios= " + e.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<User> listarSupervisorPorGrupo(GroupCls grupo) {
+        List<User> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.groupId = :grupo ORDER BY u.userId DESC");
+            query.setParameter("grupo", grupo);
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el metodo buscarPorCedula= " + e.getMessage());

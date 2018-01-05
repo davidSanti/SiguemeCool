@@ -15,6 +15,7 @@ import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
+import com.sigueme.backend.utilities.Mail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -367,6 +369,10 @@ public class CursoController implements Serializable {
 
                     userByCourseFacadeLocal.create(userbyCourse);
                 }
+                //Envio de Coreo
+                this.enviarCorreo(usuariosLista,
+                        "Nueva Capacitación Asignada",
+                        "Tienes una nueva Capacitación, dale un vistazo.");
                 ocultarModal(3);
                 ocultarModal(1);
                 limpiarFiltro();
@@ -378,6 +384,46 @@ public class CursoController implements Serializable {
             }
         } catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Error al asociar los usuarios al curso"));
+        }
+    }
+
+    public void enviarCorreoAlEditarUsuariosCurso(List<User> usuariosChecked, List<User> usuariosUnChecked) {
+        try {
+            if (!usuariosChecked.isEmpty()) {
+                this.enviarCorreo(usuariosChecked,
+                        "Nueva Capacitación Asignada",
+                        "Tienes una nueva Capacitación, dale un vistazo.");
+            }
+            if (!usuariosUnChecked.isEmpty()) {
+                this.enviarCorreo(usuariosUnChecked,
+                        "Capacitación",
+                        "Ten han removido de la siguiente capacitación: ");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al enviar correo edit: " + e.getMessage());
+        }
+    }
+
+    public void enviarCorreo(List<User> usuariosCorreo, String asunto, String mensaje) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        SimpleDateFormat fecha = new SimpleDateFormat("dd-MM-yyyy");
+        try {
+            System.out.println(asunto + mensaje
+                    + "\n\nNombre: " + curso.getCourseName()
+                    + "\nDescripción: " + curso.getDescription()
+                    + "\nFecha de Finalizacion: " + fecha.format(curso.getFinishDate()));
+            for (User user : usuariosCorreo) {
+                System.out.println("correo a:" + user.getFirstName());
+            }
+//            Mail.send(usuariosCorreo, asunto, mensaje
+//                    + "\n\nNombre: " + curso.getCourseName()
+//                    + "\nDescripción: " + curso.getDescription()
+//                    + "\nFecha de Finalizacion: " + fecha.format(curso.getFinishDate()));
+            context.addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Correo enviado exitosamente"));
+        } catch (Exception e) {
+            context.addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No se pudo enviar el correo electrónico"));
         }
     }
 

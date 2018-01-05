@@ -24,10 +24,10 @@ public final class Mail {
     public static void send(List<User> para, String sujeto, String mensaje) throws UnsupportedEncodingException {
         final String user = "sistema.sigueme@gmail.com";//Correo del cual vamos a enviar el emil
         final String pass = "S1guEMe123";//Clave del email anterior
-        System.out.println("va a enviar correo");
+        System.out.println("1st paso");
         //1st paso) Obtener el objeto de sesión
         Properties props = new Properties();
-        props.setProperty("mail.smtp.host", "smtp.gmail.com"); 
+        props.setProperty("mail.smtp.host", "smtp.gmail.com");
         props.setProperty("mail.smtp.starttls.enable", "true");
         props.setProperty("mail.smtp.port", "587");
         props.setProperty("mail.smtp.starttls.required", "false");
@@ -64,7 +64,7 @@ public final class Mail {
             message.addRecipients(Message.RecipientType.TO, destinatarios);
             message.setSubject(sujeto);
             message.setContent(multiparte, "text/html; charset=utf-8");
-            System.out.println("antes");
+            System.out.println("3st paso");
             //3rd paso)send message
             Transport.send(message);
 
@@ -72,7 +72,7 @@ public final class Mail {
 
         } catch (MessagingException e) {
 //            throw new RuntimeException(e);
-System.out.println("errrrp" + e.getMessage());
+            System.out.println("Error" + e.getMessage());
         }
 
     }

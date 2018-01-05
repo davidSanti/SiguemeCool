@@ -49,4 +49,6 @@ public interface UserFacadeLocal {
     List<User> listarUsuariosSiteManager();
 
     List<User> listarUsuarios();
+    
+    List<User> listarSupervisorPorGrupo(GroupCls grupo);
 }
