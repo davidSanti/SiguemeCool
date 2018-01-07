@@ -36,13 +36,13 @@
                         </f:facet>
                     </p:menubar>
                 </h:form>
-                 <p:dialog id="modificarCuenta"  resizable="false" responsive="true"
+                <p:dialog id="modificarCuenta"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="modificarCuenta" modal="true"
                           showEffect="fade" hideEffect="fade">
 
                     <h:form id="formModificarCuenta">
-                         <p:growl id="growlmodificarCuenta" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+                        <p:growl id="growlmodificarCuenta" showDetail="true" showSummary="false" sticky="false" life="3000"/>
                         <center>
                             <h1><h:outputText value="Modificar Cuenta"/></h1>
                             <br/>
@@ -93,12 +93,46 @@
                                 <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
                             </p:inputText>
 
+                            <p:outputLabel for="clave" value="Clave actual"/>
+                            <p:password id="clave" required="true" requiredMessage="Debes escribir la clave para guardar los cambios"
+                                        value="#{usuarioController.claveOriginal}" maxlength="16"
+                                        validatorMessage="La clave debe tener entre 8 y 16 carácteres">
+                                <f:validateLength minimum="8" maximum="16" />
+                            </p:password>
+
+                            <p:column/>
+                            <p:commandLink action="#{usuarioController.mostrarCamposCambioClave()}" immediate="true"
+                                           value="#{usuarioController.mostrarMensajeCambioClave()}" update="formModificarCuenta" />
+
+                            <p:outputLabel for="password" value="Nueva Contraseña"  rendered="#{usuarioController.isModificarClave eq true}" />
+                            <p:password id="password" required="#{usuarioController.isModificarClave}" 
+                                        requiredMessage="La clave es un campo obligatorio"
+                                        weakLabel="Débil" 
+                                        strongLabel="Fuerte" 
+                                        goodLabel="Bien"
+                                        feedback="true" promptLabel="Escriba su contraseña"
+                                        value="#{usuarioController.nuevaClave}" maxlength="16" match="password1" 
+                                        validatorMessage="Las contraseñas no coinciden" 
+                                        rendered="#{usuarioController.isModificarClave eq true}">
+                                <f:validateLength minimum="8" maximum="16" />
+                            </p:password>
+
+                            <p:outputLabel for="password1" value="Confirmar contraseña" rendered="#{usuarioController.isModificarClave eq true}" />
+                            <p:password id="password1" required="#{usuarioController.isModificarClave}" requiredMessage="debes confirmar la clave"
+                                        weakLabel="Débil" 
+                                        strongLabel="Fuerte" 
+                                        goodLabel="Bien"
+                                        feedback="true" promptLabel="Escriba su contraseña"
+                                        maxlength="16"
+                                        rendered="#{usuarioController.isModificarClave eq true}">
+                                <f:validateLength minimum="8" maximum="16" />
+                            </p:password>
                         </h:panelGrid>
 
                         <center>
                             <br/>
                             <p:commandButton value="Guardar"
-                                             actionListener="#{usuarioController.modificarUsuario()}"
+                                             actionListener="#{usuarioController.modificarCuenta()}"
                                              update="formModificarCuenta, formModificarCuenta:growlmodificarCuenta"/>
 
                             <p:commandButton value="Cerrar" immediate="true"
@@ -106,14 +140,14 @@
                         </center>
                     </h:form>
                 </p:dialog>
-                
+
             </ui:insert>
         </div>
 
         <div id="content" class="center_content">
             <ui:insert name="content">
 
-                   
+
             </ui:insert>
         </div>
 

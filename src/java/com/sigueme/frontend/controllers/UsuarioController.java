@@ -62,6 +62,9 @@ public class UsuarioController implements Serializable {
 
     private String parametroBusqueda;
     private List<UserStatus> listaEstadosUsuario;
+    private String claveOriginal;
+    private String nuevaClave;
+    private boolean isModificarClave;
 
     @PostConstruct
     public void init() {
@@ -70,6 +73,9 @@ public class UsuarioController implements Serializable {
         listaRoles = new ArrayList<>();
         listarEstadosUsuario();
         listarUsuarios();
+        claveOriginal = "";
+        nuevaClave = "";
+        isModificarClave = false;
     }
 
     public UsuarioController() {
@@ -279,6 +285,7 @@ public class UsuarioController implements Serializable {
 
     public void asignarUsuario() {
         this.usuario = retornarUsuarioEnSesion();
+        this.claveOriginal = usuario.getUserPassword();
     }
 
     public void modificarUsuario() {
@@ -304,6 +311,53 @@ public class UsuarioController implements Serializable {
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Los datos no se actualizaron, inténtalo más tarde"));
         }
+    }
+
+    public void modificarCuenta() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (Crypto.Desencriptar(this.usuario.getUserPassword()).equals(this.claveOriginal)) {
+                if (this.nuevaClave != null) {
+                    this.usuario.setUserPassword(Crypto.Encriptar(nuevaClave));
+                    cerrarSesion();
+                }
+                this.userFacadeLocal.edit(this.usuario);
+                ocultarModal(3);
+                context.addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Los datos se han modificado correctamente"));
+
+            } else {
+                context.addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", "La contraseña actual no es correcta"));
+            }
+        } catch (Exception e) {
+            context.addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No se han modificado los datos"));
+        }
+    }
+
+    public void mostrarCamposCambioClave() {
+        if (isModificarClave) {
+            isModificarClave = false;
+        } else {
+            isModificarClave = true;
+        }
+    }
+    
+     public String mostrarMensajeCambioClave() {
+        String nombre;
+        if (isModificarClave) {
+            nombre = "Ocultar campos";
+        } else {
+            nombre = "Cambiar Clave";
+        }
+        return nombre;
+    }
+
+    public String cerrarSesion() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.getExternalContext().invalidateSession();
+        return "/index?faces-redirect=true";
     }
 
     public boolean verificarSiUsuarioActivo() {
@@ -391,6 +445,30 @@ public class UsuarioController implements Serializable {
 
     public void setListaEstadosUsuario(List<UserStatus> listaEstadosUsuario) {
         this.listaEstadosUsuario = listaEstadosUsuario;
+    }
+
+    public String getClaveOriginal() {
+        return claveOriginal;
+    }
+
+    public void setClaveOriginal(String claveOriginal) {
+        this.claveOriginal = claveOriginal;
+    }
+
+    public boolean isIsModificarClave() {
+        return isModificarClave;
+    }
+
+    public void setIsModificarClave(boolean isModificarClave) {
+        this.isModificarClave = isModificarClave;
+    }
+
+    public String getNuevaClave() {
+        return nuevaClave;
+    }
+
+    public void setNuevaClave(String nuevaClave) {
+        this.nuevaClave = nuevaClave;
     }
 
 }

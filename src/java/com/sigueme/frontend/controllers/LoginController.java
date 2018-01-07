@@ -7,9 +7,17 @@ package com.sigueme.frontend.controllers;
 
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.model.UserFacadeLocal;
+import com.sigueme.backend.utilities.Crypto;
+import com.sigueme.backend.utilities.Mail;
+import com.sigueme.backend.utilities.PasswordGenerator;
 import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -22,16 +30,21 @@ import org.primefaces.context.RequestContext;
  * @author RobayoDa
  */
 @Named(value = "loginController")
-@SessionScoped
+@ViewScoped
 public class LoginController implements Serializable {
 
     @EJB
     private UserFacadeLocal userFacadeLocal;
     private User user;
 
+    private String identificacionRecuperarClave;
+    private String correoRecuperarClave;
+
     @PostConstruct
     public void init() {
         user = new User();
+        identificacionRecuperarClave = "";
+        correoRecuperarClave = "";
     }
 
     public LoginController() {
@@ -43,14 +56,13 @@ public class LoginController implements Serializable {
         String redireccion = null;
         User usuarioValidado = null;
         try {
-            //String pass = Crypto.Encriptar(this.usuario.getClave());
-            //this.usuario.setClave(pass);
+            String claveEncriptada = Crypto.Encriptar(this.user.getUserPassword());
+            this.user.setUserPassword(claveEncriptada);
             usuarioValidado = userFacadeLocal.iniciarSesion(this.user);
             if (usuarioValidado != null) {
                 HttpSession sesion = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
                 sesion.setAttribute("usuario", usuarioValidado);
                 sesion.setAttribute("rol", usuarioValidado.getRoleId());
-                //redireccion = "pages/sigueme/sigueme?faces-redirect=true";
                 redireccion = "pages/system/home.xhtml?faces-redirect=true";
             } else {
                 FacesContext.getCurrentInstance().addMessage(
@@ -67,12 +79,83 @@ public class LoginController implements Serializable {
         return redireccion;
     }
 
+    public void recuperarClave() {
+        try {
+            User usuario = userFacadeLocal.verificarCorreoEIdentificacion(identificacionRecuperarClave, correoRecuperarClave);
+            if (usuario != null) {
+                String claveGenerada = PasswordGenerator.getPassword();
+                usuario.setUserPassword(Crypto.Encriptar(claveGenerada));
+                userFacadeLocal.edit(usuario);
+                FacesContext.getCurrentInstance().addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Contraseña restaurada correctamente"));
+
+                System.out.println("" + claveGenerada);
+                //enviar correo
+                enviarCorreo(usuario, claveGenerada);
+                ocultarModal(1);
+            } else {
+                FacesContext.getCurrentInstance().addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error: ", "Los datos del usuario no son correcos, intente nuevamente"));
+            }
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error: ", "Ha ocurrido un error al intentar recupear tu clave"));
+            System.out.println("Error:: " + e.getMessage());
+        }
+    }
+
+    public void enviarCorreo(User usuario, String nuevaClave) {
+        List<User> lista = new ArrayList<>();
+        lista.add(usuario);
+//        try {
+//            Mail.send(lista, "Cambio de Contraseña", "Tu contraseña se ha restaurado correctamente,"
+//                    + "\nIntenta ingresar al sistema con la siguiente clave: " + nuevaClave);
+        FacesContext.getCurrentInstance().addMessage(
+                null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correo enviado exitosamente"));
+
+//        } catch (UnsupportedEncodingException ex) {
+//            FacesContext.getCurrentInstance().addMessage(
+//                    null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error: ", "El correo no se ha podido enviar "));
+//        }
+    }
+
+    public void ocultarModal(int opcion) {
+        RequestContext req = RequestContext.getCurrentInstance();
+        String formulario = null;
+        switch (opcion) {
+            case 1:
+                req.execute("PF('recuperarClave').hide()");
+                formulario = "formRecuperarClave:gridRecuperarClave";
+                init();
+                break;
+            default:
+                break;
+        }
+        req.update(formulario);
+    }
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getIdentificacionRecuperarClave() {
+        return identificacionRecuperarClave;
+    }
+
+    public void setIdentificacionRecuperarClave(String identificacionRecuperarClave) {
+        this.identificacionRecuperarClave = identificacionRecuperarClave;
+    }
+
+    public String getCorreoRecuperarClave() {
+        return correoRecuperarClave;
+    }
+
+    public void setCorreoRecuperarClave(String correoRecuperarClave) {
+        this.correoRecuperarClave = correoRecuperarClave;
     }
 
 }

@@ -199,4 +199,21 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         return lista;
     }
 
+    @Override
+    public User verificarCorreoEIdentificacion(String identificacion, String correo) {
+        List<User> lista = new ArrayList();
+        User user = null;
+        try {
+            Query quey = em.createQuery("SELECT u FROM User u WHERE u.identification = :identificacion OR u.peopleSoft = :identificacion AND u.email = :correo ", User.class);
+            quey.setParameter("identificacion", identificacion);
+            quey.setParameter("correo", correo);
+            lista = quey.getResultList();
+            if (!lista.isEmpty()) {
+                user = lista.get(0);
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return user;
+    }
 }

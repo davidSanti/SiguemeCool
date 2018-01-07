@@ -27,19 +27,42 @@
                                 value="#{loginController.user.userPassword}" styleClass="form-control" onkeypress="isCapslock(event);">
                     </p:password>
 
-
-                    <p:commandButton id="iniciarSesion" value="Ingresar" 
-                                     action="#{loginController.autenticarUsuario()}"   
-                                     styleClass="btn waves-effect waves-light"
-                                     update="login">
-
-                    </p:commandButton><br></br><br></br>
-                    <p:commandLink style="margin-left: 17px;" value="#{msgs['Index.ForgotPassword']}" oncomplete="PF('password').show()"/>
-
-                </h:panelGrid>
+                    <p:column/>
+                    <p:commandLink style="margin-left: 17px;" value="¿Olvidaste tu contraseña?" 
+                                   oncomplete="PF('recuperarClave').show()"/>
+                </h:panelGrid>  
+                <br/>
+                <p:commandButton id="iniciarSesion" value="Ingresar" 
+                                 action="#{loginController.autenticarUsuario()}"   
+                                 styleClass="btn waves-effect waves-light"
+                                 update="login"/>
             </center>
-
         </h:form>
+
+
+        <p:dialog id="recuperarClave" widgetVar="recuperarClave" resizable="false" header="Recuperar Contraseña"
+                  modal="true" closeOnEscape="false" showEffect="fade" hideEffect="fade" closable="false">
+
+            <h:form id="formRecuperarClave">
+                <p:growl id="growlRecuperar" showDetail="true" showSummary="false" sticky="false" life="5000"/> 
+
+                <h:panelGrid id="gridRecuperarClave" columns="2">
+
+                    <p:outputLabel value="Identificacion" for="recuperarIdentificacion"/>
+                    <p:inputText id="recuperarIdentificacion" value="#{loginController.identificacionRecuperarClave}" pt:required="true"
+                                 required="true" requiredMessage="Campo obligatorio"/>
+
+                    <p:outputLabel value="Correo" for="recuperarCorreo"/>
+                    <p:inputText id="recuperarCorreo" value="#{loginController.correoRecuperarClave}" pt:required="true"
+                                 required="true" requiredMessage="Campo obligatorio"/>
+
+                    <p:commandButton value="Continuar" action="#{loginController.recuperarClave()}" 
+                                     update="recuperarClave, formRecuperarClave:growlRecuperar"/>
+                    <p:commandButton value="Cancelar" immediate="true" actionListener="#{loginController.ocultarModal(1)}"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
     </h:body>
 </html>
 
