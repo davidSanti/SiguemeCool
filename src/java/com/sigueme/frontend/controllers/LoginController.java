@@ -7,6 +7,7 @@ package com.sigueme.frontend.controllers;
 
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.model.UserFacadeLocal;
+import com.sigueme.backend.model.UserStatusFacadeLocal;
 import com.sigueme.backend.utilities.Crypto;
 import com.sigueme.backend.utilities.Mail;
 import com.sigueme.backend.utilities.PasswordGenerator;
@@ -35,6 +36,8 @@ public class LoginController implements Serializable {
 
     @EJB
     private UserFacadeLocal userFacadeLocal;
+    @EJB
+    private UserStatusFacadeLocal userStatusFacadeLocal;
     private User user;
 
     private String identificacionRecuperarClave;
@@ -81,17 +84,20 @@ public class LoginController implements Serializable {
 
     public void recuperarClave() {
         try {
+            System.out.println("correoRecuperarClave" + correoRecuperarClave);
             User usuario = userFacadeLocal.verificarCorreoEIdentificacion(identificacionRecuperarClave, correoRecuperarClave);
             if (usuario != null) {
                 String claveGenerada = PasswordGenerator.getPassword();
                 usuario.setUserPassword(Crypto.Encriptar(claveGenerada));
+                //el estado es para qeu le pida cambio de contraseña cuando entre al sistema
+                usuario.setUserStatusId(userStatusFacadeLocal.find(4));
                 userFacadeLocal.edit(usuario);
                 FacesContext.getCurrentInstance().addMessage(
                         null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Contraseña restaurada correctamente"));
 
                 System.out.println("" + claveGenerada);
                 //enviar correo
-                enviarCorreo(usuario, claveGenerada);
+//                enviarCorreo(usuario, claveGenerada);
                 ocultarModal(1);
             } else {
                 FacesContext.getCurrentInstance().addMessage(
@@ -107,16 +113,16 @@ public class LoginController implements Serializable {
     public void enviarCorreo(User usuario, String nuevaClave) {
         List<User> lista = new ArrayList<>();
         lista.add(usuario);
-//        try {
-//            Mail.send(lista, "Cambio de Contraseña", "Tu contraseña se ha restaurado correctamente,"
-//                    + "\nIntenta ingresar al sistema con la siguiente clave: " + nuevaClave);
-        FacesContext.getCurrentInstance().addMessage(
-                null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correo enviado exitosamente"));
+        try {
+            Mail.send(lista, "Cambio de Contraseña", "Tu contraseña se ha restaurado correctamente,"
+                    + "\nIntenta ingresar al sistema con la siguiente clave: " + nuevaClave);
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correo enviado exitosamente"));
 
-//        } catch (UnsupportedEncodingException ex) {
-//            FacesContext.getCurrentInstance().addMessage(
-//                    null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error: ", "El correo no se ha podido enviar "));
-//        }
+        } catch (UnsupportedEncodingException ex) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error: ", "El correo no se ha podido enviar "));
+        }
     }
 
     public void ocultarModal(int opcion) {

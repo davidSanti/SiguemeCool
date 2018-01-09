@@ -216,7 +216,6 @@ public class MenuController implements Serializable {
     }
 
     public void verificarCambioDeClave() {
-        System.out.println("entraaaa");
         RequestContext request = RequestContext.getCurrentInstance();
         usuario = retornarUsuarioEnSesion();
         if (usuario.getUserStatusId().getUserStatusId() == 4) {

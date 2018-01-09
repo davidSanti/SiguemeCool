@@ -38,10 +38,10 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     public User iniciarSesion(User user) {
         User usuario = null;
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.identification = :cedula AND u.userPassword = :clave AND u.userStatusId.userStatusId = :estadoUsuario");
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.identification = :cedula AND u.userPassword = :clave AND u.userStatusId.userStatusId <> :estadoUsuario");
             query.setParameter("cedula", user.getIdentification());
             query.setParameter("clave", user.getUserPassword());
-            query.setParameter("estadoUsuario", 1);
+            query.setParameter("estadoUsuario", 2);
 
             List<User> usuariosLista = query.getResultList();
             if (!usuariosLista.isEmpty()) {
@@ -204,7 +204,7 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         List<User> lista = new ArrayList();
         User user = null;
         try {
-            Query quey = em.createQuery("SELECT u FROM User u WHERE u.identification = :identificacion OR u.peopleSoft = :identificacion AND u.email = :correo ", User.class);
+            Query quey = em.createQuery("SELECT u FROM User u WHERE (u.identification = :identificacion OR u.peopleSoft = :identificacion) AND u.email = :correo ", User.class);
             quey.setParameter("identificacion", identificacion);
             quey.setParameter("correo", correo);
             lista = quey.getResultList();
