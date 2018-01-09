@@ -83,6 +83,8 @@ public class CursoController implements Serializable {
     private Date fechaFin;
     private String busqueda;
 
+    private List<User> usuariosRemovidosDelCursoEmail;
+
     @Inject
     CursoChartController cursoGraficaController;
 
@@ -100,6 +102,7 @@ public class CursoController implements Serializable {
         listaCursosTemporal = new ArrayList<>();
         listarCursos();
         filtrarEstado = new String();
+        usuariosRemovidosDelCursoEmail = new ArrayList<>();
     }
 
     public CursoController() {
@@ -248,7 +251,6 @@ public class CursoController implements Serializable {
         this.curso = course;
         try {
             if (curso.getFinishDate().after(Date.from(Instant.now()))) {
-                List<UserByCourse> lista = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
                 boolean bandera = cursoFacadeLocal.validarEvidenciaUsuariosCurso(curso);
 
                 if (!bandera) {
@@ -257,6 +259,7 @@ public class CursoController implements Serializable {
                 } else {
                     if (eliminarUsuariosDelCurso()) {
                         cursoFacadeLocal.remove(curso);
+                        enviarCorreoAlEditarUsuariosCurso(new ArrayList<>(), usuariosRemovidosDelCursoEmail);
                         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
                     }
                 }
@@ -271,11 +274,14 @@ public class CursoController implements Serializable {
 
     public void eliminarTodosLosUsuariosDelCurso() {
         if (eliminarUsuariosDelCurso()) {
+            ocultarModal(12);
+            enviarCorreoAlEditarUsuariosCurso(new ArrayList<>(), usuariosRemovidosDelCursoEmail);
             FacesContext.getCurrentInstance().addMessage(
                     null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "los usuarios se han removido correctamente"));
         }
     }
 
+    //Este método elimina todos los usuario que aún no hallan enviado la evidencia del curso
     public boolean eliminarUsuariosDelCurso() {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean bandera = true;
@@ -285,6 +291,8 @@ public class CursoController implements Serializable {
                 if (item.getAttached() == null && item.getDescription() == null) {
                     System.out.println("eliminar a " + item.getUserId().getFirstName());
                     userByCourseFacadeLocal.remove(item);
+                    //Lista que luego enviará correo
+                    usuariosRemovidosDelCursoEmail.add(item.getUserId());
                 }
             }
         } catch (Exception e) {
@@ -331,7 +339,6 @@ public class CursoController implements Serializable {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Editado Correctamente"));
             } else {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Verifique la fechas por favor"));
-
             }
 
         } catch (Exception ex) {
@@ -388,19 +395,36 @@ public class CursoController implements Serializable {
     }
 
     public void enviarCorreoAlEditarUsuariosCurso(List<User> usuariosChecked, List<User> usuariosUnChecked) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        boolean bandera = false;
         try {
             if (!usuariosChecked.isEmpty()) {
+                for (User user : usuariosChecked) {
+                    System.out.println("agregar: " + user.getFirstName());
+                }
                 this.enviarCorreo(usuariosChecked,
                         "Nueva Capacitación Asignada",
                         "Tienes una nueva Capacitación, dale un vistazo.");
+                bandera = true;
             }
             if (!usuariosUnChecked.isEmpty()) {
+                for (User user : usuariosUnChecked) {
+                    System.out.println("remover: " + user.getFirstName());
+                }
                 this.enviarCorreo(usuariosUnChecked,
                         "Capacitación",
                         "Ten han removido de la siguiente capacitación: ");
+                bandera = true;
+            }
+
+            if (bandera) {
+                context.addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correo enviado exitosamente"));
             }
         } catch (Exception e) {
             System.out.println("Error al enviar correo edit: " + e.getMessage());
+            context.addMessage(
+                    null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo enviar el correo electrónico"));
         }
     }
 
@@ -408,17 +432,17 @@ public class CursoController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         SimpleDateFormat fecha = new SimpleDateFormat("dd-MM-yyyy");
         try {
-            System.out.println(asunto + mensaje
-                    + "\n\nNombre: " + curso.getCourseName()
-                    + "\nDescripción: " + curso.getDescription()
-                    + "\nFecha de Finalizacion: " + fecha.format(curso.getFinishDate()));
-            for (User user : usuariosCorreo) {
-                System.out.println("correo a:" + user.getFirstName());
-            }
-//            Mail.send(usuariosCorreo, asunto, mensaje
+//            System.out.println(asunto + mensaje
 //                    + "\n\nNombre: " + curso.getCourseName()
 //                    + "\nDescripción: " + curso.getDescription()
 //                    + "\nFecha de Finalizacion: " + fecha.format(curso.getFinishDate()));
+//            for (User user : usuariosCorreo) {
+//                System.out.println("correo a:" + user.getFirstName());
+//            }
+            Mail.send(usuariosCorreo, asunto, mensaje
+                    + "\n\nNombre: " + curso.getCourseName()
+                    + "\nDescripción: " + curso.getDescription()
+                    + "\nFecha de Finalizacion: " + fecha.format(curso.getFinishDate()));
             context.addMessage(
                     null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Correo enviado exitosamente"));
         } catch (Exception e) {
@@ -523,6 +547,11 @@ public class CursoController implements Serializable {
 
             case 11:
                 req.execute("PF('Grafica').hide();");
+                break;
+            case 12:
+                req.execute("PF('confirmarEliminacion').hide();");   
+                curso = new Course();
+                usuariosRemovidosDelCursoEmail = new ArrayList<>();
                 break;
             default:
                 break;
@@ -743,6 +772,8 @@ public class CursoController implements Serializable {
     }
 
     public void guardarEdicionUsuariosCurso() {
+        List<User> listaUsuariosAgregados = new ArrayList<>();
+        List<User> listaUsuariosRemovidos = new ArrayList<>();
         //En esta parte se verifica los usuarios originales que se encontraban asignados al curso (en la base de datos)
         //y si se identifica un usuario nuevo se agrega
         for (UserByCourse usuariosAgregar : usuariosTemporalesPorCurso) {
@@ -757,6 +788,8 @@ public class CursoController implements Serializable {
                 usuarioCurso.setCourseId(curso);
                 usuarioCurso.setUserId(usuariosAgregar.getUserId());
                 curso.getUserByCourseList().add(usuarioCurso);
+                //Se agregan los items para su posterior envio de correo
+                listaUsuariosAgregados.add(usuariosAgregar.getUserId());
             }
         }
 
@@ -770,12 +803,16 @@ public class CursoController implements Serializable {
                 }
             }
             if (bandera) {
+                listaUsuariosRemovidos.add(curso.getUserByCourseList().get(i).getUserId());
                 userByCourseFacadeLocal.remove(curso.getUserByCourseList().remove(i));
+                //Se agregan los usuarios removidos para notificación por correo electrónico
             }
         }
         verificarEstadoCurso();
         cursoFacadeLocal.edit(curso);
-
+        //Aqui rocedemos a enviar el correo
+        enviarCorreoAlEditarUsuariosCurso(listaUsuariosAgregados, listaUsuariosRemovidos);
+        
         FacesContext.getCurrentInstance().addMessage(
                 null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos se han modificado correctamente"));
     }

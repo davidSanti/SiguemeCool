@@ -432,7 +432,7 @@
                                         </h:outputText>
                                     </p:column>
 
-                                    <p:column headerText="Calificación">
+                                    <p:column headerText="Validación">
                                         <h:outputText value="#{cursoController.determinarCalificacion(usuariosCurso)}">
                                         </h:outputText>
                                     </p:column>
@@ -485,7 +485,7 @@
                                     <p:fileDownload value="#{cursoController.file}"/>
                                 </p:commandButton>
 
-                                <p:outputLabel value="Calificación"/>
+                                <p:outputLabel value="Validación"/>
                                 <p:selectOneMenu value="#{cursoController.usuarioPorCursoActual.grade}">
                                     <f:selectItem itemLabel="Aprobado" itemValue="true"/>
                                     <f:selectItem itemLabel="No Aprobado" itemValue="false"/>

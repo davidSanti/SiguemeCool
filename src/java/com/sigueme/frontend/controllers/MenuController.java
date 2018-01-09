@@ -10,6 +10,9 @@ import com.sigueme.backend.entities.Role;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.model.PermissionFacadeLocal;
 import com.sigueme.backend.model.PermissionRoleFacadeLocal;
+import com.sigueme.backend.model.UserFacadeLocal;
+import com.sigueme.backend.model.UserStatusFacadeLocal;
+import com.sigueme.backend.utilities.Crypto;
 import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -24,6 +27,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
@@ -41,10 +45,17 @@ public class MenuController implements Serializable {
     private PermissionRoleFacadeLocal permissionRoleFacadeLocal;
     @EJB
     private PermissionFacadeLocal permissionFacadeLocal;
+    @EJB
+    private UserFacadeLocal userFacadeLocal;
+    @EJB
+    private UserStatusFacadeLocal userStatusFacadeLocal;
 
     private MenuModel model;
     private User usuario;
     private List<Permission> permisos;
+
+    private String claveActual;
+    private String nuevaClave;
 
     public MenuController() {
     }
@@ -54,8 +65,10 @@ public class MenuController implements Serializable {
         model = new DefaultMenuModel();
         usuario = new User();
         permisos = new ArrayList<>();
+        nuevaClave = "";
         this.listarPermisos();
         this.establecerPermisos();
+        verificarCambioDeClave();
     }
 
     public MenuModel getModel() {
@@ -174,6 +187,7 @@ public class MenuController implements Serializable {
     //éste método devuelve el nombre del usuario que se encuentra actualmente en sesión.
     //ésto lo vemos reflejado en el nombre que aparece en la parte derecha de la barra de navegación
     public String retornarNombreUsuario() {
+        verificarCambioDeClave();
         String nombre = retornarUsuarioEnSesion().getFirstName();
         return nombre;
     }
@@ -199,6 +213,56 @@ public class MenuController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().invalidateSession();
         return "/index?faces-redirect=true";
+    }
+
+    public void verificarCambioDeClave() {
+        System.out.println("entraaaa");
+        RequestContext request = RequestContext.getCurrentInstance();
+        usuario = retornarUsuarioEnSesion();
+        if (usuario.getUserStatusId().getUserStatusId() == 4) {
+            request.execute("PF('cambiarClave').show()");
+        }
+    }
+
+    public void cambiarClaveUsuario() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (usuario != null) {
+                String claveEncritada = Crypto.Encriptar(claveActual);
+                if (claveEncritada.equals(usuario.getUserPassword())) {
+                    //asignar cerrar sesion 
+                    if (!claveActual.equals(nuevaClave)) {
+                        usuario.setUserPassword(Crypto.Encriptar(nuevaClave));
+                        usuario.setUserStatusId(userStatusFacadeLocal.find(1));
+                        userFacadeLocal.edit(usuario);
+                        cerrarSesion();
+                    } else {
+                        FacesContext.getCurrentInstance().addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No puedes utilizar la misma clave, debes cambiarla"));
+                    }
+                }
+            } else {
+                FacesContext.getCurrentInstance().addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "La clave actual es incorrecta"));
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public String getNuevaClave() {
+        return nuevaClave;
+    }
+
+    public void setNuevaClave(String nuevaClave) {
+        this.nuevaClave = nuevaClave;
+    }
+
+    public String getClaveActual() {
+        return claveActual;
+    }
+
+    public void setClaveActual(String claveActual) {
+        this.claveActual = claveActual;
     }
 
 }

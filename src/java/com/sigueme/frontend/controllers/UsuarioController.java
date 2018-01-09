@@ -5,8 +5,6 @@
  */
 package com.sigueme.frontend.controllers;
 
-import com.sigueme.backend.utilities.Mailer;
-
 import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.Role;
 import com.sigueme.backend.entities.User;
@@ -132,8 +130,8 @@ public class UsuarioController implements Serializable {
                     System.out.println("clave generada" + Crypto.Encriptar(claveGenerada));
 //                    usuario.setUserPassword(Crypto.Encriptar(claveGenerada));
                     usuario.setUserPassword(usuario.getIdentification());
-                    //Aqui se le asigna el estado por defecto que es Activo (1)
-                    usuario.setUserStatusId(userStatusFacadeLocal.find(1));
+                    //Aqui se le asigna el estado por defecto que NO es Activo sino change password, para que la primera vez que esntre al sistema cambie la contraseña.
+                    usuario.setUserStatusId(userStatusFacadeLocal.find(4));
                     // userFacadeLocal.create(usuario);
                     List<User> list = new ArrayList();
                     User user1 = new User();
@@ -188,15 +186,6 @@ public class UsuarioController implements Serializable {
             }
         }
         return bandera;
-    }
-
-    public void enviarCorreo() {
-        try {
-            Mailer.send("David.Robayo@unisys.com", "cositas", "otras cositas");
-        } catch (UnsupportedEncodingException ex) {
-            System.out.println("errrro" + ex.getMessage());
-            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public void editarUsuario(User user) {
@@ -343,8 +332,8 @@ public class UsuarioController implements Serializable {
             isModificarClave = true;
         }
     }
-    
-     public String mostrarMensajeCambioClave() {
+
+    public String mostrarMensajeCambioClave() {
         String nombre;
         if (isModificarClave) {
             nombre = "Ocultar campos";

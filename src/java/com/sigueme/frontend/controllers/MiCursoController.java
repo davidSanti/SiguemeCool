@@ -12,7 +12,6 @@ import com.sigueme.backend.entities.UserByCourse;
 import com.sigueme.backend.model.CourseFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
-import com.sigueme.backend.utilities.Mail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -226,13 +225,13 @@ public class MiCursoController implements Serializable {
     // con el archivo la descrpcion proporcionada por un usuario asignado a un curso en particular
     public void subirEvidencia() {
         FacesContext context = FacesContext.getCurrentInstance();
-            eliminarEvidencia(2);
         if (file != null && !file.getFileName().equals("")) {
-//            String path = context.getExternalContext().getRealPath("/") + url;
-//            File f = new File(path);
             String archivo = cargarAdjunto();
             if (usuariosMiCurso.getAttached() != null && !archivo.equals(usuariosMiCurso.getAttached())) {
                 System.out.println("eliminar anterior archivo");
+                File f = new File("C:\\Users\\Microsoft Windows 10\\Documents\\_SUSTS\\DEVELOP\\SIGUEME\\Sigueme\\build\\web\\archivos\\Curso_Total_1030692952.jpg");
+                f.delete();
+//                eliminarEvidencia(2);
             }
             this.usuariosMiCurso.setAttached(archivo);
             try {
@@ -314,11 +313,12 @@ public class MiCursoController implements Serializable {
                 String url = usuariosMiCurso.getAttached();
                 String path = context.getExternalContext().getRealPath("/") + url;
                 File f = new File(path);
+//                File f = new File("C:\\Users\\Microsoft Windows 10\\Documents\\_SUSTS\\DEVELOP\\SIGUEME\\Sigueme\\build\\web\\archivos\\Curso_Total_1030692952.pdf");
 
                 InputStream stream = (InputStream) new FileInputStream(f);
                 stream.close();
                 if (f.exists()) {
-                    System.out.println("if exist");
+                    System.out.println("if exist: " + path);
                     if (f.delete()) {
                         System.out.println("if dele");
                         if (opcion == 1) {
@@ -346,7 +346,7 @@ public class MiCursoController implements Serializable {
 //        path = path.substring(0, path.indexOf("\\build\\"));
 //        path += "\\Web\\archivos\\";
         String pathReal = null;
-
+        FileOutputStream output = null;
         try {
 //            String nombre = file.getFileName();
             String nombre = renombrarArchivo(file.getFileName());
@@ -355,13 +355,19 @@ public class MiCursoController implements Serializable {
             InputStream input = file.getInputstream();
             byte[] data = new byte[input.available()];
             input.read(data);
-            FileOutputStream output = new FileOutputStream(path);
+            output = new FileOutputStream(path);
             output.write(data);
             output.close();
         } catch (IOException e) {
             System.out.println("Error al cargar el arhcivo" + e.getMessage());
         } catch (Exception e) {
             System.out.println("Error al cargar el arhcivo" + e.getMessage());
+        } finally {
+            try {
+                output.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MiCursoController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return pathReal;
     }
@@ -376,15 +382,16 @@ public class MiCursoController implements Serializable {
     }
 
     public void descargarAdjunto() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        InputStream stream = null;
         try {
-            FacesContext fc = FacesContext.getCurrentInstance();
             if (this.usuariosMiCurso.getAttached() != null) {
                 String url = this.usuariosMiCurso.getAttached();
                 String path = fc.getExternalContext().getRealPath("/") + url;
                 File f = new File(path);
                 downloadFile = null;
                 if (f.exists()) {
-                    InputStream stream = (InputStream) new FileInputStream(f);
+                    stream = (InputStream) new FileInputStream(f);
                     downloadFile = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
                 }
             }
@@ -394,6 +401,13 @@ public class MiCursoController implements Serializable {
             Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MiCursoController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
     }
 
