@@ -422,7 +422,7 @@ public class MiCursoController implements Serializable {
                         calificacion = "Sin Evidencia";
                     }
                 } else {
-                    calificacion = "Pendiente Por Calificar";
+                    calificacion = "Pendiente Por Validar";
                 }
 
             } else if (usuarioCurso.getGrade()) {

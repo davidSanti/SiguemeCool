@@ -5,6 +5,7 @@
  */
 package com.sigueme.backend.model;
 
+import com.sigueme.backend.entities.Convention;
 import com.sigueme.backend.entities.Desk;
 import com.sigueme.backend.entities.GroupCls;
 import java.util.List;
@@ -32,8 +33,8 @@ public interface DeskFacadeLocal {
     int count();
 
     Desk buscarPorSerialCode(String serialCode);
-    
+
     List<String> buscarPorSerialCodeAutoComplete(String serialCode);
-    
-    List<Desk> listarPuestosPorGrupo(List<GroupCls> grupo);
+
+    List<Desk> listarPuestosPorGrupo(List<Convention> conenciones);
 }

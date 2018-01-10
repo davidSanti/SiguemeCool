@@ -97,7 +97,7 @@ public class LoginController implements Serializable {
 
                 System.out.println("" + claveGenerada);
                 //enviar correo
-//                enviarCorreo(usuario, claveGenerada);
+                enviarCorreo(usuario, claveGenerada);
                 ocultarModal(1);
             } else {
                 FacesContext.getCurrentInstance().addMessage(

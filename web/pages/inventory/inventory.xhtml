@@ -32,26 +32,22 @@
                             <h:outputText value="#{puesto.serialCode}"/>
                         </p:column>
 
-                        <p:column filterBy="#{puesto.groupCls}" filterMatchMode="in" >
+                        <p:column filterBy="#{puesto.conventionId}" filterMatchMode="in" >
                             <f:facet name="filter">
-                                <p:selectCheckboxMenu id="gruposList" label="Grupos"     
+                                <p:selectCheckboxMenu id="convencionesList" label="Convenciones"     
                                                       onHide="ejecutarFiltro();"
-                                                      value="#{inventarioController.grupos}" filter="true"
-                                                      converter="grupoConverter" >
+                                                      value="#{inventarioController.convenciones}" filter="true"
+                                                      converter="convencionConverter" >
 
-                                    <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
-                                                   itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                    <f:selectItems var="convencion" value="#{inventarioController.listarCovenciones()}" 
+                                                   itemLabel="#{convencion.description}" itemValue="#{convencion}"/>
                                 </p:selectCheckboxMenu>
                                 <p:remoteCommand  name="ejecutarFiltro"
-                                                  update=":formInventario:tablaInventario" process="@this gruposList"
-                                                  action="#{inventarioController.filtrarPorGrupo()}"/> 
+                                                  update=":formInventario:tablaInventario" process="@this convencionesList"
+                                                  action="#{inventarioController.filtrarPorConvencion()}"/> 
                             </f:facet>
 
-                            <p:dataList value="#{puesto.groupCls}"
-                                        type="definition"  var="grupo"
-                                        emptyMessage="No se encontraron registros">
-                                <h:outputText value="#{grupo.groupName}"/>
-                            </p:dataList>
+                            <h:outputText value="#{puesto.conventionId.description}"/>
 
                         </p:column>
 
@@ -77,14 +73,14 @@
                         <h1><h:outputText value="Registrar Puesto"/></h1>
                         <h:panelGrid columns="2" id="gridRegistrar">
 
-                            <p:outputLabel value="Grupo(s)" />
-                            <p:selectCheckboxMenu label="-- Seleccione --" id="proyecto" 
-                                                  required="true" requiredMessage="El Proyecto es un campo obligatorio"
-                                                  value="#{inventarioController.puesto.groupCls}" filter='true'
-                                                  converter="grupoConverter">
-                                <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
-                                               itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
-                            </p:selectCheckboxMenu>
+                            <p:outputLabel value="Convención" for="proyecto"/>
+                            <p:selectOneMenu id="proyecto" 
+                                             required="true" requiredMessage="El Proyecto es un campo obligatorio"
+                                             value="#{inventarioController.puesto.conventionId}" filter='true'
+                                             converter="convencionConverter">
+                                <f:selectItems var="convencion" value="#{inventarioController.listarCovenciones()}" 
+                                               itemLabel="#{convencion.description}" itemValue="#{convencion}"/>
+                            </p:selectOneMenu>
 
                             <p:outputLabel value="Serial Code:" for="serialCode" />
                             <p:inputText id="serialCode" value="#{inventarioController.puesto.serialCode}" title="Serial Code"
@@ -115,15 +111,16 @@
                     <h:form id="formEditar">
                         <h1><h:outputText value="Modificar Puesto"/></h1>
                         <h:panelGrid columns="2" id="gridEditar">
-                            <p:outputLabel value="Grupo(s)" />
-                            <p:selectCheckboxMenu label="-- Seleccione --" id="proyecto" 
-                                                  required="true" requiredMessage="El Proyecto es un campo obligatorio"
-                                                  value="#{inventarioController.puesto.groupCls}" filter='true'
-                                                  converter="grupoConverter">
-                                <f:selectItems var="grupo" value="#{inventarioController.listarGrupos()}" 
-                                               itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
-                            </p:selectCheckboxMenu>
-
+                            
+                            <p:outputLabel value="Convención" for="proyecto"/>
+                            <p:selectOneMenu id="proyecto" 
+                                             required="true" requiredMessage="El Proyecto es un campo obligatorio"
+                                             value="#{inventarioController.puesto.conventionId}" filter='true'
+                                             converter="convencionConverter">
+                                <f:selectItems var="convencion" value="#{inventarioController.listarCovenciones()}" 
+                                               itemLabel="#{convencion.description}" itemValue="#{convencion}"/>
+                            </p:selectOneMenu>
+                            
                             <p:outputLabel value="Serial Code:" for="serialCode" />
                             <p:inputText id="serialCode" value="#{inventarioController.puesto.serialCode}" title="Serial Code"
                                          required="true" requiredMessage="El Serial Code es un campo obligatorio."

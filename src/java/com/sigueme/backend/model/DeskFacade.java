@@ -5,7 +5,9 @@
  */
 package com.sigueme.backend.model;
 
+import com.sigueme.backend.entities.Convention;
 import com.sigueme.backend.entities.Desk;
+import com.sigueme.backend.entities.Element;
 import com.sigueme.backend.entities.GroupCls;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +70,11 @@ public class DeskFacade extends AbstractFacade<Desk> implements DeskFacadeLocal 
     }
 
     @Override
-    public List<Desk> listarPuestosPorGrupo(List<GroupCls> grupo) {
+    public List<Desk> listarPuestosPorGrupo(List<Convention> conenciones) {
         List<Desk> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT d FROM Desk d WHERE d.groupCls IN :grupo");
-            query.setParameter("grupo", grupo);
+            Query query = em.createQuery("SELECT d FROM Desk d WHERE d.conventionId IN :conenciones");
+            query.setParameter("conenciones", conenciones);
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el método:listarPuestosPorProyecto = " + e.getMessage());

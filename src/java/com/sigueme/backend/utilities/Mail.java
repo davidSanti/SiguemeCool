@@ -27,12 +27,20 @@ public final class Mail {
         System.out.println("1st paso");
         //1st paso) Obtener el objeto de sesión
         Properties props = new Properties();
-        props.setProperty("mail.smtp.host", "smtp.gmail.com");
-        props.setProperty("mail.smtp.starttls.enable", "true");
-        props.setProperty("mail.smtp.port", "25");
-        props.setProperty("mail.smtp.starttls.required", "false");
-        props.setProperty("mail.smtp.auth", "true");
-        props.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
+//        props.setProperty("mail.smtp.host", "smtp.gmail.com");
+//        props.setProperty("mail.smtp.starttls.enable", "true");
+////        props.setProperty("mail.smtp.port", "25");
+//        props.setProperty("mail.smtp.port", "587"); otro puerto
+//        props.setProperty("mail.smtp.starttls.required", "false");
+//        props.setProperty("mail.smtp.auth", "true");
+//        props.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
+//        props.setProperty("mail.smtp.host", "smtp.gmail.com");
+
+//Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -54,12 +62,10 @@ public final class Mail {
             //multiparte.addBodyPart(adjunto);
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(user, "Sigueme"));
-            //retornarDestinatarios(para);
 
             InternetAddress[] destinatarios = new InternetAddress[para.size()];
 
             for (int i = 0; i < para.size(); i++) {
-
                 destinatarios[i] = new InternetAddress(para.get(i).getEmail());
             }
 
@@ -76,10 +82,6 @@ public final class Mail {
             throw new RuntimeException(e);
         }
 
-    }
-
-    public static void send(String klzamud, String asunto, String su_clave) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

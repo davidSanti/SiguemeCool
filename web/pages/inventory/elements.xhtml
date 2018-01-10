@@ -49,8 +49,15 @@
                         <p:column headerText="Acciones" width="120">
                             <p:commandButton icon="ui-icon-circle-zoomin" actionListener="#{elementoController.editarElemento(elemento)}"
                                              oncomplete="PF('modalVerElemento').show()" update="modalVerElemento"/>
+
                             <p:commandButton  icon="ui-icon-pencil" actionListener="#{elementoController.editarElemento(elemento)}"
-                                             oncomplete="PF('editarElementos').show()" update="editarElementos"/>
+                                              oncomplete="PF('editarElementos').show()" update="editarElementos"/>
+
+                            <p:commandButton  icon="ui-icon-trash" action="#{elementoController.eliminarElemento(elemento)}"
+                                              update="tablaElmentos, formElementos:growlElements" >
+                                <p:confirm header="Confirmación" icon="ui-icon-alert"
+                                           message="Estas Seguro de eliminar este Elemento?" />
+                            </p:commandButton>
                         </p:column>
 
                     </p:dataTable>
@@ -220,7 +227,7 @@
                                          validatorMessage="La marca debe contener entre 1 y 50 carácteres" maxlength="50">
                                 <f:validateLength minimum="1" maximum="50"/>
                             </p:inputText>
-                            
+
                             <p:outputLabel value="Nombre Pc" for="nombrePc" rendered="#{elementoController.banderaNombrePc eq true}"/>
                             <p:inputText id="nombrePc" value="#{elementoController.elemento.pcName}" title="" 
                                          required="#{elementoController.banderaNombrePc eq true}" requiredMessage="El nombre del Pc es un campo obligatorio" 
@@ -245,6 +252,13 @@
 
                     </h:form>
                 </p:dialog>
+
+                <h:form>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </h:form> 
 
             </ui:define>
 

@@ -45,33 +45,37 @@ public class Element implements Serializable {
     @Basic(optional = false)
     @Column(name = "element_id")
     private Integer elementId;
-    
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 13)
     @Column(name = "serial_code")
     private String serialCode;
-    
+
     @Size(max = 20)
     @Column(name = "inventory_plaque")
     private String inventoryPlaque;
-    
+
     @Size(max = 50)
     @Column(name = "brand")
     private String brand;
-    
+
     @Size(max = 50)
     @Column(name = "model")
     private String model;
-    
+
     @Size(max = 17)
     @Column(name = "pc_name")
     private String pcName;
-    
+
     @Size(max = 50)
     @Column(name = "description")
     private String description;
-     
+
+    @JoinColumn(name = "desk_id", referencedColumnName = "desk_id")
+    @ManyToOne(optional = false)
+    private Desk deskId;
+
     @JoinColumn(name = "type_id", referencedColumnName = "element_type_id")
     @ManyToOne(optional = false)
     private ElementType typeId;
@@ -111,7 +115,7 @@ public class Element implements Serializable {
     public void setInventoryPlaque(String inventoryPlaque) {
         this.inventoryPlaque = inventoryPlaque;
     }
-    
+
     public String getBrand() {
         return brand;
     }
@@ -152,6 +156,14 @@ public class Element implements Serializable {
         this.typeId = typeId;
     }
 
+    public Desk getDeskId() {
+        return deskId;
+    }
+
+    public void setDeskId(Desk deskId) {
+        this.deskId = deskId;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -176,5 +188,5 @@ public class Element implements Serializable {
     public String toString() {
         return "com.sigueme.backend.entities.Element[ elementId=" + elementId + " ]";
     }
-    
+
 }

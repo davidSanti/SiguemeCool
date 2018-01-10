@@ -38,7 +38,7 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     public User iniciarSesion(User user) {
         User usuario = null;
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.identification = :cedula AND u.userPassword = :clave AND u.userStatusId.userStatusId <> :estadoUsuario");
+            Query query = em.createQuery("SELECT u FROM User u WHERE (u.identification = :cedula OR u.peopleSoft = :cedula) AND u.userPassword = :clave AND u.userStatusId.userStatusId <> :estadoUsuario");
             query.setParameter("cedula", user.getIdentification());
             query.setParameter("clave", user.getUserPassword());
             query.setParameter("estadoUsuario", 2);

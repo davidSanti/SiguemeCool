@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -44,30 +45,28 @@ public class Desk implements Serializable {
     @Basic(optional = false)
     @Column(name = "desk_id")
     private Integer deskId;
-    
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 9)
     @Column(name = "serial_code")
     private String serialCode;
-    
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "desk_location")
     private String deskLocation;
-    
+
     @JoinTable(name = "elements_by_desk", joinColumns = {
         @JoinColumn(name = "desk_id", referencedColumnName = "desk_id")}, inverseJoinColumns = {
         @JoinColumn(name = "element_id", referencedColumnName = "element_id")})
     @ManyToMany
     private List<Element> elements;
-    
-    @JoinTable(name = "desks_by_group", joinColumns = {
-        @JoinColumn(name = "desk_id", referencedColumnName = "desk_id")}, inverseJoinColumns = {
-        @JoinColumn(name = "group_id", referencedColumnName = "group_id")})
-    @ManyToMany
-    private List<GroupCls> groupCls;
+
+    @JoinColumn(name = "convention_id", referencedColumnName = "convention_id")
+    @ManyToOne(optional = false)
+    private Convention conventionId;
 
     public Desk() {
     }
@@ -115,12 +114,12 @@ public class Desk implements Serializable {
         this.elements = elements;
     }
 
-    public List<GroupCls> getGroupCls() {
-        return groupCls;
+    public Convention getConventionId() {
+        return conventionId;
     }
 
-    public void setGroupCls(List<GroupCls> groupCls) {
-        this.groupCls = groupCls;
+    public void setConventionId(Convention conventionId) {
+        this.conventionId = conventionId;
     }
 
     @Override
@@ -147,5 +146,5 @@ public class Desk implements Serializable {
     public String toString() {
         return "com.sigueme.backend.entities.Desk[ deskId=" + deskId + " ]";
     }
-    
+
 }

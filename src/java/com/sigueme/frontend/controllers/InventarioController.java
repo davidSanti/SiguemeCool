@@ -5,23 +5,23 @@
  */
 package com.sigueme.frontend.controllers;
 
+import com.sigueme.backend.entities.Convention;
 import com.sigueme.backend.entities.Desk;
 import com.sigueme.backend.entities.Element;
 import com.sigueme.backend.entities.ElementType;
 import com.sigueme.backend.entities.GroupCls;
+import com.sigueme.backend.model.ConventionFacadeLocal;
 import com.sigueme.backend.model.DeskFacadeLocal;
 import com.sigueme.backend.model.ElementFacadeLocal;
 import com.sigueme.backend.model.ElementTypeFacadeLocal;
-import com.sigueme.backend.model.GroupClsFacadeLocal;
-import com.sigueme.frontend.converters.GrupoConverter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.primefaces.context.RequestContext;
@@ -35,7 +35,7 @@ import org.primefaces.context.RequestContext;
 public class InventarioController implements Serializable {
 
     @EJB
-    private GroupClsFacadeLocal groupClsFacadeLocal;
+    private ConventionFacadeLocal conventionFacadeLocal;
     @EJB
     private DeskFacadeLocal deskFacadeLocal;
     @EJB
@@ -47,7 +47,7 @@ public class InventarioController implements Serializable {
     private Element elemento;
     private ElementType tipoElemento;
 
-    private List<GroupCls> grupos;
+    private List<Convention> convenciones;
     private List<Desk> puestos;
     private List<Element> elementosPorPuestos;
 
@@ -70,14 +70,14 @@ public class InventarioController implements Serializable {
         puesto = new Desk();
         elemento = new Element();
 
-        grupos = new ArrayList<GroupCls>();
-        elementosPorPuestos = new ArrayList<Element>();
+        convenciones = new ArrayList<>();
+        elementosPorPuestos = new ArrayList<>();
         elementosPorPuestosOrigen = new ArrayList<>();
-        elementosPorPuestosDestino = new ArrayList<Element>();
+        elementosPorPuestosDestino = new ArrayList<>();
 
-        puestos = new ArrayList<Desk>();
+        puestos = new ArrayList<>();
         listarPuestos();
-        tipoElementos = new ArrayList<ElementType>();
+        tipoElementos = new ArrayList<>();
 
         serialCodeOrigen = "";
         serialCodeDestino = "";
@@ -93,9 +93,9 @@ public class InventarioController implements Serializable {
 
     //Este método se ejecuta cuando el selectChecboxMenu se cierra en la interfaz de course.xhtml, con la finalidad de que al cambiar los items de la lista
     //se actualice el listado con los puestos asociados a dicho proyecto  
-    public void filtrarPorGrupo() {
-        if (grupos.size() > 0) {
-            puestos = deskFacadeLocal.listarPuestosPorGrupo(grupos);
+    public void filtrarPorConvencion() {
+        if (convenciones.size() > 0) {
+            puestos = deskFacadeLocal.listarPuestosPorGrupo(convenciones);
         } else {
             listarPuestos();
         }
@@ -119,22 +119,17 @@ public class InventarioController implements Serializable {
 
         String serialCode = puesto.getSerialCode();
         Desk puestoSerial = deskFacadeLocal.buscarPorSerialCode(serialCode);
-        boolean bandera = puestoSerial == null ? true : false;
+        boolean bandera = puestoSerial == null;
         if (bandera) {
-            if (verificarGrupoMSC(puesto.getGroupCls())) {
-                try {
-                    this.deskFacadeLocal.create(puesto);
-                    banderaRegistro = true;
-                    context.addMessage(
-                            null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registro exitoso"));
-                } catch (Exception e) {
-                    context.addMessage(
-                            null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Ha ocurrido un error al registrar el puesto"));
-                }
-            } else {
+            try {
+                this.deskFacadeLocal.create(puesto);
+                banderaRegistro = true;
                 context.addMessage(
-                        null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
-                                "El puesto no puede pertenecer al msc, si está asociado a otros grupos"));
+                        null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registro exitoso"));
+            } catch (Exception e) {
+                context.addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Ha ocurrido un error al registrar el puesto"));
+
             }
         } else {
             // Ya existe un puesto con ese serial code
@@ -144,8 +139,8 @@ public class InventarioController implements Serializable {
         return banderaRegistro;
     }
 
-    //éste método asigna el puesto que le enviamos desde la interfaz a la variable global que intanciamos arriba "puesto" 
-    //y asgina la lsita de elemtos asociados a ese puesto.
+//éste método asigna el puesto que le enviamos desde la interfaz a la variable global que intanciamos arriba "puesto" 
+//y asgina la lsita de elemtos asociados a ese puesto.
     public void editarPuesto(Desk desk) {
         this.puesto = desk;
         this.elementosPorPuestos = puesto.getElements();
@@ -167,23 +162,16 @@ public class InventarioController implements Serializable {
 
         String serialCode = puesto.getSerialCode();
         Desk puestoSerial = deskFacadeLocal.buscarPorSerialCode(serialCode);
-        boolean bandera = puestoSerial.getDeskId() == puesto.getDeskId() ? true : false;
+        boolean bandera = Objects.equals(puestoSerial.getDeskId(), puesto.getDeskId());
         if (bandera) {
-            if (verificarGrupoMSC(puesto.getGroupCls())) {
-
-                try {
-                    this.deskFacadeLocal.edit(puesto);
-                    banderaEditar = true;
-                    context.addMessage(
-                            null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "El registro se ha modificado correctamente"));
-                } catch (Exception e) {
-                    context.addMessage(
-                            null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Ha ocurrido un error al modificar el puesto"));
-                }
-            } else {
+            try {
+                this.deskFacadeLocal.edit(puesto);
+                banderaEditar = true;
                 context.addMessage(
-                        null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
-                                "El puesto no puede pertenecer al msc, si está asociado a otros grupos"));
+                        null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "El registro se ha modificado correctamente"));
+            } catch (Exception e) {
+                context.addMessage(
+                        null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Ha ocurrido un error al modificar el puesto"));
             }
 
         } else {
@@ -210,20 +198,20 @@ public class InventarioController implements Serializable {
         }
         return serialCodeCorregido.toUpperCase();
     }
-
-    //éste método verifica que un puesto no pertenezca al MSC y a otro grupo al mismo tiempo
-    public boolean verificarGrupoMSC(List<GroupCls> listaGrupos) {
-        boolean bandera = true;
-        if (listaGrupos.size() > 1) {
-            for (GroupCls item : listaGrupos) {
-                if (item.getGroupId() == 1) {
-                    bandera = false;
-                    break;
-                }
-            }
-        }
-        return bandera;
-    }
+//
+//    //éste método verifica que un puesto no pertenezca al MSC y a otro grupo al mismo tiempo
+//    public boolean verificarGrupoMSC(List<Convention> listaConvenciones) {
+//        boolean bandera = true;
+//        if (listaConvenciones.size() > 1) {
+//            for (Convention item : listaConvenciones) {
+//                if (item.getConventionId() == 1) {
+//                    bandera = false;
+//                    break;
+//                }
+//            }
+//        }
+//        return bandera;
+//    }
 
     //Este método verifica si el elemento es  un computador (1 desktop 2 laptop) 
     //para poder validar si se muestra o no el dato de pcName en la interfaz gráfica de Ver detalle elemento
@@ -237,8 +225,8 @@ public class InventarioController implements Serializable {
         }
     }
 
-    public List<GroupCls> listarGrupos() {
-        return groupClsFacadeLocal.findAll();
+    public List<Convention> listarCovenciones() {
+        return conventionFacadeLocal.findAll();
     }
 
     public List<Element> listarElementosMSC() {
@@ -451,12 +439,12 @@ public class InventarioController implements Serializable {
         this.elementosMsc = elementosMsc;
     }
 
-    public List<GroupCls> getGrupos() {
-        return grupos;
+    public List<Convention> getConvenciones() {
+        return convenciones;
     }
 
-    public void setGrupos(List<GroupCls> grupos) {
-        this.grupos = grupos;
+    public void setConvenciones(List<Convention> convenciones) {
+        this.convenciones = convenciones;
     }
 
 }
