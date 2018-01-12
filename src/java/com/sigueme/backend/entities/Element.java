@@ -77,7 +77,6 @@ public class Element implements Serializable {
     private Desk deskId;
 
     @JoinColumn(name = "type_id", referencedColumnName = "element_type_id")
-    @ManyToOne(optional = false)
     private ElementType typeId;
 
     public Element() {

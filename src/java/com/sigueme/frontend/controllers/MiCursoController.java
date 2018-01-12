@@ -145,9 +145,11 @@ public class MiCursoController implements Serializable {
         this.tabla = tabla;
     }
 
-    public void asignarUsuarioCursos(UserByCourse usuarioCurso) {
+    public void asignarUsuarioCursos(UserByCourse usuarioCurso, boolean opcion) {
         usuariosMiCurso = usuarioCurso;
-        descargarAdjunto();
+        if (opcion) {
+            descargarAdjunto();
+        }
     }
 
     public String getFiltrarEstado() {

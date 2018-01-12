@@ -68,7 +68,6 @@ public class MenuController implements Serializable {
         nuevaClave = "";
         this.listarPermisos();
         this.establecerPermisos();
-        verificarCambioDeClave();
     }
 
     public MenuModel getModel() {

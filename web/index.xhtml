@@ -6,61 +6,88 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
     <h:head>
-        <title>Sigueme</title>      
-    </h:head>
-    <h:body>
-        <h:form id="login">
-            <p:growl id="growlLogin" showDetail="true" showSummary="false" sticky="false" life="2000"/> 
-            <center>
-                <h1>Inicio de Sesión</h1>
-                <p:separator/>
-                <h:panelGrid columns="2">
+        <title>Sigueme</title>  
 
-                    <p:outputLabel for="cedula" value="Cedula"/>
-                    <p:inputText id="cedula" required="true" requiredMessage="La cedula es un campo obligatorio"
-                                 value="#{loginController.user.identification}" styleClass="form-control">
+        <link href="resources/css/login.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+    <h:body style="background-image: url('resources/img/fondo1.jpg')" >
+        <center>
+            <h:form id="login" styleClass="login">
+                <p:growl id="growlLogin" showDetail="true" showSummary="false" sticky="false" life="2000" /> 
+
+                <h1>Iniciar Sesión</h1>
+
+                <h:panelGrid columns="1" style="" >
+
+
+                    <p:inputText styleClass="cedula-contraseñaEstilos" id="cedula" required="true" requiredMessage="La cedula es un campo obligatorio"
+                                 value="#{loginController.user.identification}" 
+                                 pt:placeholder="Cedula | PeopleSoft" pt:required="true">
                         <f:validateLength minimum="6" maximum="10"/>
                     </p:inputText>
 
-                    <p:outputLabel for="password" value="Clave"/>
-                    <p:password id="password" required="true" requiredMessage="La contraseña es un campo obligatorio"
-                                value="#{loginController.user.userPassword}" styleClass="form-control" onkeypress="isCapslock(event);">
+
+                    <p:password styleClass="cedula-contraseñaEstilos" id="password" pt:placeholder="Contraseña"
+                                required="true" requiredMessage="La contraseña es un campo obligatorio"
+                                value="#{loginController.user.userPassword}"  onkeypress="isCapslock(event);">
                     </p:password>
 
-                    <p:column/>
-                    <p:commandLink style="margin-left: 17px;" value="¿Olvidaste tu contraseña?" 
-                                   oncomplete="PF('recuperarClave').show()"/>
-                </h:panelGrid>  
+                </h:panelGrid> 
+
+
                 <br/>
                 <p:commandButton id="iniciarSesion" value="Ingresar" 
                                  action="#{loginController.autenticarUsuario()}"   
-                                 styleClass="btn waves-effect waves-light"
+                                 styleClass="iniciarSesionBoton"
                                  update="login"/>
-            </center>
-        </h:form>
+                <p>
+                    <p:column/>
+                    <p:commandLink   styleClass="letraOlvidasteContraseña"  value="¿Olvidaste tu contraseña?" 
+                                     oncomplete="PF('recuperarClave').show()"/>
+                </p>
 
 
-        <p:dialog id="recuperarClave" widgetVar="recuperarClave" resizable="false" header="Recuperar Contraseña"
-                  modal="true" closeOnEscape="false" showEffect="fade" hideEffect="fade" closable="false">
-
-            <h:form id="formRecuperarClave">
-                <p:growl id="growlRecuperar" showDetail="true" showSummary="false" sticky="false" life="5000"/> 
-
-                <h:panelGrid id="gridRecuperarClave" columns="2">
-
-                    <p:outputLabel value="Identificacion" for="recuperarIdentificacion"/>
-                    <p:inputText id="recuperarIdentificacion" value="#{loginController.identificacionRecuperarClave}" pt:required="true"
-                                 required="true" requiredMessage="Campo obligatorio"/>
-
-                    <p:outputLabel value="Correo" for="recuperarCorreo"/>
-                    <p:inputText id="recuperarCorreo" value="#{loginController.correoRecuperarClave}" pt:required="true"
-                                 required="true" requiredMessage="Campo obligatorio"/>
-
-                    <p:commandButton value="Continuar" action="#{loginController.recuperarClave()}" 
-                                     update="recuperarClave, formRecuperarClave:growlRecuperar"/>
-                    <p:commandButton value="Cancelar" immediate="true" actionListener="#{loginController.ocultarModal(1)}"/>
-                </h:panelGrid>
             </h:form>
+
+        </center>
+
+        <p:dialog id="recuperarClave" widgetVar="recuperarClave"  draggable="false" styleClass="ss"
+                  closeOnEscape="false" showEffect="fade" hideEffect="fade" closable="false" modal="true"  resizable="false">
+
+            <center>
+                
+
+            <h:form id="formRecuperarClave" styleClass="estiloForm" >
+
+                <p:growl id="growlRecuperar" showDetail="true" showSummary="false" sticky="false" life="5000"/> 
+                
+                <h2>Recuperar Contraseña</h2>
+                <h:panelGrid id="gridRecuperarClave" columns="2">
+                    
+                    
+                    
+                 
+                    <p:inputText id="recuperarIdentificacion" value="#{loginController.identificacionRecuperarClave}" pt:required="true"
+                                 required="true" requiredMessage="Campo obligatorio"  pt:placeholder="Cedula | PeopleSoft" styleClass="cedula-emailEstilos" />
+                    <br></br>
+                    <p:inputText id="recuperarCorreo" value="#{loginController.correoRecuperarClave}" pt:required="true"
+                                 required="true" requiredMessage="Campo obligatorio" pt:placeholder="Correo" styleClass="cedula-emailEstilos" />
+                    <br></br>
+                                    </h:panelGrid>
+
+                <h:panelGrid columns="2">
+                    
+                <p:commandButton value="Continuar" action="#{loginController.recuperarClave()}" 
+                                 update="recuperarClave, formRecuperarClave:growlRecuperar" styleClass="Continuar" />
+
+                <p:commandButton value="Cancelar" immediate="true" styleClass="Cancelar"
+
+                                 actionListener="#{loginController.ocultarModal(1)}"/>
+                </h:panelGrid>
+
+            </h:form>
+
+            </center>
         </p:dialog>
 
     </h:body>

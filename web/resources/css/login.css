@@ -1,0 +1,127 @@
+.login{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 410px;
+    height: 320px;
+    padding: 50px 40px;
+    box-sizing: border-box;
+    background: black;
+    opacity: 0.7;
+}
+
+.ui-dialog .ui-dialog-titlebar{
+    
+    background-color:#FF0200  ;
+    
+}
+/*    box-shadow: none !important;*/
+.ui-dialog-titlebar .ui-widget-header.ss{
+    box-shadow: none!important;
+}
+
+.estiloForm{
+       height: 230px !important;
+}
+.ui-dialog{
+    /*position: absolute;*/
+    top: 50%;
+    /*left: 50%;*/
+    /*transform: translate(-50%, -50%);*/
+    width: 410px;
+    height: 270px !important;
+/*        padding: 50px 40px;*/
+    box-sizing: border-box;
+    background: #fff;
+/*    box-shadow: none !important;*/
+    
+    /*    opacity: 0.7; */
+
+}
+.nombresEnBlanco{
+    color: white;
+}
+
+
+h1{
+    font-size: 24px;
+    margin: 0;
+    padding: 0 0 20px;
+    color: white;
+    text-align: center;
+
+}
+
+.cedula-emailEstilos{
+    height: 100%!important;
+    width: 100%!important;
+    margin-bottom: 5px;  
+    font-size: 20px;
+    padding-left: 5%;
+    border-radius: 5px;
+    left: 10px!important;   
+}
+
+
+.cedula-contraseñaEstilos{
+
+    height: 15%!important;
+    width: 95%!important;
+    margin-bottom: 5px;  
+    font-size: 20px;
+    padding-left: 5%;
+    border-radius: 5px;
+}
+
+
+.iniciarSesionBoton{
+    width: 75%;
+    border:none;
+    outline: none;
+    height: 40px;
+    color: #fff;
+    font-size: 18px;
+    background: #0284A8;
+    cursor: pointer;
+    border-radius: 0px;
+
+}
+
+.Cancelar{
+    
+    width: 100%!important;
+    border:none;
+    outline: none;
+    height: 40px;
+    color: #fff !important;
+    font-size: 0.8em!important;
+    background: #D75129!important;
+    cursor: pointer;
+    border-radius: 0px;
+   
+    top:20px;
+}
+.Continuar{
+    width: 100% !important;
+    border:none;
+    outline: none;
+    height: 40px;
+    color: #fff !important;
+    font-size: 0.8em!important;
+    background: #4E885B!important;
+    cursor: pointer;
+    border-radius: 0px;
+    top:20px;
+
+}
+
+.letraOlvidasteContraseña{
+    color:white;
+}
+
+.boton:hover{
+    background: #02547D;
+}
+
+

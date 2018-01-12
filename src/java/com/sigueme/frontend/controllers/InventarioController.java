@@ -9,7 +9,6 @@ import com.sigueme.backend.entities.Convention;
 import com.sigueme.backend.entities.Desk;
 import com.sigueme.backend.entities.Element;
 import com.sigueme.backend.entities.ElementType;
-import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.model.ConventionFacadeLocal;
 import com.sigueme.backend.model.DeskFacadeLocal;
 import com.sigueme.backend.model.ElementFacadeLocal;
@@ -61,6 +60,7 @@ public class InventarioController implements Serializable {
 
     private Desk puestoOrigen;
     private Desk puestoDestino;
+    private String serialCodeFilter;
 
     public InventarioController() {
     }
@@ -84,7 +84,8 @@ public class InventarioController implements Serializable {
         puestoOrigen = new Desk();
         puestoDestino = new Desk();
 
-        //elementosMsc = listarElementosMSC(); esto todavía no nos sirve :(
+        serialCodeFilter = "";
+        listarElementosMSC();
     }
 
     public void listarPuestos() {
@@ -93,9 +94,13 @@ public class InventarioController implements Serializable {
 
     //Este método se ejecuta cuando el selectChecboxMenu se cierra en la interfaz de course.xhtml, con la finalidad de que al cambiar los items de la lista
     //se actualice el listado con los puestos asociados a dicho proyecto  
-    public void filtrarPorConvencion() {
+    public void filtrarPuesto() {
+        serialCodeFilter = serialCodeFilter.toUpperCase();
         if (convenciones.size() > 0) {
-            puestos = deskFacadeLocal.listarPuestosPorGrupo(convenciones);
+            puestos = deskFacadeLocal.listarPuestosPorSerialCodeYCovenciones(serialCodeFilter, convenciones);
+
+        } else if (!serialCodeFilter.equals("")) {
+            puestos = deskFacadeLocal.listarPuestosPorSerialCodeYCovenciones(serialCodeFilter, listarCovenciones());
         } else {
             listarPuestos();
         }
@@ -141,9 +146,16 @@ public class InventarioController implements Serializable {
 
 //éste método asigna el puesto que le enviamos desde la interfaz a la variable global que intanciamos arriba "puesto" 
 //y asgina la lsita de elemtos asociados a ese puesto.
-    public void editarPuesto(Desk desk) {
+    public void editarPuesto(Desk desk, boolean opcion) {
         this.puesto = desk;
-        this.elementosPorPuestos = puesto.getElements();
+        if (opcion) {
+            listarElementosPorPuesto();
+        }
+    }
+
+    public void listarElementosPorPuesto() {
+        elementosPorPuestos = new ArrayList<>();
+        elementosPorPuestos = elementFacadeLocal.listarElementosPorPuesto(puesto);
     }
 
     //Este método valida que la edición se haya efectuado correctamente y cierra el modal
@@ -198,20 +210,6 @@ public class InventarioController implements Serializable {
         }
         return serialCodeCorregido.toUpperCase();
     }
-//
-//    //éste método verifica que un puesto no pertenezca al MSC y a otro grupo al mismo tiempo
-//    public boolean verificarGrupoMSC(List<Convention> listaConvenciones) {
-//        boolean bandera = true;
-//        if (listaConvenciones.size() > 1) {
-//            for (Convention item : listaConvenciones) {
-//                if (item.getConventionId() == 1) {
-//                    bandera = false;
-//                    break;
-//                }
-//            }
-//        }
-//        return bandera;
-//    }
 
     //Este método verifica si el elemento es  un computador (1 desktop 2 laptop) 
     //para poder validar si se muestra o no el dato de pcName en la interfaz gráfica de Ver detalle elemento
@@ -230,6 +228,7 @@ public class InventarioController implements Serializable {
     }
 
     public List<Element> listarElementosMSC() {
+        elementosMsc = new ArrayList<>();
         this.elementosMsc = elementFacadeLocal.listarElementosMsc();
         return elementosMsc;
     }
@@ -351,6 +350,38 @@ public class InventarioController implements Serializable {
         req.update("formInventario:tablaInventario");
     }
 
+    public void asignarElementoAlPuesto(Element element) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            this.elemento = element;
+            elemento.setDeskId(puesto);
+            elementFacadeLocal.edit(elemento);
+
+            listarElementosMSC();
+            listarElementosPorPuesto();
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Elemento asignado correctamente"));
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al asignar elemento"));
+        }
+    }
+
+    public void eliminarElementoDelPuesto(Element element) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            this.elemento = element;
+            elemento.setDeskId(null);
+            elementFacadeLocal.edit(elemento);
+
+            listarElementosMSC();
+            listarElementosPorPuesto();
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Elemento eliminado correctamente"));
+
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al eliminar elemento"));
+
+        }
+    }
+
     public Desk getPuesto() {
         return puesto;
     }
@@ -445,6 +476,14 @@ public class InventarioController implements Serializable {
 
     public void setConvenciones(List<Convention> convenciones) {
         this.convenciones = convenciones;
+    }
+
+    public String getSerialCodeFilter() {
+        return serialCodeFilter;
+    }
+
+    public void setSerialCodeFilter(String serialCodeFilter) {
+        this.serialCodeFilter = serialCodeFilter;
     }
 
 }

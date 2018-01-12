@@ -26,11 +26,19 @@
 
                     <p:dataTable id="tablaInventario" emptyMessage="No se encontrarón registros"
                                  var="puesto" value="#{inventarioController.puestos}" widgetVar="tablaInventario"
-                                 paginator="true" paginatorPosition="bottom" rows="8" reflow="true" rowStyleClass="row-color" >
+                                 paginator="true" paginatorPosition="bottom" rows="10" reflow="true" rowStyleClass="row-color" >
 
-                        <p:column headerText="Puesto" filterBy="#{puesto.serialCode}">
+                        <p:column headerText="Puesto" filterBy="#{puesto.serialCode}" filterMatchMode="in">
+                            <f:facet name="filter">
+                                <p:inputText  value="#{inventarioController.serialCodeFilter}"
+                                              styleClass="upper-case" maxlength="9">
+                                    <p:ajax event="keyup" update="tablaInventario" 
+                                            listener="#{inventarioController.filtrarPuesto()}" />
+                                </p:inputText>
+                            </f:facet>
                             <h:outputText value="#{puesto.serialCode}"/>
                         </p:column>
+
 
                         <p:column filterBy="#{puesto.conventionId}" filterMatchMode="in" >
                             <f:facet name="filter">
@@ -44,7 +52,7 @@
                                 </p:selectCheckboxMenu>
                                 <p:remoteCommand  name="ejecutarFiltro"
                                                   update=":formInventario:tablaInventario" process="@this convencionesList"
-                                                  action="#{inventarioController.filtrarPorConvencion()}"/> 
+                                                  action="#{inventarioController.filtrarPuesto()}"/> 
                             </f:facet>
 
                             <h:outputText value="#{puesto.conventionId.description}"/>
@@ -56,9 +64,9 @@
                         </p:column>
 
                         <p:column headerText="Acciones">
-                            <p:commandButton icon="ui-icon-pencil" actionListener="#{inventarioController.editarPuesto(puesto)}"
+                            <p:commandButton icon="ui-icon-pencil" actionListener="#{inventarioController.editarPuesto(puesto,false)}"
                                              oncomplete="PF('modalEditarPuesto').show()" update="modalEditarPuesto"/>
-                            <p:commandButton icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.editarPuesto(puesto)}"
+                            <p:commandButton icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.editarPuesto(puesto,true)}"
                                              oncomplete="PF('modalVerPuesto').show()" update="modalVerPuesto"/>
                         </p:column>
                     </p:dataTable>
@@ -111,7 +119,7 @@
                     <h:form id="formEditar">
                         <h1><h:outputText value="Modificar Puesto"/></h1>
                         <h:panelGrid columns="2" id="gridEditar">
-                            
+
                             <p:outputLabel value="Convención" for="proyecto"/>
                             <p:selectOneMenu id="proyecto" 
                                              required="true" requiredMessage="El Proyecto es un campo obligatorio"
@@ -120,7 +128,7 @@
                                 <f:selectItems var="convencion" value="#{inventarioController.listarCovenciones()}" 
                                                itemLabel="#{convencion.description}" itemValue="#{convencion}"/>
                             </p:selectOneMenu>
-                            
+
                             <p:outputLabel value="Serial Code:" for="serialCode" />
                             <p:inputText id="serialCode" value="#{inventarioController.puesto.serialCode}" title="Serial Code"
                                          required="true" requiredMessage="El Serial Code es un campo obligatorio."
@@ -143,24 +151,46 @@
                     </h:form>                          
                 </p:dialog>
 
-                <p:dialog id="modalAsignarElementos" resizable="false" closeOnEscape="true" 
+                <p:dialog id="modalAsignarElementos" resizable="false" closeOnEscape="false" 
                           draggable="false" closable="true" widgetVar="modalAsignarElementos" 
-                          modal="true" showEffect="fade" hideEffect="fade">
+                          modal="true" showEffect="fade" hideEffect="fade" width="800">
                     <center><h1><h:outputText value="Elementos del MSC"/></h1></center>
-                    <h:form>
-                        <h:panelGrid columns="2">
-                            <p:dataTable id="tablaElmentosMsc" emptyMessage="No se encontrarón registros"
-                                         var="elemento" value="#{inventarioController.elementosMsc}"
-                                         paginator="true" paginatorPosition="bottom" rows="8" reflow="true" 
-                                         rowStyleClass="row-color">
+                    <center>
+                        <h:form id="formAsociarElementos">
+                            <p:growl id="growlAsociarElementos" showDetail="true" showSummary="false" sticky="false" life="2500"/> 
 
-                                <p:column headerText="Algo">
-                                    <h:outputText value="#{elemento.brand}"/>
-                                </p:column>
-                            </p:dataTable>
+                            <h:panelGrid columns="2">
+                                <p:dataTable id="tablaElmentosMsc" emptyMessage="No se encontrarón registros"
+                                             var="elemento" value="#{inventarioController.elementosMsc}"
+                                             paginator="true" paginatorPosition="bottom" rows="8" reflow="true" 
+                                             rowStyleClass="row-color">
 
-                        </h:panelGrid>
-                    </h:form>
+                                    <p:column headerText="Serial Code">
+                                        <h:outputText value="#{elemento.serialCode}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Tipo">
+                                        <h:outputText value="#{elemento.typeId.description}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Modelo">
+                                        <h:outputText value="#{elemento.model}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Acciones">
+                                        <p:commandButton value="Ver" icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.asignarElemento(elemento)}"
+                                                         oncomplete="PF('modalVerElemento').show()" update="modalVerElemento"/>
+                                        <p:commandButton icon="ui-icon-check" 
+                                                         update="formAsociarElementos, formVerPuesto:tablaElmentos, formAsociarElementos:tablaElmentosMsc"
+                                                         action="#{inventarioController.asignarElementoAlPuesto(elemento)}"/>
+                                    </p:column>
+
+                                </p:dataTable>
+
+                            </h:panelGrid>
+                            <p:commandButton value="Cerrar" oncomplete="PF('modalAsignarElementos').hide()"/>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
                 <p:dialog id="modalVerPuesto" resizable="false" closeOnEscape="false" 
@@ -171,6 +201,8 @@
                     </center>
                     <br/>
                     <h:form id="formVerPuesto">
+                        <p:growl id="growlVerPuesto" showSummary="false" showDetail="true" sticky="false" life="3000"/>                      
+
                         <p:dataTable id="tablaElmentos" emptyMessage="No se encontrarón registros"
                                      var="elemento" value="#{inventarioController.elementosPorPuestos}"
                                      paginator="true" paginatorPosition="bottom" rows="10" reflow="true" 
@@ -198,21 +230,25 @@
                             </p:column>
 
                             <p:column headerText="Acciones" width="80">
-                                <p:commandButton value="Ver" icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.asignarElemento(elemento)}"
+                                <p:commandButton icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.asignarElemento(elemento)}"
                                                  oncomplete="PF('modalVerElemento').show()" update="modalVerElemento"/>
+                                <p:commandButton icon="ui-icon-trash" update="formVerPuesto"
+                                                 action="#{inventarioController.eliminarElementoDelPuesto(elemento)}"/>
                             </p:column>
 
                         </p:dataTable>
 
                         <br/>
                         <center>
-                            <p:commandButton value="Cerrar" actionListener="#{inventarioController.cerrarModal(4)}"/>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Agregar" oncomplete="PF('modalAsignarElementos').show()"
+                                                 update="modalAsignarElementos, formAsociarElementos"/>
+                                <p:commandButton value="Cerrar" actionListener="#{inventarioController.cerrarModal(4)}"/>
+                            </h:panelGrid>
                         </center>
 
-                        <p:commandButton value="Agregar" oncomplete="PF('modalAsignarElementos').show()" update="modalAsignarElementos"/>
                     </h:form>
                 </p:dialog>
-
 
                 <p:dialog id="modalMigrar" resizable="false" closeOnEscape="false" 
                           draggable="false" closable="false" widgetVar="modalMigrar" 

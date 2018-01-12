@@ -25,7 +25,32 @@
                                  paginator="true" paginatorPosition="bottom" rows="10" reflow="true" 
                                  rowStyleClass="row-color">
 
-                        <p:column headerText="Tipo">
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Buscar por campos" />
+                                <p:inputText value="#{elementoController.filtroMultiCriterio}"  style="width:250px">
+                                    <p:ajax event="keyup" update="tablaElmentos" 
+                                            listener="#{elementoController.filtrarElementos()}" />
+                                </p:inputText>
+                                <p:commandButton icon="ui-icon-closethick" update="tablaElmentos"
+                                                 action="#{elementoController.limpiarFiltro()}"/>
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column filterBy="#{elemento.typeId.description}" filterMatchMode="in">
+                            <f:facet name="filter">
+                                <p:selectCheckboxMenu id="tipoElemento" label="Tipo"     
+                                                      onHide="ejecutarFiltro();"
+                                                      value="#{elementoController.tipoElementosListaFiltrar}" filter="true"
+                                                      converter="tipoElementoConverter" >
+
+                                    <f:selectItems var="tipo" value="#{elementoController.tipoElementosLista}" 
+                                                   itemLabel="#{tipo.description}" itemValue="#{tipo}"/>
+                                </p:selectCheckboxMenu>
+                                <p:remoteCommand  name="ejecutarFiltro"
+                                                  update="formElementos:tablaElmentos" process="@this tipoElemento"
+                                                  action="#{elementoController.filtrarElementos()}"/> 
+                            </f:facet>
                             <h:outputLabel value="#{elemento.typeId.description}"/>
                         </p:column>
 

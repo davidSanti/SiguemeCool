@@ -40,7 +40,10 @@ public class ElementoController implements Serializable {
 
     private List<Element> elementosLista;
     private List<ElementType> tipoElementosLista;
+    private List<ElementType> tipoElementosListaFiltrar;
+
     private boolean banderaNombrePc;
+    private String filtroMultiCriterio;
 
     public ElementoController() {
     }
@@ -50,6 +53,8 @@ public class ElementoController implements Serializable {
         elemento = new Element();
         listarElementos();
         listarTiposElemento();
+        tipoElementosListaFiltrar = new ArrayList<>();
+        filtroMultiCriterio = "";
         banderaNombrePc = false;
     }
 
@@ -248,4 +253,49 @@ public class ElementoController implements Serializable {
             return false;
         }
     }
+
+    public void filtrarElementos() {
+        List<Element> lista = new ArrayList<>();
+        try {
+            if (tipoElementosListaFiltrar.size() > 0) {
+                lista = elementFacadeLocal.filtrarElmentosPorTipo(tipoElementosListaFiltrar);
+            }
+
+            elementosLista = new ArrayList<>();
+            elementosLista.addAll(lista);
+        } catch (Exception e) {
+        }
+    }
+
+    /*
+       serialCodeFilter = serialCodeFilter.toUpperCase();
+        if (convenciones.size() > 0) {
+            puestos = deskFacadeLocal.listarPuestosPorSerialCodeYCovenciones(serialCodeFilter, convenciones);
+
+        } else if (!serialCodeFilter.equals("")) {
+            puestos = deskFacadeLocal.listarPuestosPorSerialCodeYCovenciones(serialCodeFilter, listarCovenciones());
+        } else {
+            listarPuestos();
+        }
+     */
+    public void limpiarFiltro() {
+        listarElementos();
+    }
+
+    public List<ElementType> getTipoElementosListaFiltrar() {
+        return tipoElementosListaFiltrar;
+    }
+
+    public void setTipoElementosListaFiltrar(List<ElementType> tipoElementosListaFiltrar) {
+        this.tipoElementosListaFiltrar = tipoElementosListaFiltrar;
+    }
+
+    public String getFiltroMultiCriterio() {
+        return filtroMultiCriterio;
+    }
+
+    public void setFiltroMultiCriterio(String filtroMultiCriterio) {
+        this.filtroMultiCriterio = filtroMultiCriterio;
+    }
+
 }

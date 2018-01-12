@@ -5,7 +5,9 @@
  */
 package com.sigueme.backend.model;
 
+import com.sigueme.backend.entities.Desk;
 import com.sigueme.backend.entities.Element;
+import com.sigueme.backend.entities.ElementType;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -33,4 +35,8 @@ public interface ElementFacadeLocal {
     List<Element> listarElementosMsc();
 
     List<Element> verificarIdentification(String identification, int option);
+
+    List<Element> listarElementosPorPuesto(Desk puesto);
+    
+    List<Element> filtrarElmentosPorTipo(List<ElementType> listaTipo);
 }

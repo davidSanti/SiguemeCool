@@ -5,7 +5,9 @@
  */
 package com.sigueme.backend.model;
 
+import com.sigueme.backend.entities.Desk;
 import com.sigueme.backend.entities.Element;
+import com.sigueme.backend.entities.ElementType;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -48,8 +50,8 @@ public class ElementFacade extends AbstractFacade<Element> implements ElementFac
     public List<Element> listarElementosMsc() {
         List<Element> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT e FROM Desk d LEFT JOIN d.elements e WHERE e.elementId IS NULL");
-            System.out.println("tamaño" + query.getResultList());
+            Query query = em.createQuery("SELECT e FROM Element e WHERE e.deskId IS NULL");
+            lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el método listarElementosMsc = " + e.getMessage());
         }
@@ -72,6 +74,32 @@ public class ElementFacade extends AbstractFacade<Element> implements ElementFac
             System.out.println("Error en el método verificarIdentification = " + e.getMessage());
         }
         return lista;
-    }   
+    }
+
+    @Override
+    public List<Element> listarElementosPorPuesto(Desk puesto) {
+        List<Element> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT e FROM Element e WHERE e.deskId = :puesto");
+            query.setParameter("puesto", puesto);
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el método verificarIdentification = " + e.getMessage());
+        }
+        return lista;
+    }
+    
+    @Override
+    public List<Element> filtrarElmentosPorTipo(List<ElementType> listaTipo) {
+        List<Element> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT e FROM Element e WHERE e.typeId IN :tipo ORDER BY e.typeId ASC");
+            query.setParameter("tipo", listaTipo);
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el método filtrarElmentosPorTipo = " + e.getMessage());
+        }
+        return lista;
+    }
 
 }

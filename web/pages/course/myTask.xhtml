@@ -33,8 +33,6 @@
                                  paginatorPosition="bottom" rows="10" 
                                  rowStyleClass="#{miCursoController.validarSiCursoVencido(curso,1) ? 'cursoVencido' : 'row-color'}" >
 
-
-
                         <p:column headerText="Name" filterBy="#{curso.courseId.courseName}" filterMatchMode="in">
 
                             <f:facet name="filter">
@@ -100,10 +98,10 @@
 
                         <p:column headerText="Acciones" width="140">
                             <p:commandButton oncomplete="PF('subirEvidencia').show()" 
-                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso)}"  update="subirEvidencia" icon="  ui-icon-folder-collapsed"
+                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso,false)}"  update="subirEvidencia" icon="  ui-icon-folder-collapsed"
                                              disabled="#{miCursoController.validarSiCursoVencido(curso,2)}"/>   
                             <p:commandButton oncomplete="PF('Descargar').show()" 
-                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso)}" update="Descargar" 
+                                             actionListener="#{miCursoController.asignarUsuarioCursos(curso,true)}" update="Descargar" 
                                              disabled="#{curso.attached == null and curso.description == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   
 
                             <p:commandButton actionListener="#{miCursoController.eliminarEvidencia(curso)}" update="formMiCurso"

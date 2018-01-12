@@ -82,4 +82,17 @@ public class DeskFacade extends AbstractFacade<Desk> implements DeskFacadeLocal 
         return lista;
     }
 
+    @Override
+    public List<Desk> listarPuestosPorSerialCodeYCovenciones(String serialCode, List<Convention> covenciones) {
+        List<Desk> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT d FROM Desk d WHERE d.serialCode LIKE CONCAT('%',:serialCode,'%') AND d.conventionId IN :covenciones ");
+            query.setParameter("covenciones", covenciones);
+            query.setParameter("serialCode", serialCode);
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el método:listarPuestosPorSerialCodeYCovenciones = " + e.getMessage());
+        }
+        return lista;
+    }
 }
