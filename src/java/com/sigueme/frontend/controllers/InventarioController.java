@@ -244,8 +244,8 @@ public class InventarioController implements Serializable {
             String puestoInexistente = "";
 
             if (puestoOrigen != null && puestoDestino != null) {
-                elementosPorPuestosOrigen = puestoOrigen.getElements();
-                elementosPorPuestosDestino = puestoDestino.getElements();
+                elementosPorPuestosOrigen = elementFacadeLocal.listarElementosPorPuesto(puestoOrigen);
+                elementosPorPuestosDestino = elementFacadeLocal.listarElementosPorPuesto(puestoDestino);
                 this.abrirModal(1);
             } else {
                 puestoInexistente = puestoOrigen == null ? serialCodeOrigen : serialCodeDestino;
@@ -284,11 +284,11 @@ public class InventarioController implements Serializable {
         boolean bandera = false;
         try {
             if (opcion == 1) {
-                puesto.getElements().removeAll(elementosPorPuestos);
+//                puesto.getElements().removeAll(elementosPorPuestos);
                 deskFacadeLocal.edit(puesto);
                 bandera = true;
             } else if (opcion == 2) {
-                puesto.getElements().addAll(elementosPorPuestos);
+//                puesto.getElements().addAll(elementosPorPuestos);
                 deskFacadeLocal.edit(puesto);
                 bandera = true;
             }

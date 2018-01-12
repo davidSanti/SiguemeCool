@@ -6,7 +6,6 @@
 package com.sigueme.backend.entities;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,8 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -23,7 +20,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -57,12 +53,6 @@ public class Desk implements Serializable {
     @Size(min = 1, max = 100)
     @Column(name = "desk_location")
     private String deskLocation;
-
-    @JoinTable(name = "elements_by_desk", joinColumns = {
-        @JoinColumn(name = "desk_id", referencedColumnName = "desk_id")}, inverseJoinColumns = {
-        @JoinColumn(name = "element_id", referencedColumnName = "element_id")})
-    @ManyToMany
-    private List<Element> elements;
 
     @JoinColumn(name = "convention_id", referencedColumnName = "convention_id")
     @ManyToOne(optional = false)
@@ -103,15 +93,6 @@ public class Desk implements Serializable {
 
     public void setDeskLocation(String deskLocation) {
         this.deskLocation = deskLocation;
-    }
-
-    @XmlTransient
-    public List<Element> getElements() {
-        return elements;
-    }
-
-    public void setElements(List<Element> elements) {
-        this.elements = elements;
     }
 
     public Convention getConventionId() {
