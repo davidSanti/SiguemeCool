@@ -258,28 +258,21 @@ public class ElementoController implements Serializable {
         List<Element> lista = new ArrayList<>();
         try {
             if (tipoElementosListaFiltrar.size() > 0) {
-                lista = elementFacadeLocal.filtrarElmentosPorTipo(tipoElementosListaFiltrar);
+                lista = elementFacadeLocal.filtrarElmentosPorTipo(tipoElementosListaFiltrar, filtroMultiCriterio);
+            } else if (!filtroMultiCriterio.equals("")) {
+                lista = elementFacadeLocal.filtrarElmentosPorTipo(tipoElementosLista, filtroMultiCriterio);
+            } else {
+                listarElementos();
             }
-
             elementosLista = new ArrayList<>();
             elementosLista.addAll(lista);
         } catch (Exception e) {
         }
     }
 
-    /*
-       serialCodeFilter = serialCodeFilter.toUpperCase();
-        if (convenciones.size() > 0) {
-            puestos = deskFacadeLocal.listarPuestosPorSerialCodeYCovenciones(serialCodeFilter, convenciones);
-
-        } else if (!serialCodeFilter.equals("")) {
-            puestos = deskFacadeLocal.listarPuestosPorSerialCodeYCovenciones(serialCodeFilter, listarCovenciones());
-        } else {
-            listarPuestos();
-        }
-     */
     public void limpiarFiltro() {
         listarElementos();
+        //toca que quite todos los filtros no solo liste
     }
 
     public List<ElementType> getTipoElementosListaFiltrar() {

@@ -263,38 +263,18 @@ public class InventarioController implements Serializable {
     public void migrarElementos() {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean mensaje = true;
-        if (administrarElementos(puestoOrigen, 1)) {
-            if (administrarElementos(puestoDestino, 2)) {
-                mensaje = false;
-            } else {
-                administrarElementos(puestoOrigen, 2);
-            }
+        for (Element item : elementosPorPuestos) {
+            item.setDeskId(puestoDestino);
+            elementFacadeLocal.edit(item);
         }
         cerrarModal(2);
         cerrarModal(3);
 
         if (mensaje) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al migrar los elementos"));
-        } else {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Elementos migrados exitosamente"));
+        } else {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al migrar los elementos"));
         }
-    }
-
-    public boolean administrarElementos(Desk puesto, int opcion) {
-        boolean bandera = false;
-        try {
-            if (opcion == 1) {
-//                puesto.getElements().removeAll(elementosPorPuestos);
-                deskFacadeLocal.edit(puesto);
-                bandera = true;
-            } else if (opcion == 2) {
-//                puesto.getElements().addAll(elementosPorPuestos);
-                deskFacadeLocal.edit(puesto);
-                bandera = true;
-            }
-        } catch (Exception e) {
-        }
-        return bandera;
     }
 
     public void asignarElemento(Element elemento) {

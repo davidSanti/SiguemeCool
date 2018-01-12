@@ -37,6 +37,6 @@ public interface ElementFacadeLocal {
     List<Element> verificarIdentification(String identification, int option);
 
     List<Element> listarElementosPorPuesto(Desk puesto);
-    
-    List<Element> filtrarElmentosPorTipo(List<ElementType> listaTipo);
+
+    List<Element> filtrarElmentosPorTipo(List<ElementType> listaTipo, String multicriterio);
 }

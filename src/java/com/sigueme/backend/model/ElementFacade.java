@@ -89,12 +89,26 @@ public class ElementFacade extends AbstractFacade<Element> implements ElementFac
         return lista;
     }
     
+//    @Override
+//    public List<Element> filtrarElmentosPorTipo(List<ElementType> listaTipo) {
+//        List<Element> lista = new ArrayList<>();
+//        try {
+//            Query query = em.createQuery("SELECT e FROM Element e WHERE e.typeId IN :tipo ORDER BY e.typeId ASC");
+//            query.setParameter("tipo", listaTipo);
+//            lista = query.getResultList();
+//        } catch (Exception e) {
+//            System.out.println("Error en el método filtrarElmentosPorTipo = " + e.getMessage());
+//        }
+//        return lista;
+//    }
+    
     @Override
-    public List<Element> filtrarElmentosPorTipo(List<ElementType> listaTipo) {
+    public List<Element> filtrarElmentosPorTipo(List<ElementType> listaTipo, String multicriterio) {
         List<Element> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT e FROM Element e WHERE e.typeId IN :tipo ORDER BY e.typeId ASC");
+            Query query = em.createQuery("SELECT e FROM Element e WHERE e.typeId IN :tipo AND (e.serialCode LIKE CONCAT('%',:criterio,'%') OR e.inventoryPlaque LIKE CONCAT('%',:criterio,'%')) ORDER BY e.typeId ASC");
             query.setParameter("tipo", listaTipo);
+            query.setParameter("criterio", multicriterio);
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el método filtrarElmentosPorTipo = " + e.getMessage());
