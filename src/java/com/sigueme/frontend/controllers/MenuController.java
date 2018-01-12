@@ -78,6 +78,22 @@ public class MenuController implements Serializable {
         return model;
     }
 
+    public String getNuevaClave() {
+        return nuevaClave;
+    }
+
+    public void setNuevaClave(String nuevaClave) {
+        this.nuevaClave = nuevaClave;
+    }
+
+    public String getClaveActual() {
+        return claveActual;
+    }
+
+    public void setClaveActual(String claveActual) {
+        this.claveActual = claveActual;
+    }
+
     //éste método lista todos los permisos que posee un usuario dependiendo de su rol (variable capturada al iniciar sesión)
     //en caso de que no se halla inicializado la variable "rol" se redirige al usuario al index (interfaz de login)
     public void listarPermisos() {
@@ -236,7 +252,7 @@ public class MenuController implements Serializable {
                         cerrarSesion();
                     } else {
                         FacesContext.getCurrentInstance().addMessage(
-                        null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No puedes utilizar la misma clave, debes cambiarla"));
+                                null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No puedes utilizar la misma clave, debes cambiarla"));
                     }
                 }
             } else {
@@ -247,20 +263,7 @@ public class MenuController implements Serializable {
         }
     }
 
-    public String getNuevaClave() {
-        return nuevaClave;
+    public String redireccion() {
+        return "/pages/system/home.xhtml?redirect=true";
     }
-
-    public void setNuevaClave(String nuevaClave) {
-        this.nuevaClave = nuevaClave;
-    }
-
-    public String getClaveActual() {
-        return claveActual;
-    }
-
-    public void setClaveActual(String claveActual) {
-        this.claveActual = claveActual;
-    }
-
 }

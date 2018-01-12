@@ -21,13 +21,16 @@
         <div id="top" class="top">
             <ui:insert name="top">
                 <h:form>
+                                       
                     <p:menubar model="#{menuController.model}">
                         <f:facet name="options">
-                            <p:menubar>
-                                <p:submenu label="#{menuController.retornarNombreUsuario()}">
-                                    <p:menuitem value="Modificar Cuenta" icon="ui-icon-pencil"
+                            <p:menubar >
+                                <p:menuitem action="#{menuController.redireccion()}" icon="ui-icon-home" styleClass="buton" style="margin-right: 25px"></p:menuitem>
+                                <p:submenu icon="ui-icon-person" styleClass="buton" > 
+
+                                    <p:menuitem value="Modificar Cuenta" icon="ui-icon-pencil" 
                                                 oncomplete="PF('modificarCuenta').show()" update=":modificarCuenta" 
-                                                actionListener="#{usuarioController.asignarUsuario()}"/>
+                                                actionListener="#{usuarioController.asignarUsuario()}" styleClass="colorMenus"/>
                                     <p:menuitem value="Cerrar Sesión"
                                                 action="#{menuController.cerrarSesion()}"
                                                 icon="ui-icon-power"/>
@@ -39,12 +42,12 @@
                 <p:dialog id="modificarCuenta"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="modificarCuenta" modal="true"
-                          showEffect="fade" hideEffect="fade">
+                          showEffect="fade" hideEffect="fade" >
 
                     <h:form id="formModificarCuenta">
                         <p:growl id="growlmodificarCuenta" showDetail="true" showSummary="false" sticky="false" life="3000"/>
                         <center>
-                            <h1><h:outputText value="Modificar Cuenta"/></h1>
+                            <h1><h:outputText value="Modificar Cuenta" /></h1>
                             <br/>
                         </center>
 
