@@ -120,7 +120,7 @@
                           closeOnEscape="false" draggable="false" closable="false" 
                           modal="true" showEffect="fold" hideEffect="fold"
                           responsive="true" width="700" >
-                    <h1><h:outputText value="Mis cursos"/></h1>
+                    <h2>Mis cursos</h2>
 
 
                     <h:form id="formPrueba" enctype="multipart/form-data" acceptcharset="ISO-8859-1">
@@ -154,18 +154,22 @@
 
                         </p:panelGrid>
                         <p:inputTextarea value="#{miCursoController.usuariosMiCurso.description}" required="true" pt:required="true" 
-                                         requiredMessage="La descripción es obligatoria"
-                                         maxlength="500" cols="92"  rows="7"  autoResize="false" 
+                                         requiredMessage="La descripción es obligatoria" style="height: 90px!important ;width: 98.3%!important"
+                                         maxlength="500" cols="92"  rows="7"  autoResize="false"  pt:placeholder="Escriba Una Descripción Acerca Del Curso Que Esta Enviando"
                                          pt:maxlength="500" pt:minlength="10">
                             <f:validateLength minimum="10" maximum="500"/>                              
 
                         </p:inputTextarea>
                         <br></br>
                         <center>
+                            <h:panelGrid columns="2">
+                                
+                           
                             <p:commandButton id="guardar" value="Guardar" action="#{miCursoController.subirEvidencia()}" 
-                                             ajax="false"  update="subirEvidencia, :formMiCurso:growlMiCurso"/>
+                                             ajax="false"  update="subirEvidencia, :formMiCurso:growlMiCurso" styleClass="btn btn-success " />
                             <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(6)}" immediate="true" 
-                                             update="subirEvidencia"/>
+                                             update="subirEvidencia" styleClass="btn btn-warning " />
+                             </h:panelGrid>
                         </center>
                     </h:form>
                 </p:dialog>
@@ -174,7 +178,7 @@
                           closeOnEscape="false" draggable="false" closable="false" 
                           widgetVar="Descargar" modal="true" showEffect="fold" hideEffect="fold"
                           responsive="true" width="500" >
-                    <h1><h:outputText value="Descargar archivo"/></h1>
+                    <h2>Descargar archivo</h2>
                     <h:form id="formDescaga">
 
                         <p:panelGrid columns="2" style="width:480px">
@@ -189,13 +193,13 @@
 
                             <p:outputLabel value="Adjunto"/>
                             <p:commandButton ajax="false" immediate="true" value="Descargar" action="#{miCursoController.descargarAdjuntoDeNuevo()}"
-                                             update=":formMiCurso:growlMiCurso">
+                                             update=":formMiCurso:growlMiCurso"   styleClass="botonOpcional-form" style="width: 40%!important">
                                 <p:fileDownload value="#{miCursoController.downloadFile}"/>
                             </p:commandButton> 
 
                         </p:panelGrid>
                         <center>
-                            <p:commandButton value="Cerrar"  action="#{cursoController.ocultarModal(7)}" immediate="true" 
+                            <p:commandButton value="Cerrar"  action="#{cursoController.ocultarModal(7)}" immediate="true" styleClass="btn btn-warning"
                                              update="Descargar"/> 
                         </center>
 
@@ -208,7 +212,7 @@
                           widgetVar="Grafica" modal="true" showEffect="fold" hideEffect="fold"
                           responsive="true" width="800" >
 
-                    <h1><h:outputText value="Grafica"/></h1>
+                    <h2>Total Evidencias</h2>
                     <h:form id="formGrafica">
                         <center>
                             <p:panelGrid columns="2">
@@ -231,17 +235,21 @@
 
                                 </p:dataTable>
                             </p:panelGrid>
-                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(11)}" immediate="true" update="Grafica" styleClass="correrBoton"/>   
+                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(11)}" immediate="true" update="Grafica"  styleClass="btn btn-warning"/>   
                         </center>
                     </h:form>
 
                 </p:dialog>
 
 
-                <h:form>           
+               <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes boton-confirm-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no boton-confirm-no" icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </center>
                     </p:confirmDialog>
                 </h:form>
 

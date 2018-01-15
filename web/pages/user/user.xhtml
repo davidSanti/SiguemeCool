@@ -111,184 +111,189 @@
 
                 <p:dialog id="verUsuario"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="verUsuario" modal="true"
+                          widgetVar="verUsuario" modal="true" width="380"
                           showEffect="fade" hideEffect="fade">
+                    <center>
+                        <h:form id="formVerUsuario">
 
-                    <h:form id="formVerUsuario">
-                        <center>
-                            <h1><h:outputText value="Ver Detalle Usuario"/></h1>
-                            <br/>
-                        </center>
+                            <h2>Ver Detalle Usuario</h2>
 
-                        <p:panelGrid columns="2" id="gridVerUsuario">
+                            <p:panelGrid columns="2" id="gridVerUsuario">
 
-                            <h:outputText value="Grupo"/>
-                            <p:selectOneMenu id="grupoVer" label="Grupo"
-                                             value="#{usuarioController.usuario.groupId}" filter="true"
-                                             converter="grupoConverter" >
+                                <h:outputText value="Grupo"/>
+                                <p:selectOneMenu id="grupoVer" label="Grupo"
+                                                 value="#{usuarioController.usuario.groupId}" filter="true"
+                                                 converter="grupoConverter" >
 
-                                <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
-                                               itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
-                            </p:selectOneMenu>
+                                    <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
+                                                   itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                </p:selectOneMenu>
 
-                            <h:outputText value="Rol"/>
-                            <p:selectOneMenu id="rolVer" label="Rol"
-                                             value="#{usuarioController.usuario.roleId}" filter="true"
-                                             converter="rolConverter" >
+                                <h:outputText value="Rol"/>
+                                <p:selectOneMenu id="rolVer" label="Rol"
+                                                 value="#{usuarioController.usuario.roleId}" filter="true"
+                                                 converter="rolConverter" >
 
-                                <f:selectItems var="rol" value="#{usuarioController.listarRoles()}" 
-                                               itemLabel="#{rol.description}" itemValue="#{rol}"/>
-                            </p:selectOneMenu>
+                                    <f:selectItems var="rol" value="#{usuarioController.listarRoles()}" 
+                                                   itemLabel="#{rol.description}" itemValue="#{rol}"/>
+                                </p:selectOneMenu>
 
-                            <p:outputLabel for="estado" value="Estado"/>
-                            <p:selectOneMenu id="estado" value="#{usuarioController.usuario.userStatusId}"
-                                             converter="estadoUsuarioConverter">
+                                <p:outputLabel for="estado" value="Estado"/>
+                                <p:selectOneMenu id="estado" value="#{usuarioController.usuario.userStatusId}" 
+                                                 style="width: 85%"
+                                                 converter="estadoUsuarioConverter">
 
-                                <f:selectItems value="#{usuarioController.listaEstadosUsuario}" var="estado"
-                                               itemLabel="#{estado.description}" itemValue="#{estado}"/>
+                                    <f:selectItems value="#{usuarioController.listaEstadosUsuario}" var="estado"
+                                                   itemLabel="#{estado.description}" itemValue="#{estado}"/>
 
-                            </p:selectOneMenu>
+                                </p:selectOneMenu>
 
-                            <p:outputLabel value="PeopleSoft" for="peoplSoft"/>
-                            <p:inputText id="peoplSoft" value="#{usuarioController.usuario.peopleSoft}"
-                                         required="true" requiredMessage="El PeopleSoft es un campo obligatorio"
-                                         maxlength="6" validatorMessage="El PeopleSoft debe ser de 6 caracteres"
-                                         pt:type="number" pt:minlength="6" pt:maxlength="6" pt:required="true">
-                                <f:validateLength minimum="6" maximum="6"/>
-                            </p:inputText>
+                                <p:outputLabel value="PeopleSoft" for="peoplSoft"/>
+                                <p:inputText id="peoplSoft" value="#{usuarioController.usuario.peopleSoft}"
+                                             required="true" requiredMessage="El PeopleSoft es un campo obligatorio"
+                                             maxlength="6" validatorMessage="El PeopleSoft debe ser de 6 caracteres"
+                                             pt:type="number" pt:minlength="6" pt:maxlength="6" pt:required="true">
+                                    <f:validateLength minimum="6" maximum="6"/>
+                                </p:inputText>
 
-                            <h:outputText value="Cedula"/>
-                            <h:outputText value="#{usuarioController.usuario.identification}"/>
+                                <h:outputText value="Cedula"/>
+                                <h:outputText value="#{usuarioController.usuario.identification}"/>
 
-                            <h:outputText value="Nombre"/>
-                            <h:outputText value="#{usuarioController.usuario.firstName}"/>
+                                <h:outputText value="Nombre"/>
+                                <h:outputText value="#{usuarioController.usuario.firstName}"/>
 
-                            <h:outputText value="Apellido"/>
-                            <h:outputText value="#{usuarioController.usuario.lastName}"/>
+                                <h:outputText value="Apellido"/>
+                                <h:outputText value="#{usuarioController.usuario.lastName}"/>
 
-                            <h:outputText value="Correo"/>
-                            <h:outputText value="#{usuarioController.usuario.email}"/>
+                                <h:outputText value="Correo"/>
+                                <h:outputText value="#{usuarioController.usuario.email}"/>
 
-                            <h:outputText value="Dirección"/>
-                            <h:outputText value="#{usuarioController.usuario.address}"/>
+                                <h:outputText value="Dirección"/>
+                                <h:outputText value="#{usuarioController.usuario.address}"/>
 
-                        </p:panelGrid>
+                            </p:panelGrid>
 
-                        <center>
-                            <br/>
-                            <p:commandButton value="Guardar" action="#{usuarioController.editarUsuario()}"
-                                             update="formUsuario:tablaUsuario, formUsuario:growlUsuario, formVerUsuario">
-                                <p:confirm header="Confirmación" icon="ui-icon-alert"
-                                           message="Desea guardar los cambios realizado al usuario?" />
-                            </p:commandButton>
-                            <p:commandButton value="Cerrar" immediate="true" update="formUsuario:tablaUsuario"
-                                             actionListener="#{usuarioController.ocultarModal(1)}"/>
-                        </center>
-                    </h:form>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" immediate="true" update="formUsuario:tablaUsuario"
+                                                 actionListener="#{usuarioController.ocultarModal(1)}" styleClass="btn btn-warning"/>
+
+                                <p:commandButton value="Guardar" action="#{usuarioController.editarUsuario()}"
+                                                 update="formUsuario:tablaUsuario, formUsuario:growlUsuario, formVerUsuario"  
+                                                 styleClass="btn btn-success">
+
+                                    <p:confirm header="Confirmación" icon="ui-icon-alert"
+                                               message="Desea guardar los cambios realizado al usuario?" />
+                                </p:commandButton>
+
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
                 <p:dialog id="registrarUsuario"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="registrarUsuario" modal="true"
+                          widgetVar="registrarUsuario" modal="true" width="380"
                           showEffect="fade" hideEffect="fade">
 
-                    <h:form id="formRegistrarUsuario">
-                        <center>
-                            <h1><h:outputText value="Registrar Usuario"/></h1>
-                            <br/>
-                        </center>
+                    <center>
+                        <h:form id="formRegistrarUsuario">
+                            <h2>Registrar Usuario</h2>                         
 
-                        <h:panelGrid columns="2" id="gridRegistrarUsuario">
+                            <h:panelGrid columns="1" id="gridRegistrarUsuario" width="280">
 
-                            <p:outputLabel value="Grupo" for="grupo" />
-                            <p:selectOneMenu id="grupo" label="Grupo"
-                                             value="#{usuarioController.usuario.groupId}" filter="true"
-                                             converter="grupoConverter" pt:required="true"
-                                             required="true" requiredMessage="El Grupo es un campo obligatorio">
+                                <p:selectOneMenu id="grupo" label="Grupo" style="width: 93%"
+                                                 value="#{usuarioController.usuario.groupId}" filter="true"
+                                                 converter="grupoConverter" pt:required="true"
+                                                 required="true" requiredMessage="El Grupo es un campo obligatorio">
 
-                                <f:selectItem noSelectionOption="true" value="#{null}" 
-                                              itemLabel="-- Seleccione un Grupo --"/>
+                                    <f:selectItem noSelectionOption="true" value="#{null}" 
+                                                  itemLabel="-- Seleccione un Grupo --"/>
 
-                                <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
-                                               itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
-                            </p:selectOneMenu>
+                                    <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
+                                                   itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                </p:selectOneMenu>
 
-                            <p:outputLabel value="Rol" for="rol"/>
-                            <p:selectOneMenu id="rol" label="Rol"
-                                             value="#{usuarioController.usuario.roleId}"
-                                             converter="rolConverter" pt:required="true"
-                                             required="true" requiredMessage="El Rol es un campo obligatorio">
+                                <p:selectOneMenu id="rol" label="Rol" style="width: 93%"
+                                                 value="#{usuarioController.usuario.roleId}"
+                                                 converter="rolConverter" pt:required="true"
+                                                 required="true" requiredMessage="El Rol es un campo obligatorio">
 
-                                <f:selectItem noSelectionOption="true" value="#{null}" 
-                                              itemLabel="-- Seleccione un rol --"/>
+                                    <f:selectItem noSelectionOption="true" value="#{null}" 
+                                                  itemLabel="-- Seleccione un rol --"/>
 
-                                <f:selectItems var="rol" value="#{usuarioController.listarRoles()}" 
-                                               itemLabel="#{rol.description}" itemValue="#{rol}"/>
-                            </p:selectOneMenu>
+                                    <f:selectItems var="rol" value="#{usuarioController.listarRoles()}" 
+                                                   itemLabel="#{rol.description}" itemValue="#{rol}"/>
+                                </p:selectOneMenu>
 
-                            <p:outputLabel value="Cedula" for="cedula"/>
-                            <p:inputText id="cedula" value="#{usuarioController.usuario.identification}"
-                                         required="true" requiredMessage="La Cedula es un campo obligatorio"
-                                         maxlength="10" pt:type="number" validatorMessage="la Cedula debe contener entre 8 y 10 caracteres"
-                                         pt:minlength="8" pt:maxlength="10" pt:required="true">
-                                <f:validateLength minimum="8" maximum="10"/>
-                            </p:inputText>
+                                <p:inputText id="cedula" value="#{usuarioController.usuario.identification}"
+                                             required="true" requiredMessage="La Cedula es un campo obligatorio"
+                                             maxlength="10" pt:type="number" validatorMessage="la Cedula debe contener entre 8 y 10 caracteres"
+                                             pt:minlength="8" pt:maxlength="10" pt:required="true"
+                                             pt:placeholder="Cedula">
+                                    <f:validateLength minimum="8" maximum="10"/>
+                                </p:inputText>
 
-                            <p:outputLabel value="PeopleSoft" for="peoplSoft"/>
-                            <p:inputText id="peoplSoft" value="#{usuarioController.usuario.peopleSoft}"
-                                         required="true" requiredMessage="El PeopleSoft es un campo obligatorio"
-                                         maxlength="6" validatorMessage="El PeopleSoft debe ser de 6 caracteres"
-                                         pt:type="number" pt:minlength="6" pt:maxlength="6" pt:required="true">
-                                <f:validateLength minimum="6" maximum="6"/>
-                            </p:inputText>
+                                <p:inputText id="peoplSoft" value="#{usuarioController.usuario.peopleSoft}"
+                                             required="true" requiredMessage="El PeopleSoft es un campo obligatorio"
+                                             maxlength="6" validatorMessage="El PeopleSoft debe ser de 6 caracteres"
+                                             pt:type="number" pt:minlength="6" pt:maxlength="6" pt:required="true"
+                                             pt:placeholder="PeopleSoft">
+                                    <f:validateLength minimum="6" maximum="6"/>
+                                </p:inputText>
 
-                            <p:outputLabel value="Nombre" for="nombre"/>
-                            <p:inputText id="nombre" value="#{usuarioController.usuario.firstName}"
-                                         required="true" requiredMessage="El Nombre es un campo obligatorio"
-                                         maxlength="50" validatorMessage="El Nombre debe contener entre 3 y 50 caracteres"
-                                         pt:minlength="3" pt:maxlength="50" pt:required="true">
-                                <f:validateLength minimum="3" maximum="50"/>
-                                <f:validateRegex pattern="^[a-zA-Z\s]+$"/>
-                            </p:inputText>
+                                <p:inputText id="nombre" value="#{usuarioController.usuario.firstName}"
+                                             required="true" requiredMessage="El Nombre es un campo obligatorio"
+                                             maxlength="50" validatorMessage="El Nombre debe contener entre 3 y 50 caracteres"
+                                             pt:minlength="3" pt:maxlength="50" pt:required="true"
+                                             pt:placeholder="Nombre">
+                                    <f:validateLength minimum="3" maximum="50"/>
+                                    <f:validateRegex pattern="^[a-zA-Z\s]+$"/>
+                                </p:inputText>
 
-                            <p:outputLabel value="Apellido" for="apellido"/>
-                            <p:inputText id="apellido" value="#{usuarioController.usuario.lastName}"
-                                         required="true" requiredMessage="El Apellido es un campo obligatorio"
-                                         maxlength="50" validatorMessage="El Apellido debe contener entre 3 y 50 caracteres"
-                                         pt:minlength="3" pt:maxlength="50" pt:required="true">
-                                <f:validateLength minimum="3" maximum="50"/>
-                                <f:validateRegex pattern="^[a-zA-Z\s]+$"/>
-                            </p:inputText>
+                                <p:inputText id="apellido" value="#{usuarioController.usuario.lastName}"
+                                             required="true" requiredMessage="El Apellido es un campo obligatorio"
+                                             maxlength="50" validatorMessage="El Apellido debe contener entre 3 y 50 caracteres"
+                                             pt:minlength="3" pt:maxlength="50" pt:required="true"
+                                             pt:placeholder="Apellido">
+                                    <f:validateLength minimum="3" maximum="50"/>
+                                    <f:validateRegex pattern="^[a-zA-Z\s]+$"/>
+                                </p:inputText>
 
-                            <p:outputLabel value="Correo" for="correo"/>
-                            <p:inputText id="correo" value="#{usuarioController.usuario.email}"
-                                         required="true" requiredMessage="El Correo es un campo obligatorio"
-                                         pt:type="email" pt:minlength="15" pt:maxlength="100" pt:required="true"
-                                         maxlength="100" validatorMessage="El Correo debe contener entre 15 y 100 caracteres">
-                                <f:validateLength minimum="15" maximum="100"/>
-                                <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
-                            </p:inputText>
+                                <p:inputText id="correo" value="#{usuarioController.usuario.email}"
+                                             required="true" requiredMessage="El Correo es un campo obligatorio"
+                                             pt:type="email" pt:minlength="15" pt:maxlength="100" pt:required="true"
+                                             maxlength="100" validatorMessage="El Correo debe contener entre 15 y 100 caracteres"
+                                             pt:placeholder="Correo">
+                                    <f:validateLength minimum="15" maximum="100"/>
+                                    <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                                </p:inputText>
 
-                        </h:panelGrid>
+                            </h:panelGrid>
 
-                        <center>
-                            <br/>
-                            <p:commandButton value="Guardar"
-                                             actionListener="#{usuarioController.registrarUsuario()}"
-                                             update="formUsuario:tablaUsuario, formUsuario:growlUsuario"/>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" immediate="true"
+                                                 actionListener="#{usuarioController.ocultarModal(2)}"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Registrar"
+                                                 actionListener="#{usuarioController.registrarUsuario()}"
+                                                 update="formUsuario:tablaUsuario, formUsuario:growlUsuario"
+                                                 styleClass="btn btn-primary"/>
 
-                            <p:commandButton value="Cerrar" immediate="true"
-                                             actionListener="#{usuarioController.ocultarModal(2)}"/>
-                        </center>
-                    </h:form>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
-                <h:form>
+                <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes boton-confirm-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no boton-confirm-no" icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </center>
                     </p:confirmDialog>
-                </h:form> 
+                </h:form>  
             </ui:define>
 
         </ui:composition>
