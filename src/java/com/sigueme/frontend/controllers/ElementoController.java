@@ -264,8 +264,10 @@ public class ElementoController implements Serializable {
             } else {
                 listarElementos();
             }
-            elementosLista = new ArrayList<>();
-            elementosLista.addAll(lista);
+            if (!lista.isEmpty()) {
+                elementosLista = new ArrayList<>();
+                elementosLista.addAll(lista);
+            }
         } catch (Exception e) {
         }
     }

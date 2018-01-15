@@ -21,8 +21,11 @@
         <div id="top" class="top">
             <ui:insert name="top">
                 <h:form>
-                                       
+
                     <p:menubar model="#{menuController.model}">
+                        <p:menuitem>                            
+                            <img src="../../resources/img/logo3.png" height="50"/>
+                        </p:menuitem>
                         <f:facet name="options">
                             <p:menubar >
                                 <p:menuitem action="#{menuController.redireccion()}" icon="ui-icon-home" styleClass="buton" style="margin-right: 25px"></p:menuitem>

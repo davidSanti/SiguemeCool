@@ -54,14 +54,17 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     }
 
     @Override
-    public List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, List<User> usuariosExcluidos) {
+    public List<User> filtrarUsuariosPorGrupo(List<GroupCls> listaGrupos, List<Integer> usuariosExcluidos) {
         List<User> lista = new ArrayList<>();
         try {
             Query query;
             if (usuariosExcluidos.isEmpty()) {
+                System.out.println("1");
                 query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
             } else {
-                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
+                System.out.println("2");
+//                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
+                query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.userId NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
                 query.setParameter("usuariosExcluidos", usuariosExcluidos);
             }
             query.setParameter("grupos", listaGrupos);
@@ -75,7 +78,7 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     }
 
     @Override
-    public List<User> filtrarUsuariosPorRol(List<Role> listaRoles, List<User> usuariosExcluidos) {
+    public List<User> filtrarUsuariosPorRol(List<Role> listaRoles, List<Integer> usuariosExcluidos) {
         List<User> lista = new ArrayList<>();
         try {
             Query query;
@@ -95,7 +98,7 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     }
 
     @Override
-    public List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos, List<User> usuariosExcluidos) {
+    public List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos, List<Integer> usuariosExcluidos) {
         List<User> lista = new ArrayList<>();
         try {
             Query query;

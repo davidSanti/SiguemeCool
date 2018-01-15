@@ -79,10 +79,12 @@
                                               oncomplete="PF('editarElementos').show()" update="editarElementos"/>
 
                             <p:commandButton  icon="ui-icon-trash" action="#{elementoController.eliminarElemento(elemento)}"
-                                              update="tablaElmentos, formElementos:growlElements" >
+                                              update="tablaElmentos, formElementos:growlElements"
+                                              styleClass="btn-danger">
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Estas Seguro de eliminar este Elemento?" />
                             </p:commandButton>
+                            <!--<p:commandLink styleClass="ui-icon ui-icon-trash" />-->
                         </p:column>
 
                     </p:dataTable>

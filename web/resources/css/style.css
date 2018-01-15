@@ -1,12 +1,12 @@
 .ui-menubar{
     height: 100% !important;
-    padding: 0px !important;
+    padding: 0px !important;    
     box-shadow: inset 0 0 0 20px #658DBD;
-
 }
 
 .ui-menu .ui-menuitem-text{
     color:white !important;
+    font-size: 1.3em;
 }
 .ui-datatable-odd {
     /*background: none repeat scroll 0 0 #F2F5F9;*/
@@ -25,20 +25,31 @@
     text-decoration: none;
     font-size: 100%;
     list-style: none;
-
 }
 
 .ui-menu .ui-menuitem-link:hover{
-    background-color: #E3D4B3!important;
+    /*background-color: #E3D4B3!important;*/
+    box-shadow: inset 0 0 0 20px #4C6B8F; 
+    /*background-color: #4C6B8F!important;*/
+    font-weight: normal!important;
+}
+/*.ui-widget-content .ui-state-hover{
+    box-shadow: inset 0 0 0 20px #85b2cb ; 
+    background-color: #4C6B8F!important;
+    color: white;
+}*/
+.ui-widget input:hover, .ui-widget select, .ui-widget textarea:hover{
+    background-color: white!important;
+}
+.ui-selectonemenu-panel .ui-selectonemenu-item:hover{
+    background-color: #85b2cb!important;
+}
 
-}
-.ui-menubar .ui-menu-child .ui-menuitem-link:hover{
-    color: black!important;
+.ui-widget-header .ui-inputfield, .ui-widget-content .ui-inputfield{
+    width: 100%!important;  
+    height: 20px!important;
 }
 
-.ui-menu .ui-menuitem-text:hover{
-    color: black!important;
-}
 .colorMenus{
     box-shadow: inset 0 0 0 20px #658DBD; 
     background-color: #658DBD;
@@ -53,7 +64,7 @@
     background-color: white;
     color:black;
     margin-right: 10px!important;
-  }
+}
 
 .row-color:hover{
     background: rgba(46,152,189, 0.3);
@@ -94,30 +105,177 @@
 /*Esto funciona kathe*/
 
 .ui-dialog{
-
     top: 50%;
     width: 410px;
-    /*height: 270px !important;*/
     box-sizing: border-box;
     background: #fff;
     border-radius: 5px;
-
 }
 
 .ui-dialog .ui-dialog-titlebar{
     box-shadow: inset 0 0 0 20px #658DBD;
+    color: white!important;
 }
 
-
-/*h1{
-
+h2{
     font-size: 24px;
-    margin: 0;
-    padding: 0 0 20px;
-    color: black;
+    margin-top: 20px;
+    /*    padding: 0 0 20px;*/
+    color: #4F4F4F;
     text-align: center;
+}
 
-}*/
+.botonOpcional-form{
+    box-shadow: inset 0 0 0 20px #337ab7!important;
+    background-color: #337ab7!important;
+    width: 103%!important; 
+    font-weight: normal!important; 
+    color: white!important; 
+    border-color: #204d74!important;
+}
+
+.botonOpcional-form:hover{
+    background-color: #204C73!important;
+    border-color: #204d74!important;
+}
+
+.boton-confirm-yes{
+    background-color: #d9534f!important;
+    box-shadow: inset 0 0 0 20px #d9534f!important;
+    border-color: #d9534f!important;
+    font-weight: normal!important;
+    color: white!important;
+}
+.boton-confirm-no{
+    background-color: #337ab7!important;
+    box-shadow: inset 0 0 0 20px #337ab7!important; 
+    border-color: #337ab7!important;
+    font-weight: normal!important;
+    color: white!important;
+}
+
+.btn {
+    display: inline-block!important;
+    padding: 6px 12px!important;
+    margin-bottom: 10px!important;
+    margin-top: 10px!important;
+    margin-left: 5px!important;
+    font-size: 14px!important;
+    font-weight: 400!important;
+    line-height: 1.42857143!important;
+    text-align: center!important;
+    white-space: nowrap!important;
+    vertical-align: middle!important;
+    -ms-touch-action: manipulation!important;
+    touch-action: manipulation!important;
+    cursor: pointer!important;
+    -webkit-user-select: none!important;
+    -moz-user-select: none!important;
+    -ms-user-select: none!important;
+    user-select: none!important;
+    background-image: none!important;
+    border: 1px solid transparent!important;
+    border-radius: 4px!important;
+    width: 100%;
+}
+
+.btn-block {
+    display: block;
+    width: 85%;
+}
+
+.btn-primary {
+    color: #fff!important;
+    background-color: #337ab7!important;
+    border-color: #2e6da4!important;
+}
+
+.btn-primary:focus,
+.btn-primary.focus {
+    color: #fff!important;
+    background-color: #286090!important;
+    border-color: #122b40!important;
+}
+
+.btn-primary:hover {
+    color: #fff!important;
+    background-color: #286090!important;
+    border-color: #204d74!important;
+}
+
+.btn-success {
+    color: #fff!important;
+    background-color: #5cb85c!important;
+    border-color: #4cae4c!important;
+}
+
+.btn-success:focus,
+.btn-success.focus {
+    color: #fff!important;
+    background-color: #449d44!important;
+    border-color: #255625!important;
+}
+
+.btn-success:hover {
+    color: #fff!important;
+    background-color: #449d44!important;
+    border-color: #398439!important;
+}
+
+.btn-warning {
+    color: #fff!important;
+    background-color: #f0ad4e!important;
+    border-color: #eea236!important;
+}
+
+.btn-warning:focus,
+.btn-warning.focus {
+    color: #fff!important;
+    background-color: #ec971f!important;
+    border-color: #985f0d!important;
+}
+
+.btn-warning:hover {
+    color: #fff!important;
+    background-color: #ec971f!important;
+    border-color: #d58512!important;
+}
+
+.btn-danger {
+    color: #fff!important;
+    background-color: #d9534f!important;
+    border-color: #d43f3a!important;
+}
+
+.btn-danger:focus,
+.btn-danger.focus {
+    color: #fff!important;
+    background-color: #c9302c!important;
+    border-color: #761c19!important;
+}
+
+.btn-danger:hover {
+    color: #fff!important;
+    background-color: #c9302c!important;
+    border-color: #ac2925!important;
+}
+
+.btn-info {
+    color: #fff!important;
+    background-color: #5bc0de!important;
+    border-color: #46b8da!important;
+}
+.btn-info:focus,
+.btn-info.focus {
+    color: #fff!important;
+    background-color: #31b0d5!important;
+    border-color: #1b6d85!important;
+}
+.btn-info:hover {
+    color: #fff!important;
+    background-color: #31b0d5!important;
+    border-color: #269abc!important;
+}
 
 /*cosas*/
 /*.ui-widget-overlay{

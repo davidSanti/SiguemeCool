@@ -85,7 +85,7 @@ public class UsuarioController implements Serializable {
     }
 
     public void filtrarUsuarios() {
-        List<User> listaVacia = new ArrayList<>();
+        List<Integer> listaVacia = new ArrayList<>();
         if (!listaGrupo.isEmpty()) {
 
             if (!listaRoles.isEmpty()) {
@@ -132,12 +132,12 @@ public class UsuarioController implements Serializable {
                     usuario.setUserPassword(usuario.getIdentification());
                     //Aqui se le asigna el estado por defecto que NO es Activo sino change password, para que la primera vez que esntre al sistema cambie la contraseña.
                     usuario.setUserStatusId(userStatusFacadeLocal.find(4));
-                    // userFacadeLocal.create(usuario);
+                     userFacadeLocal.create(usuario);
                     List<User> list = new ArrayList();
                     User user1 = new User();
                     user1.setEmail("dsrobayo80@misena.edu.co");
                     list.add(user1);
-                    Mail.send(list, "Cosas", "su calve es: " + claveGenerada);
+//                    Mail.send(list, "Cosas", "su calve es: " + claveGenerada);
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Usuario registrado correctamente"));
                     ocultarModal(2);
                 } else {

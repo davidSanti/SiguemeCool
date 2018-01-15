@@ -594,11 +594,11 @@ public class CursoController implements Serializable {
       el filtro puede ser por grupo,por rol o ambos (esto depende de si la lista del filtro esta vacia o no)
      */
     public void filtrarUsuarios() {
-        List<User> algo = new ArrayList<>();
+        List<Integer> algo = new ArrayList<>();
         System.out.println("filtrarUsuarios  tempo" + usuariosTemporalesPorCurso.size());
 
         for (UserByCourse item : usuariosTemporalesPorCurso) {
-            algo.add(item.getUserId());
+            algo.add(item.getUserId().getUserId());
             System.out.println("item " + item.getUserId().getFirstName());
         }
         if (!listaGrupos.isEmpty()) {

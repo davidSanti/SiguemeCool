@@ -4,8 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-
-      xmlns:p="http://primefaces.org/ui">      
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
     <body>
 
@@ -119,152 +119,187 @@
 
                 <p:dialog id="registrarCurso"  resizable="false"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="registrarCurso" modal="true"
+                          widgetVar="registrarCurso" modal="true" width="380"
                           showEffect="fold" hideEffect="fold" responsive="true">
-                    <h:form id="formRegistrar">
 
-                        <h1><h:outputText value="Registrar"/></h1>
-                        <h:panelGrid columns="2" id="gridRegistrar">
+                    <center>
+                        <h:form id="formRegistrar">
 
-                            <p:outputLabel value="Nombre" for="courseName" />
-                            <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
-                                         required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90">
-                                <f:validateLength minimum="10" maximum="90"/>
-                            </p:inputText>
-                            
-                            <p:outputLabel value="Fecha Inicio" for="startDate" />
-                            <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" required="true" 
-                                        requiredMessage="El campo fecha inicio es obligatorio"  showOn="button" effect="fold"
-                                        pattern="dd/MM/yyyy">
-                                <f:convertDateTime pattern="dd/MM/yyyy" />
-                            </p:calendar>
-                            <p:outputLabel value="Fecha Fin" for="finishDate" />
-                            <p:calendar id="finishDate" value="#{cursoController.curso.finishDate}" title="FinishDate" showOn="button"
-                                        required="true" requiredMessage="El campo fecha fin es obligatorio." pattern="dd/MM/yyyy" effect="fold">
-                                <f:convertDateTime pattern="dd/MM/yyyy"/>
-                            </p:calendar>
-                            <p:outputLabel value="Descripción" for="description" />
-                            <p:inputTextarea id="description" value="#{cursoController.curso.description}" title="Description" 
-                                             required="true" requiredMessage="La descripción es obligatoria" maxlength="500"
-                                             cols="22" autoResize="false">
-                                <f:validateLength minimum="10" maximum="500"/>
-                            </p:inputTextarea>
+                            <h2>Registrar Curso</h2>
+                            <h:panelGrid columns="1" id="gridRegistrar" width="280">
 
-                            <p:commandButton value="Enviar" action="#{cursoController.registrarCurso()}"
-                                             update=":formCurso, formRegistrar:gridRegistrar"/>   
-                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(1)}" immediate="true" update="formRegistrar"/>
-                        </h:panelGrid>
+                                <!--<p:outputLabel value="Nombre" for="courseName" />-->
+                                <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
+                                             required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90"
+                                             pt:placeholder="Nombre">
+                                    <f:validateLength minimum="10" maximum="90"/>
+                                </p:inputText>
 
-                    </h:form>
+                                <!--<p:outputLabel value="Fecha Inicio" for="startDate" />-->
+                                <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" 
+                                            required="true" requiredMessage="El campo fecha inicio es obligatorio" 
+                                            pattern="dd/MM/yyyy" pt:placeholder="Fecha de Inicio">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </p:calendar>
+
+                                <!--<p:outputLabel value="Fecha Fin" for="finishDate" />-->
+                                <p:calendar id="finishDate" value="#{cursoController.curso.finishDate}" title="FinishDate"
+                                            required="true" requiredMessage="El campo fecha fin es obligatorio." pattern="dd/MM/yyyy"
+                                            pt:placeholder="Fecha de finalización">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:calendar>
+
+                                <!--<p:outputLabel value="Descripción" for="description" />-->
+                                <p:inputTextarea id="description" value="#{cursoController.curso.description}" title="Description" 
+                                                 required="true" requiredMessage="La descripción es obligatoria" maxlength="500"
+                                                 rows="5" autoResize="false" style="height: 90px!important"
+                                                 pt:placeholder="Descripción">
+                                    <f:validateLength minimum="10" maximum="500"/>
+                                </p:inputTextarea>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" width="290">
+                                <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(1)}"
+                                                 immediate="true" update="formRegistrar"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Registrar" action="#{cursoController.registrarCurso()}"
+                                                 update=":formCurso, formRegistrar:gridRegistrar"
+                                                 styleClass="btn btn-primary"/>   
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
                 <p:dialog id="asociar"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="asociarUsuarios" modal="true"
-                          showEffect="fold" hideEffect="fold" width="500">
-                    <h:form id="formAsociar">
-                        <center>
-                            <h1><h:outputText value="Asociar Usuarios"/></h1>
-                        </center>
+                          showEffect="fold" hideEffect="fold" width="550">
+                    <center>
 
-                        <h:panelGrid columns="2">
-                            <p:panel>
-                                <p:selectCheckboxMenu label="MU" id="grupos"
-                                                      value="#{cursoController.listaGrupos}" 
-                                                      converter="grupoConverter" filter='true'
-                                                      styleClass="checkBox"
-                                                      onHide="ejecutarFiltroAsociar();">
-                                    <f:selectItems var="grupo" value="#{cursoController.listarGrupos()}" 
-                                                   itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
-                                </p:selectCheckboxMenu>
-                                <br></br>
-                                <br></br>
-                                <p:selectCheckboxMenu label="Roles" id="roles"
-                                                      value="#{cursoController.listaRoles}" 
-                                                      converter="rolConverter" filter='true'
-                                                      styleClass="checkBox" 
-                                                      onHide="ejecutarFiltroAsociar();">
-                                    <f:selectItems var="roles" value="#{cursoController.listarRoles()}" 
-                                                   itemLabel="#{roles.description}" itemValue="#{roles}"/>
-                                </p:selectCheckboxMenu>
+                        <h:form id="formAsociar">
 
-                                <p:remoteCommand  name="ejecutarFiltroAsociar"
-                                                  update="listaUsuarios" process="@this grupos, @this roles"
-                                                  action="#{cursoController.filtrarUsuarios()}"/> 
-                                <br></br>
-                                <br></br>
+                            <h2>Asociar Usuarios</h2>
 
-                                <center>
-                                    <p:commandButton value="Clear" action="#{cursoController.limpiarFiltro()}" update="listaUsuarios,grupos, roles"/>
-                                </center>
+                            <h:panelGrid columns="2">
+                                <p:panel>
+                                    <p:selectCheckboxMenu label="Grupos" id="grupos" 
+                                                          value="#{cursoController.listaGrupos}" 
+                                                          converter="grupoConverter" filter='true'
+                                                          styleClass="checkBox"
+                                                          onHide="ejecutarFiltroAsociar();">
+                                        <f:selectItems var="grupo" value="#{cursoController.listarGrupos()}" 
+                                                       itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                    </p:selectCheckboxMenu>
+                                    <br></br>
+                                    <br></br>
+                                    <p:selectCheckboxMenu label="Roles" id="roles"
+                                                          value="#{cursoController.listaRoles}" 
+                                                          converter="rolConverter" filter='true'
+                                                          styleClass="checkBox" 
+                                                          onHide="ejecutarFiltroAsociar();">
+                                        <f:selectItems var="roles" value="#{cursoController.listarRoles()}" 
+                                                       itemLabel="#{roles.description}" itemValue="#{roles}"/>
+                                    </p:selectCheckboxMenu>
 
-                            </p:panel>
+                                    <p:remoteCommand  name="ejecutarFiltroAsociar"
+                                                      update="listaUsuarios" process="@this grupos, @this roles"
+                                                      action="#{cursoController.filtrarUsuarios()}"/> 
+                                    <br></br>
+                                    <br></br>
 
-                            <p:panel>
-                                <p:selectManyMenu id="listaUsuarios" value="#{cursoController.usuariosLista}" showCheckbox="true" 
-                                                  converter="usuarioConverter" styleClass="usuarios-checkBox" scrollHeight="150"
-                                                  style="width: 300px !important" >
-                                    <f:selectItems var="user" value="#{cursoController.devolverUsuarios()}"
-                                                   itemLabel="#{user.firstName} #{user.lastName}" itemValue="#{user}">
-                                    </f:selectItems>
-                                </p:selectManyMenu>
-                            </p:panel>
+                                    <p:commandButton value="Clear" action="#{cursoController.limpiarFiltro()}"
+                                                     update="listaUsuarios,grupos, roles"
+                                                     styleClass="btn btn-info"/>
+                                </p:panel>
 
-                        </h:panelGrid>
-                        <center>
-                            <p:commandButton value="Enviar" action="#{cursoController.asociarUsuarios()}" update=":formCurso, :formCurso:tablaCurso, :formRegistrar"></p:commandButton> 
-                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(3)}" immediate="true" update="editarCurso"/>
-                        </center>
-                    </h:form>
+                                <p:panel>
+                                    <p:selectManyMenu id="listaUsuarios" value="#{cursoController.usuariosLista}" showCheckbox="true" 
+                                                      converter="usuarioConverter" styleClass="usuarios-checkBox" scrollHeight="150"
+                                                      style="width: 300px !important; height: 150px!important" >
+                                        <f:selectItems var="user" value="#{cursoController.devolverUsuarios()}"
+                                                       itemLabel="#{user.firstName} #{user.lastName}" itemValue="#{user}">
+                                        </f:selectItems>
+                                    </p:selectManyMenu>
+                                </p:panel>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(3)}" 
+                                                 immediate="true" update="editarCurso"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Enviar" action="#{cursoController.asociarUsuarios()}" 
+                                                 update=":formCurso, :formCurso:tablaCurso, :formRegistrar"
+                                                 styleClass="btn btn-success"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
                 <p:dialog id="editarCurso"  resizable="false"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="editarCurso" modal="true"
+                          widgetVar="editarCurso" modal="true" width="380"
                           showEffect="fold" hideEffect="fold" responsive="true">
-                    <h:form id="formEditar">
 
-                        <h1><h:outputText value="Editar"/></h1>
-                        <h:panelGrid columns="2" id="gridEditar">
+                    <center>
+                        <h:form id="formEditar">
+                            <h2>Modificar Curso</h2>
+                            <h:panelGrid columns="1" id="gridEditar" width="280">
 
+                                <!--<p:outputLabel value="Nombre" for="courseName" />-->
+                                <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
+                                             required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90"
+                                             disabled="#{cursoController.desabilitarInputSiCursoVencido()}"
+                                             pt:placeholder="Nombre">
+                                    <f:validateLength minimum="10" maximum="90"/>
+                                </p:inputText>
 
-                            <p:outputLabel value="Nombre" for="courseName" />
-                            <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
-                                         required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90"
-                                         disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
-                                <f:validateLength minimum="10" maximum="90"/>
-                            </p:inputText>
+                                <!--<p:outputLabel value="Fecha Inicio" for="startDate" />-->
+                                <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate"  
+                                            requiredMessage="El campo fecha inicio es obligatorio"  required="true"
+                                            pattern="dd/MM/yyyy" disabled="#{cursoController.desabilitarInputSiCursoVencido()}"
+                                            pt:placeholder="Fecha de Inicio">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </p:calendar>
 
-                            <p:outputLabel value="Fecha Inicio" for="startDate" />
-                            <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" required="true" 
-                                        requiredMessage="El campo fecha inicio es obligatorio"  showOn="button" effect="fold"
-                                        pattern="dd/MM/yyyy" disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
-                                <f:convertDateTime pattern="dd/MM/yyyy" />
-                            </p:calendar>
+                                <!--<p:outputLabel value="Fecha Fin" for="finishDate" />-->
+                                <p:calendar id="finishDate" value="#{cursoController.curso.finishDate}" title="FinishDate"
+                                            required="true" requiredMessage="El campo fecha fin es obligatorio." 
+                                            pattern="dd/MM/yyyy" pt:placeholder="Fecha de Finalización">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:calendar>
 
-                            <p:outputLabel value="Fecha Fin" for="finishDate" />
-                            <p:calendar id="finishDate" value="#{cursoController.curso.finishDate}" title="FinishDate" showOn="button"
-                                        required="true" requiredMessage="El campo fecha fin es obligatorio." pattern="dd/MM/yyyy" effect="fold">
-                                <f:convertDateTime pattern="dd/MM/yyyy"/>
-                            </p:calendar>
+                                <!--<h:column/>-->
+                                <!--                                <p:commandLink value="Editar usuarios" oncomplete="PF('editarUsuarios').show();" 
+                                                                               actionListener="#{cursoController.devolverUsuariosPorCurso(1)}" update="editarUsuarios"
+                                                                               disabled="#{cursoController.desabilitarInputSiCursoVencido()}"/>-->
 
-                            <h:column/>
-                            <p:commandLink value="Editar usuarios" oncomplete="PF('editarUsuarios').show();" 
-                                           actionListener="#{cursoController.devolverUsuariosPorCurso(1)}" update="editarUsuarios"
-                                           disabled="#{cursoController.desabilitarInputSiCursoVencido()}"/>
+                                <!--<p:outputLabel value="Descripción" for="description" />-->
+                                <p:inputTextarea id="description" value="#{cursoController.curso.description}" title="Description" 
+                                                 required="true" requiredMessage="La descripción es obligatoria" maxlength="500"
+                                                 rows="5" autoResize="false" style="height: 90px!important"
+                                                 disabled="#{cursoController.desabilitarInputSiCursoVencido()}"
+                                                 pt:placeholder="Descripción">
+                                    <f:validateLength minimum="10" maximum="500"/>
+                                </p:inputTextarea>
+                                <p:commandButton value="Editar usuarios" oncomplete="PF('editarUsuarios').show();" 
+                                                 actionListener="#{cursoController.devolverUsuariosPorCurso(1)}" update="editarUsuarios"
+                                                 disabled="#{cursoController.desabilitarInputSiCursoVencido()}"
+                                                 styleClass="btn-block botonOpcional-form"/>
 
-                            <p:outputLabel value="Descripción" for="description" />
-                            <p:inputTextarea id="description" value="#{cursoController.curso.description}" title="Description" 
-                                             required="true" requiredMessage="La descripción es obligatoria" maxlength="500"
-                                             cols="22" autoResize="false" disabled="#{cursoController.desabilitarInputSiCursoVencido()}">
-                                <f:validateLength minimum="10" maximum="500"/>
-                            </p:inputTextarea>
+                            </h:panelGrid>
 
-                        </h:panelGrid>
-                        <p:commandButton value="Enviar" action="#{cursoController.editarCerrarModal()}" update=":formCurso, formEditar:gridEditar"></p:commandButton> 
-                        <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(2)}" immediate="true" update="editarCurso"/>
-                    </h:form>
-
+                            <h:panelGrid columns="2" width="290">                                
+                                <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(2)}" 
+                                                 immediate="true" update="editarCurso"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Guardar" action="#{cursoController.editarCerrarModal()}"
+                                                 update=":formCurso, formEditar:gridEditar"
+                                                 styleClass="btn btn-success"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
                 <p:dialog id="editarUsuarios"  resizable="false" 
@@ -272,15 +307,13 @@
                           widgetVar="editarUsuarios" modal="true" styleClass="algo"
                           showEffect="fold" hideEffect="fold" width="800" >
                     <center>
-                        <h1><h:outputText value="Usuarios Por Curso"></h:outputText></h1>
-                    </center>
-                    <h:form id="formEditarUsuariosCurso">
-                        <center>
+                        <h:form id="formEditarUsuariosCurso">
+                            <h2>Usuarios Por Curso</h2>
                             <p:panelGrid columns="2">
+
                                 <h:panelGroup>
                                     <h:panelGrid columns="4">
-
-                                        <p:selectCheckboxMenu label="MU" id="gruposEditarAsignar"
+                                        <p:selectCheckboxMenu label="Grupos" id="gruposEditarAsignar"
                                                               value="#{cursoController.listaGrupos}" 
                                                               converter="grupoConverter" filter='true'
                                                               styleClass="checkBox"
@@ -302,28 +335,30 @@
                                                           update="usuariosEditarAsignar" process="@this gruposEditarAsignar, @this rolesEditarAsignar"
                                                           action="#{cursoController.filtrarUsuarios()}"/> 
 
-                                        <p:commandButton value="Clear" action="#{cursoController.limpiarFiltro()}" update="usuariosEditarAsignar, gruposEditarAsignar, rolesEditarAsignar"/>
+                                        <p:commandButton value="Limpiar" action="#{cursoController.limpiarFiltro()}" 
+                                                         update="usuariosEditarAsignar, gruposEditarAsignar, rolesEditarAsignar"
+                                                         styleClass="btn-dang"/>
 
                                     </h:panelGrid>
+
                                     <p:selectManyMenu id="usuariosEditarAsignar" value="#{cursoController.usuariosLista}" showCheckbox="true" 
                                                       converter="usuarioConverter" styleClass="usuarios-checkBox" scrollHeight="150"
-                                                      style="width: 300px !important" >
+                                                      style="width: 300px !important; height: 150px!important" >
                                         <f:selectItems var="user" value="#{cursoController.devolverUsuarios()}"
                                                        itemLabel="#{user.firstName} #{user.lastName}" itemValue="#{user}">
                                         </f:selectItems>
                                     </p:selectManyMenu>
 
-                                    <center>
-                                        <p:commandButton value="Asignar" update=":formEditarUsuariosCurso"
-                                                         action="#{cursoController.asignarUsuariosAlEditar()}"/>
-                                    </center>
+                                    <p:commandButton value="Asignar" update=":formEditarUsuariosCurso"
+                                                     action="#{cursoController.asignarUsuariosAlEditar()}"
+                                                     styleClass="btn btn-primary"/>
                                 </h:panelGroup>
 
                                 <h:panelGroup>
                                     <p:dataTable id="tablaUsuarios"
                                                  value="#{cursoController.usuariosPorCurso}" var="usuariosCurso" 
                                                  emptyMessage="No se encontrarón registros" reflow="true"
-                                                 paginator="true" paginatorPosition="bottom" rows="10"  rowStyleClass="algo">
+                                                 paginator="true" paginatorPosition="bottom" rows="5"  rowStyleClass="algo">
 
                                         <p:column filterBy="#{usuariosTable.groupId.groupName}" filterMatchMode="in" >
                                             <f:facet name="filter">
@@ -360,14 +395,16 @@
 
                             </p:panelGrid>
 
-                            <center >
-                                <p:commandButton value="Guardar" update="verCurso,formEditarUsuariosCurso, :formCurso:growlCurso" styleClass="correrBoton"
-                                                 action="#{cursoController.guardarEdicionCerrarModal()}" immediate="true" />
-                                <p:commandButton value="Cerrar" update="verCurso,formEditarUsuariosCurso" styleClass="correrBoton"
-                                                 actionListener="#{cursoController.ocultarModal(5)}" immediate="true" />
-                            </center>
-                        </center>
-                    </h:form>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" update="verCurso,formEditarUsuariosCurso"  immediate="true" 
+                                                 actionListener="#{cursoController.ocultarModal(5)}"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Guardar" update="verCurso,formEditarUsuariosCurso, :formCurso:growlCurso"
+                                                 action="#{cursoController.guardarEdicionCerrarModal()}" immediate="true" 
+                                                 styleClass="btn btn-success"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
                 <p:dialog id="verCurso"  resizable="false" 
@@ -375,12 +412,12 @@
                           widgetVar="verCurso" modal="true" styleClass="algo"
                           showEffect="fold" hideEffect="fold" width="650" >
                     <center>
-                        <h1><h:outputText value="Detalle Curso"></h:outputText></h1>
-                    </center>
-                    <br/>
-                    <h:form id="formVerCurso">
-                        <center>
+
+                        <h:form id="formVerCurso">
+                            <h2>Detalle Curso</h2>
+
                             <p:panelGrid columns="2" id="gridVerCurso">
+
                                 <h:outputText value="Nombre"/>
                                 <h:outputText value="#{cursoController.curso.courseName}"/>
 
@@ -405,10 +442,11 @@
                                         <p:graphicImage url="/resources/img/probabilidad-y-estadistica-gif-6.gif" width="50"/>
                                     </p:commandLink>
                                 </p:panelGrid>
+
                                 <p:dataTable id="usuariosTabla" reflow="true"
                                              value="#{cursoController.usuariosPorCurso}" var="usuariosCurso" 
                                              emptyMessage="No se encontrarón registros" 
-                                             paginator="true" paginatorPosition="bottom" rows="6"  rowStyleClass="algo">
+                                             paginator="true" paginatorPosition="bottom" rows="5"  rowStyleClass="algo">
 
                                     <p:column filterBy="#{usuariosTable.groupId.groupName}" filterMatchMode="in" >
                                         <f:facet name="filter">
@@ -447,12 +485,13 @@
                                 </p:dataTable>
 
                             </p:panelGrid>
-                            <br/>
-                            <center >
-                                <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(4)}" immediate="true" update="verCurso" styleClass="correrBoton"/>
-                            </center>
-                        </center>
-                    </h:form>
+
+                            <h:panelGrid columns="1">
+                                <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(4)}" 
+                                                 immediate="true" update="verCurso" styleClass="btn btn-warning btn-block"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
 
@@ -584,10 +623,14 @@
 
                 </p:dialog>
 
-                <h:form>           
+                <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes boton-confirm-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no boton-confirm-no" icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </center>
                     </p:confirmDialog>
                 </h:form>             
 
