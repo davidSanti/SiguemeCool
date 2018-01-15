@@ -4,7 +4,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
     <body>
 
@@ -90,202 +91,225 @@
                     </p:dataTable>
                 </h:form>
 
-                <p:dialog id="registrarElementos"  resizable="false"
+                <p:dialog id="registrarElementos"  resizable="false" width="380"
                           closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="registrarElementos" modal="true"
                           showEffect="fold" hideEffect="fold" responsive="true">
-                    <h:form id="formRegistrar">
+                    <center>
+                        <h:form id="formRegistrar">
 
-                        <h1><h:outputText value="Registrar Elemento"/></h1>
-                        <h:panelGrid columns="2" id="gridRegistrar">
-
-                            <p:outputLabel value="Tipo" for="type" />
-                            <p:selectOneMenu id="type" label="Tipo Elemento"     
-                                             value="#{elementoController.elemento.typeId}"
-                                             required="true" requiredMessage="El campo Tipo Elemento es un campo obligatorio" 
-                                             converter="tipoElementoConverter" >
-
-                                <f:selectItem itemLabel="-- Seleciona un tipo --" noSelectionOption="true" itemDisabled="true"/>
-
-                                <f:selectItems var="tipo" value="#{elementoController.tipoElementosLista}" 
-                                               itemLabel="#{tipo.description}" itemValue="#{tipo}"/>         
-                                <f:ajax event="change" listener="#{elementoController.asignarMarcaSegunTipoElemento}" 
-                                        render="formRegistrar"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Marca" for="brand" />
-                            <p:inputText id="brand" value="#{elementoController.elemento.brand}" title="brand" required="true" 
-                                         validatorMessage="La marca debe contener entre 2 y 50 carácteres" maxlength="50"
-                                         requiredMessage="El campo Marca es un campo obligatorio" >    
-                                <f:validateLength minimum="2" maximum="50"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Serial Code" for="serialCode" />
-                            <p:inputText id="serialCode" value="#{elementoController.elemento.serialCode}" title="serialCode" 
-                                         required="true" requiredMessage="El campo serial Code es un campo obligatorio"
-                                         validatorMessage="La marca debe contener entre 1 y 13 carácteres" maxlength="13">
-                                <f:validateLength minimum="1" maximum="13"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Placa" for="inventoryPlaque" />
-                            <p:inputText id="inventoryPlaque" value="#{elementoController.elemento.inventoryPlaque}" title="inventoryPlaque" 
-                                         required="true" requiredMessage="La Placa es un campo obligatorio"
-                                         validatorMessage="La marca debe contener entre 1 y 20 carácteres" maxlength="20">
-                                <f:validateLength minimum="1" maximum="20"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Modelo" for="modelo" />
-                            <p:inputText id="modelo" value="#{elementoController.elemento.model}" title="" 
-                                         required="true" requiredMessage="El Modelo es un campo obligatorio" 
-                                         validatorMessage="La marca debe contener entre 1 y 50 carácteres" maxlength="50">
-                                <f:validateLength minimum="1" maximum="50"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Nombre Pc" for="nombrePc" rendered="#{elementoController.banderaNombrePc eq true}"/>
-                            <p:inputText id="nombrePc" value="#{elementoController.elemento.pcName}" title="" 
-                                         required="#{elementoController.banderaNombrePc eq true}" requiredMessage="El nombre del Pc es un campo obligatorio" 
-                                         validatorMessage="La marca debe contener entre 1 y 17 carácteres" maxlength="17"
-                                         rendered="#{elementoController.banderaNombrePc eq true}">
-                                <f:validateLength minimum="1" maximum="17"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Descripción" for="description" />
-                            <p:inputTextarea id="description" value="#{elementoController.elemento.description}" title="Description" 
-                                             cols="22" autoResize="false" maxlength="50"
-                                             validatorMessage="La marca debe contener entre 0 y 50 carácteres">
-                                <f:validateLength minimum="0" maximum="50"/>
-                            </p:inputTextarea>
+                            <h2>Registrar Elemento</h2>
+                            <h:panelGrid columns="1" id="gridRegistrar" width="280">
 
 
-                            <p:commandButton value="Registrar" action="#{elementoController.registrarElemento()}"
-                                             update="formRegistrar:gridRegistrar, :formElementos"/>   
-                            <p:commandButton value="Cerrar" action="#{elementoController.ocultarModal(1)}" immediate="true" 
-                                             update="formRegistrar:gridRegistrar"/>
-                        </h:panelGrid>
+                                <p:selectOneMenu id="type" label="Tipo Elemento"  style="width: 93%"  
+                                                 value="#{elementoController.elemento.typeId}"
+                                                 required="true" requiredMessage="El campo Tipo Elemento es un campo obligatorio" 
+                                                 converter="tipoElementoConverter" >
 
-                    </h:form>
+                                    <f:selectItem itemLabel="-- Seleciona un tipo --" noSelectionOption="true" itemDisabled="true"/>
+
+                                    <f:selectItems var="tipo" value="#{elementoController.tipoElementosLista}" 
+                                                   itemLabel="#{tipo.description}" itemValue="#{tipo}"/>         
+                                    <f:ajax event="change" listener="#{elementoController.asignarMarcaSegunTipoElemento}" 
+                                            render="formRegistrar"/>
+                                </p:selectOneMenu>
+
+
+                                <p:inputText id="brand" value="#{elementoController.elemento.brand}" title="brand" required="true" 
+                                             validatorMessage="La marca debe contener entre 2 y 50 carácteres" maxlength="50"
+                                             requiredMessage="El campo Marca es un campo obligatorio"  pt:placeholder="Marca" >    
+                                    <f:validateLength minimum="2" maximum="50"/>
+                                </p:inputText>
+
+                                <p:inputText id="serialCode" value="#{elementoController.elemento.serialCode}" title="serialCode" 
+                                             required="true" requiredMessage="El campo serial Code es un campo obligatorio"
+                                             validatorMessage="La marca debe contener entre 1 y 13 carácteres" maxlength="13"
+                                             pt:placeholder="Serial Code">
+                                    <f:validateLength minimum="1" maximum="13"/>
+                                </p:inputText>
+
+
+                                <p:inputText id="inventoryPlaque" value="#{elementoController.elemento.inventoryPlaque}" title="inventoryPlaque" 
+                                             required="true" requiredMessage="La Placa es un campo obligatorio"
+                                             validatorMessage="La marca debe contener entre 1 y 20 carácteres" maxlength="20"
+                                             pt:placeholder="Placa">
+                                    <f:validateLength minimum="1" maximum="20"/>
+                                </p:inputText>
+
+
+                                <p:inputText id="modelo" value="#{elementoController.elemento.model}" title="" 
+                                             required="true" requiredMessage="El Modelo es un campo obligatorio" 
+                                             validatorMessage="La marca debe contener entre 1 y 50 carácteres" maxlength="50"
+                                             pt:placeholder="Modelo">
+                                    <f:validateLength minimum="1" maximum="50"/>
+                                </p:inputText>
+
+
+                                <p:inputText id="nombrePc" value="#{elementoController.elemento.pcName}" title="" 
+                                             required="#{elementoController.banderaNombrePc eq true}" requiredMessage="El nombre del Pc es un campo obligatorio" 
+                                             validatorMessage="La marca debe contener entre 1 y 17 carácteres" maxlength="17"
+                                             rendered="#{elementoController.banderaNombrePc eq true}" pt:placeholder="Nombre Pc">
+                                    <f:validateLength minimum="1" maximum="17"/>
+                                </p:inputText>
+
+
+                                <p:inputTextarea id="description" value="#{elementoController.elemento.description}" title="Description" 
+                                                 cols="22" autoResize="false" maxlength="50" pt:placeholder="Descripción"
+                                                 validatorMessage="La marca debe contener entre 0 y 50 carácteres" style="height: 90px!important">
+                                    <f:validateLength minimum="0" maximum="50"/>
+                                </p:inputTextarea>
+
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+
+                                <p:commandButton value="Cerrar" action="#{elementoController.ocultarModal(1)}" immediate="true" 
+                                                 update="formRegistrar:gridRegistrar" styleClass="btn btn-warning " />
+
+                                <p:commandButton value="Registrar" action="#{elementoController.registrarElemento()}"
+                                                 update="formRegistrar:gridRegistrar, :formElementos"  styleClass="btn btn-primary"/>   
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
                 <p:dialog id="modalVerElemento" resizable="false" closeOnEscape="false" 
                           draggable="false" closable="false" widgetVar="modalVerElemento" 
                           modal="true" showEffect="fade" hideEffect="fade">
-                    <center><h1><h:outputText value="Detalle Elemento"/></h1></center>
-                    <br/>
-                    <h:form id="formVerElemento">
-                        <p:panelGrid columns="2" id="gridVerElemento">
+                    <center>
+                        <h2>Detalle Elemento</h2>
 
-                            <h:outputLabel value="Tipo"/>
-                            <h:outputLabel value="#{elementoController.elemento.typeId.description}"/>
+                        <h:form id="formVerElemento">
+                            <p:panelGrid columns="2" id="gridVerElemento">
 
-                            <h:outputLabel value="Serial Code"/>
-                            <h:outputLabel value="#{elementoController.elemento.serialCode}"/>
+                                <h:outputLabel value="Tipo"/>
+                                <h:outputLabel value="#{elementoController.elemento.typeId.description}"/>
 
-                            <h:outputLabel value="Placa Inventario"/>
-                            <h:outputLabel value="#{elementoController.elemento.inventoryPlaque}"/>
+                                <h:outputLabel value="Serial Code"/>
+                                <h:outputLabel value="#{elementoController.elemento.serialCode}"/>
 
-                            <h:outputLabel value="Marca"/>
-                            <h:outputLabel value="#{elementoController.elemento.brand}"/>    
+                                <h:outputLabel value="Placa Inventario"/>
+                                <h:outputLabel value="#{elementoController.elemento.inventoryPlaque}"/>
 
-                            <h:outputLabel value="Modelo"/>
-                            <h:outputLabel value="#{elementoController.elemento.model}"/>    
+                                <h:outputLabel value="Marca"/>
+                                <h:outputLabel value="#{elementoController.elemento.brand}"/>    
 
-                            <h:outputLabel value="Nombre PC" rendered="#{elementoController.verificarTipoElemento() eq true}"/>
-                            <h:outputLabel value="#{elementoController.elemento.pcName}" rendered="#{elementoController.verificarTipoElemento() eq true}"/>  
+                                <h:outputLabel value="Modelo"/>
+                                <h:outputLabel value="#{elementoController.elemento.model}"/>    
 
-                            <h:outputLabel value="Descripción"/>
-                            <h:outputLabel value="#{elementoController.elemento.description}"/>
+                                <h:outputLabel value="Nombre PC" rendered="#{elementoController.verificarTipoElemento() eq true}"/>
+                                <h:outputLabel value="#{elementoController.elemento.pcName}" rendered="#{elementoController.verificarTipoElemento() eq true}"/>  
 
-                        </p:panelGrid>
-                        <br/>
-                        <center>
-                            <p:commandButton value="Cerrar" immediate="true"
-                                             action="#{elementoController.ocultarModal(2)}"/>
-                        </center> 
-                    </h:form>
+                                <h:outputLabel value="Descripción"/>
+                                <h:outputLabel value="#{elementoController.elemento.description}"/>
+
+                            </p:panelGrid>
+
+                            <h:panelGrid>
+                                <p:commandButton value="Cerrar" immediate="true"
+                                                 action="#{elementoController.ocultarModal(2)}" styleClass="btn btn-warning" />
+                            </h:panelGrid>
+
+
+                        </h:form>
+                    </center> 
                 </p:dialog>
 
-                <p:dialog id="editarElementos"  resizable="false"
+                <p:dialog id="editarElementos"  resizable="false" width="380"
                           closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="editarElementos" modal="true"
                           showEffect="fold" hideEffect="fold" responsive="true">
-                    <h:form id="formEditar">
+                    <center>
+                        <h:form id="formEditar">
 
-                        <h1><h:outputText value="Editar Elemento"/></h1>
-                        <h:panelGrid columns="2" id="gridEditar">
-
-                            <p:outputLabel value="Tipo" for="type" />
-                            <p:selectOneMenu id="type" label="Tipo Elemento"     
-                                             value="#{elementoController.elemento.typeId}"
-                                             required="true" requiredMessage="El campo Tipo Elemento es un campo obligatorio" 
-                                             converter="tipoElementoConverter" >
-
-                                <f:selectItem itemLabel="-- Seleciona un tipo --" noSelectionOption="true" itemDisabled="true"/>
-
-                                <f:selectItems var="tipo" value="#{elementoController.tipoElementosLista}" 
-                                               itemLabel="#{tipo.description}" itemValue="#{tipo}"/>         
-                                <f:ajax event="change" listener="#{elementoController.asignarMarcaSegunTipoElemento}" 
-                                        render="formEditar"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Marca" for="brand" />
-                            <p:inputText id="brand" value="#{elementoController.elemento.brand}" title="brand" required="true" 
-                                         validatorMessage="La marca debe contener entre 2 y 50 carácteres" maxlength="50"
-                                         requiredMessage="El campo Marca es un campo obligatorio" >    
-                                <f:validateLength minimum="2" maximum="50"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Serial Code" for="serialCode" />
-                            <p:inputText id="serialCode" value="#{elementoController.elemento.serialCode}" title="serialCode" 
-                                         required="true" requiredMessage="El campo serial Code es un campo obligatorio"
-                                         validatorMessage="La marca debe contener entre 1 y 13 carácteres" maxlength="13">
-                                <f:validateLength minimum="1" maximum="13"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Placa" for="inventoryPlaque" />
-                            <p:inputText id="inventoryPlaque" value="#{elementoController.elemento.inventoryPlaque}" title="inventoryPlaque" 
-                                         required="true" requiredMessage="La Placa es un campo obligatorio"
-                                         validatorMessage="La marca debe contener entre 1 y 20 carácteres" maxlength="20">
-                                <f:validateLength minimum="1" maximum="20"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Modelo" for="Modelo" />
-                            <p:inputText id="Modelo" value="#{elementoController.elemento.model}" title="" 
-                                         required="true" requiredMessage="El Modelo es un campo obligatorio" 
-                                         validatorMessage="La marca debe contener entre 1 y 50 carácteres" maxlength="50">
-                                <f:validateLength minimum="1" maximum="50"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Nombre Pc" for="nombrePc" rendered="#{elementoController.banderaNombrePc eq true}"/>
-                            <p:inputText id="nombrePc" value="#{elementoController.elemento.pcName}" title="" 
-                                         required="#{elementoController.banderaNombrePc eq true}" requiredMessage="El nombre del Pc es un campo obligatorio" 
-                                         validatorMessage="La marca debe contener entre 1 y 17 carácteres" maxlength="17"
-                                         rendered="#{elementoController.banderaNombrePc eq true}">
-                                <f:validateLength minimum="1" maximum="17"/>
-                            </p:inputText>
-
-                            <p:outputLabel value="Descripción" for="description" />
-                            <p:inputTextarea id="description" value="#{elementoController.elemento.description}" title="Description" 
-                                             cols="22" autoResize="false" maxlength="50"
-                                             validatorMessage="La marca debe contener entre 0 y 50 carácteres">
-                                <f:validateLength minimum="0" maximum="50"/>
-                            </p:inputTextarea>
+                            <h2>Editar Elemento</h2>
+                            <h:panelGrid columns="1" id="gridEditar" width="280">
 
 
-                            <p:commandButton value="Guardar" action="#{elementoController.editarElemento()}"
-                                             update="formEditar:gridEditar, :formElementos"/>   
-                            <p:commandButton value="Cerrar" action="#{elementoController.ocultarModal(3)}" immediate="true" 
-                                             update="formEditar"/>
-                        </h:panelGrid>
+                                <p:selectOneMenu id="type" label="Tipo Elemento"     
+                                                 value="#{elementoController.elemento.typeId}"
+                                                 required="true" requiredMessage="El campo Tipo Elemento es un campo obligatorio" 
+                                                 converter="tipoElementoConverter" style="width:93%">
 
-                    </h:form>
+                                    <f:selectItem itemLabel="-- Seleciona un tipo --" noSelectionOption="true" itemDisabled="true"/>
+
+                                    <f:selectItems var="tipo" value="#{elementoController.tipoElementosLista}" 
+                                                   itemLabel="#{tipo.description}" itemValue="#{tipo}"/>         
+                                    <f:ajax event="change" listener="#{elementoController.asignarMarcaSegunTipoElemento}" 
+                                            render="formEditar"/>
+                                </p:selectOneMenu>
+
+
+                                <p:inputText id="brand" value="#{elementoController.elemento.brand}" title="brand" required="true" 
+                                             validatorMessage="La marca debe contener entre 2 y 50 carácteres" maxlength="50"
+                                             requiredMessage="El campo Marca es un campo obligatorio" pt:placeholder="Marca">    
+                                    <f:validateLength minimum="2" maximum="50"/>
+                                </p:inputText>
+
+
+                                <p:inputText id="serialCode" value="#{elementoController.elemento.serialCode}" title="serialCode" 
+                                             required="true" requiredMessage="El campo serial Code es un campo obligatorio"
+                                             validatorMessage="La marca debe contener entre 1 y 13 carácteres" maxlength="13" 
+                                             pt:placeholder="Serial Code">
+                                    <f:validateLength minimum="1" maximum="13"/>
+                                </p:inputText>
+
+
+                                <p:inputText id="inventoryPlaque" value="#{elementoController.elemento.inventoryPlaque}" title="inventoryPlaque" 
+                                             required="true" requiredMessage="La Placa es un campo obligatorio"
+                                             validatorMessage="La marca debe contener entre 1 y 20 carácteres" maxlength="20" 
+                                             pt:placeholder="Placa" >
+                                    <f:validateLength minimum="1" maximum="20"/>
+                                </p:inputText>
+
+
+                                <p:inputText id="Modelo" value="#{elementoController.elemento.model}" title="" 
+                                             required="true" requiredMessage="El Modelo es un campo obligatorio" 
+                                             validatorMessage="La marca debe contener entre 1 y 50 carácteres" maxlength="50" pt:placeholder="Modelo">
+                                    <f:validateLength minimum="1" maximum="50"/>
+                                </p:inputText>
+
+
+                                <p:inputText id="nombrePc" value="#{elementoController.elemento.pcName}" title="" 
+                                             required="#{elementoController.banderaNombrePc eq true}" requiredMessage="El nombre del Pc es un campo obligatorio" 
+                                             validatorMessage="La marca debe contener entre 1 y 17 carácteres" maxlength="17"
+                                             rendered="#{elementoController.banderaNombrePc eq true}" pt:placeholder="Nombre Pc">
+                                    <f:validateLength minimum="1" maximum="17"/>
+                                </p:inputText>
+
+
+                                <p:inputTextarea id="description" value="#{elementoController.elemento.description}" title="Description" 
+                                                 cols="22" autoResize="false" maxlength="50"  pt:placeholder="Descripción" 
+                                                 style="height: 90px!important"
+                                                 validatorMessage="La marca debe contener entre 0 y 50 carácteres">
+                                    <f:validateLength minimum="0" maximum="50"/>
+                                </p:inputTextarea>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{elementoController.ocultarModal(3)}" immediate="true" 
+                                                 update="formEditar" styleClass="btn btn-warning"/>
+                                <p:commandButton value="Guardar" action="#{elementoController.editarElemento()}"
+                                                 update="formEditar:gridEditar, :formElementos" styleClass="btn btn-success"/>   
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
                 </p:dialog>
 
-                <h:form>
+                <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes boton-confirm-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no boton-confirm-no" icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </center>
                     </p:confirmDialog>
-                </h:form> 
+                </h:form>  
 
             </ui:define>
 

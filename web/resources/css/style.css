@@ -26,6 +26,11 @@
     font-size: 100%;
     list-style: none;
 }
+.ui-menu .ui-menuitem-link .ui-menuitem-icon, .ui-menu .ui-submenu-icon{
+    display: inline-block;
+    float: left;
+    
+}
 
 .ui-menu .ui-menuitem-link:hover{
     /*background-color: #E3D4B3!important;*/
@@ -64,6 +69,10 @@
     background-color: white;
     color:black;
     margin-right: 10px!important;
+/*    width: 80px!important;
+    height: 40px!important;
+    padding-left: 30px!important;*/
+    
 }
 
 .row-color:hover{

@@ -23,17 +23,11 @@
                 <h:form>
                     <p:menubar model="#{menuController.model}">
                         <f:facet name="options">
-                            <!--                    <a href="#" class="brand-logo logoSigueme right">
-                                                    <img src="../../resources/img/logo3.png" class="responsive-img" width="100px;"></img>
-                                                </a>-->
-                            <!--                            <p:menuitem>                            
-                                                            <img src="../../resources/img/logo3.png" height="30"/>
-                                                        </p:menuitem>-->
                             <p:menubar >
                                 <p:menuitem action="#{menuController.redireccion()}"  style="margin-right: 25px">
-                                    <img src="../../resources/img/LOGOO.png" class="responsive-img" width="50px;"></img>
+                                    <img src="../../resources/img/LOGOO.png" class="responsive-img" width="30px;"></img>
                                 </p:menuitem>
-                                <p:submenu icon="ui-icon-person" styleClass="buton" > 
+                                <p:submenu  label="#{menuController.retornarNombreUsuario()}" style="height:10px!important ;margin-top: 5%" > 
 
                                     <p:menuitem value="Modificar Cuenta" icon="ui-icon-pencil" 
                                                 oncomplete="PF('modificarCuenta').show()" update=":modificarCuenta" 
