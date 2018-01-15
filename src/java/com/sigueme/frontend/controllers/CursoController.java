@@ -16,6 +16,7 @@ import com.sigueme.backend.model.RoleFacadeLocal;
 import com.sigueme.backend.model.UserByCourseFacadeLocal;
 import com.sigueme.backend.model.UserFacadeLocal;
 import com.sigueme.backend.utilities.Mail;
+import java.awt.AWTEventMulticaster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -67,6 +68,7 @@ public class CursoController implements Serializable {
     private Course curso;
 
     List<User> usuariosLista;
+    List<User> usuariosListaAsignar;
     List<User> usuariosPorCursoEditar;
     List<Course> cursos;
     List<Integer> listaCursosTemporal;
@@ -92,6 +94,7 @@ public class CursoController implements Serializable {
     public void init() {
         curso = new Course();
         usuariosLista = new ArrayList<>();
+        usuariosListaAsignar = new ArrayList<>();
         usuariosPorCurso = new ArrayList<>();
         usuariosTemporalesPorCurso = new ArrayList<>();
         usuariosPorCursoEditar = new ArrayList<>();
@@ -228,6 +231,14 @@ public class CursoController implements Serializable {
         this.usuarioPorCursoActual = usuarioPorCursoActual;
     }
 
+    public List<User> getUsuariosListaAsignar() {
+        return usuariosListaAsignar;
+    }
+
+    public void setUsuariosListaAsignar(List<User> usuariosListaAsignar) {
+        this.usuariosListaAsignar = usuariosListaAsignar;
+    }
+
     //Aquí se llama al método que valida las fechas y si éste devuelva "true" llama al método encargado de abrir el modal para asiganar usuarios
     public void registrarCurso() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -260,7 +271,7 @@ public class CursoController implements Serializable {
                     if (eliminarUsuariosDelCurso()) {
                         cursoFacadeLocal.remove(curso);
                         enviarCorreoAlEditarUsuariosCurso(new ArrayList<>(), usuariosRemovidosDelCursoEmail);
-                        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Eliminado Correctamente"));
+                        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Curso Eliminado Correctamente"));
                     }
                 }
                 listarCursos();
@@ -268,7 +279,7 @@ public class CursoController implements Serializable {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "El curso se encuentra vencido y no es posible eliminarlo"));
             }
         } catch (Exception ex) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo eliminar"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo eliminar el curso, intentalo más tarde"));
         }
     }
 
@@ -363,35 +374,67 @@ public class CursoController implements Serializable {
     /*Este metodo valida si el curso tiene usuarios asignados, de ser asi registra el curso, asigna los usuarios seleccionados y 
       cierra las ventanas modales que se abrieron anteriormente y limpia el filtro de grupo y rol
      */
+//    public void asociarUsuarios() {
+//        FacesContext context = FacesContext.getCurrentInstance();
+//        try {
+//            if (!usuariosLista.isEmpty()) {
+//                this.cursoFacadeLocal.create(curso);
+//                for (int i = 0; i < usuariosLista.size(); i++) {
+//                    UserByCourse userbyCourse = new UserByCourse();
+//                    userbyCourse.setCourseId(curso);
+//
+//                    userbyCourse.setUserId(usuariosLista.get(i));
+//
+//                    userByCourseFacadeLocal.create(userbyCourse);
+//                }
+//                //Envio de Coreo
+//                this.enviarCorreo(usuariosLista,
+//                        "Nueva Capacitación Asignada",
+//                        "Tienes una nueva Capacitación, dale un vistazo.");
+//                ocultarModal(3);
+//                ocultarModal(1);
+//                limpiarFiltro();
+//                listarCursos();
+//
+//                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registrado Correctamente"));
+//            } else {
+//                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No se puede crear el curso hasta que los usuarios se asocien"));
+//            }
+//        } catch (Exception ex) {
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Error al asociar los usuarios al curso"));
+//        }
+//    }
     public void asociarUsuarios() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
             if (!usuariosLista.isEmpty()) {
-                this.cursoFacadeLocal.create(curso);
-                for (int i = 0; i < usuariosLista.size(); i++) {
-                    UserByCourse userbyCourse = new UserByCourse();
-                    userbyCourse.setCourseId(curso);
+                usuariosListaAsignar = new ArrayList<>();
+                usuariosListaAsignar.addAll(usuariosLista);
 
-                    userbyCourse.setUserId(usuariosLista.get(i));
-
-                    userByCourseFacadeLocal.create(userbyCourse);
+                for (User user : usuariosLista) {
+                    System.out.println("item" + user.getFirstName());
+                    UserByCourse usuarioCurso = new UserByCourse();
+                    usuarioCurso.setUserId(user);
+                    usuariosTemporalesPorCurso.add(usuarioCurso);
                 }
-                //Envio de Coreo
-                this.enviarCorreo(usuariosLista,
-                        "Nueva Capacitación Asignada",
-                        "Tienes una nueva Capacitación, dale un vistazo.");
-                ocultarModal(3);
-                ocultarModal(1);
-                limpiarFiltro();
-                listarCursos();
-
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registrado Correctamente"));
-            } else {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No se puede crear el curso hasta que los usuarios se asocien"));
+//                usuariosLista.removeAll(usuariosListaAsignar);
+                usuariosLista.removeAll(usuariosLista);
             }
+            System.out.println("cuantos??" + usuariosLista.size());
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registrado Correctamente"));
+
         } catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Error al asociar los usuarios al curso"));
         }
+    }
+
+    public void removerTodosLosUsuariosAginar() {
+        List<User> listaOriginal = new ArrayList<>();
+        listaOriginal.addAll(usuariosListaAsignar);
+        usuariosListaAsignar.removeAll(listaOriginal);
+        usuariosListaAsignar =  new ArrayList<>();
+        usuariosLista.addAll(listaOriginal);
+        usuariosTemporalesPorCurso = new ArrayList<>();
     }
 
     public void enviarCorreoAlEditarUsuariosCurso(List<User> usuariosChecked, List<User> usuariosUnChecked) {
@@ -549,7 +592,7 @@ public class CursoController implements Serializable {
                 req.execute("PF('Grafica').hide();");
                 break;
             case 12:
-                req.execute("PF('confirmarEliminacion').hide();");   
+                req.execute("PF('confirmarEliminacion').hide();");
                 curso = new Course();
                 usuariosRemovidosDelCursoEmail = new ArrayList<>();
                 break;
@@ -812,7 +855,7 @@ public class CursoController implements Serializable {
         cursoFacadeLocal.edit(curso);
         //Aqui rocedemos a enviar el correo
         enviarCorreoAlEditarUsuariosCurso(listaUsuariosAgregados, listaUsuariosRemovidos);
-        
+
         FacesContext.getCurrentInstance().addMessage(
                 null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos se han modificado correctamente"));
     }

@@ -108,7 +108,7 @@
                             </p:commandButton>
 
                             <p:commandButton  icon="ui-icon-trash" action="#{cursoController.eliminarCurso(curso)}"
-                                              update="tablaCurso, formCurso:growlCurso, :formVerCurso:gridVerCurso">
+                                              update="tablaCurso, :formCurso:growlCurso, :formVerCurso:gridVerCurso">
                                 <p:confirm header="Confirmación" message="Estas Seguro de eliminar este curso?" icon="ui-icon-alert"/>
                             </p:commandButton>
 
@@ -171,49 +171,45 @@
                     </center>
                 </p:dialog>
 
+
                 <p:dialog id="asociar"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="asociarUsuarios" modal="true"
-                          showEffect="fold" hideEffect="fold" width="550">
+                          showEffect="fold" hideEffect="fold" width="800">
                     <center>
-
                         <h:form id="formAsociar">
+                            <p:panelGrid columns="2">
 
-                            <h2>Asociar Usuarios</h2>
+                                <h:panelGroup>
+                                    <h:panelGrid columns="4">
+                                        <p:selectCheckboxMenu label="Grupos" id="grupos" 
+                                                              value="#{cursoController.listaGrupos}" 
+                                                              converter="grupoConverter" filter='true'
+                                                              styleClass="checkBox"
+                                                              onHide="ejecutarFiltroAsociar();">
+                                            <f:selectItems var="grupo" value="#{cursoController.listarGrupos()}" 
+                                                           itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                        </p:selectCheckboxMenu>
 
-                            <h:panelGrid columns="2">
-                                <p:panel>
-                                    <p:selectCheckboxMenu label="Grupos" id="grupos" 
-                                                          value="#{cursoController.listaGrupos}" 
-                                                          converter="grupoConverter" filter='true'
-                                                          styleClass="checkBox"
-                                                          onHide="ejecutarFiltroAsociar();">
-                                        <f:selectItems var="grupo" value="#{cursoController.listarGrupos()}" 
-                                                       itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
-                                    </p:selectCheckboxMenu>
-                                    <br></br>
-                                    <br></br>
-                                    <p:selectCheckboxMenu label="Roles" id="roles"
-                                                          value="#{cursoController.listaRoles}" 
-                                                          converter="rolConverter" filter='true'
-                                                          styleClass="checkBox" 
-                                                          onHide="ejecutarFiltroAsociar();">
-                                        <f:selectItems var="roles" value="#{cursoController.listarRoles()}" 
-                                                       itemLabel="#{roles.description}" itemValue="#{roles}"/>
-                                    </p:selectCheckboxMenu>
+                                        <p:selectCheckboxMenu label="Roles" id="roles"
+                                                              value="#{cursoController.listaRoles}" 
+                                                              converter="rolConverter" filter='true'
+                                                              styleClass="checkBox" 
+                                                              onHide="ejecutarFiltroAsociar();">
+                                            <f:selectItems var="roles" value="#{cursoController.listarRoles()}" 
+                                                           itemLabel="#{roles.description}" itemValue="#{roles}"/>
+                                        </p:selectCheckboxMenu>
 
-                                    <p:remoteCommand  name="ejecutarFiltroAsociar"
-                                                      update="listaUsuarios" process="@this grupos, @this roles"
-                                                      action="#{cursoController.filtrarUsuarios()}"/> 
-                                    <br></br>
-                                    <br></br>
+                                        <p:remoteCommand  name="ejecutarFiltroAsociar"
+                                                          update="listaUsuarios" process="@this grupos, @this roles"
+                                                          action="#{cursoController.filtrarUsuarios()}"/> 
 
-                                    <p:commandButton value="Clear" action="#{cursoController.limpiarFiltro()}"
-                                                     update="listaUsuarios,grupos, roles"
-                                                     styleClass="btn btn-info"/>
-                                </p:panel>
+                                        <p:commandButton value="Limpiar" action="#{cursoController.limpiarFiltro()}"
+                                                         update="listaUsuarios,grupos, roles"
+                                                         styleClass="btn-dang"/>
 
-                                <p:panel>
+                                    </h:panelGrid>
+
                                     <p:selectManyMenu id="listaUsuarios" value="#{cursoController.usuariosLista}" showCheckbox="true" 
                                                       converter="usuarioConverter" styleClass="usuarios-checkBox" scrollHeight="150"
                                                       style="width: 300px !important; height: 150px!important" >
@@ -221,9 +217,53 @@
                                                        itemLabel="#{user.firstName} #{user.lastName}" itemValue="#{user}">
                                         </f:selectItems>
                                     </p:selectManyMenu>
-                                </p:panel>
 
-                            </h:panelGrid>
+                                    <p:commandButton value="Asignar" update=":formAsociar"
+                                                     action="#{cursoController.asociarUsuarios()}"
+                                                     styleClass="btn btn-primary"/>
+                                </h:panelGroup>
+
+                                <h:panelGroup>
+
+                                    <p:dataTable id="tablaUsuarios"
+                                                 value="#{cursoController.usuariosListaAsignar}" var="usuariosCurso" 
+                                                 emptyMessage="No se encontrarón registros" reflow="true"
+                                                 paginator="true" paginatorPosition="bottom" rows="5"  rowStyleClass="algo">
+
+                                        <p:column filterBy="#{usuariosTable.groupId.groupName}" filterMatchMode="in" >
+                                            <f:facet name="filter">
+                                                <p:selectCheckboxMenu id="gruposFiltro" label="Grupos"     
+                                                                      onHide="ejecutarFiltroEditar();"
+                                                                      value="#{cursoController.gruposPersona}" filter="true"
+                                                                      converter="grupoConverter" >
+
+                                                    <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
+                                                                   itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:remoteCommand  name="ejecutarFiltroEditar"
+                                                                  update=":formAsociar:tablaUsuarios" process="@this gruposFiltro"
+                                                                  action="#{cursoController.filtrarPersonasPorGrupo()}"/> 
+                                            </f:facet>
+                                            <h:outputText value="#{usuariosCurso.groupId.groupName}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Nombre">
+                                            <h:outputText value="#{usuariosCurso.firstName} #{usuariosCurso.lastName}">
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column headerText="Acciones" width="55">
+                                            <f:facet name="header">
+                                                <p:commandButton icon="ui-icon-circle-close" update=":formAsociar, :formCurso:growlCurso"
+                                                                 action="#{cursoController.removerTodosLosUsuariosAginar()}"/>
+                                            </f:facet>
+                                            <p:commandButton icon="ui-icon-close" update=":formEditarUsuariosCurso, :formCurso:growlCurso"
+                                                             action="#{cursoController.removerUsuarioDelCurso(usuariosCurso)}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGroup>
+
+                            </p:panelGrid>
 
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(3)}" 
@@ -479,8 +519,7 @@
                                         <p:commandButton icon="ui-icon-star" 
                                                          actionListener="#{cursoController.asignarUsuarioCurso(usuariosCurso)}"
                                                          oncomplete="PF('calificarCurso').show();"
-                                                         update="calificarCurso" 
-                                                         disabled="#{usuariosCurso.grade}"/>
+                                                         update="calificarCurso" />
                                     </p:column>
                                 </p:dataTable>
 
@@ -518,12 +557,13 @@
 
                                 <p:outputLabel value="Adjunto"/>
                                 <p:commandButton ajax="false" immediate="true" value="Descargar"
-                                                 disabled="#{cursoController.usuarioPorCursoActual.attached == null ? true : false}"> 
+                                                 disabled="#{cursoController.usuarioPorCursoActual.attached == null ? true : false}"
+                                                 styleClass="btn-block botonOpcional-form"> 
                                     <p:fileDownload value="#{cursoController.file}"/>
                                 </p:commandButton>
 
-                                <p:outputLabel value="Validación"/>
-                                <p:selectOneMenu value="#{cursoController.usuarioPorCursoActual.grade}">
+                                <p:outputLabel value="Validación" />
+                                <p:selectOneMenu value="#{cursoController.usuarioPorCursoActual.grade}" style="width: 95%!important">
                                     <f:selectItem itemLabel="Aprobado" itemValue="true"/>
                                     <f:selectItem itemLabel="No Aprobado" itemValue="false"/>
                                 </p:selectOneMenu>
@@ -531,10 +571,13 @@
                             </p:panelGrid>
 
                             <h:panelGrid columns="2">                         
+                                <p:commandButton value="Cerrar" immediate="true" actionListener="#{cursoController.ocultarModal(8)}"
+                                                 styleClass="btn btn-warning"/>
                                 <p:commandButton value="Guardar" iconPos="ui-icon-check"
                                                  action="#{cursoController.calificarUsuarioCurso()}"
-                                                 update="formCurso:growlCurso, formVerCurso:usuariosTabla"/>
-                                <p:commandButton value="Cerrar" immediate="true" actionListener="#{cursoController.ocultarModal(8)}"/>
+                                                 update="formCurso:growlCurso, formVerCurso:usuariosTabla"
+                                                 disabled="#{cursoController.usuarioPorCursoActual.grade}"
+                                                 styleClass="btn btn-success"/> 
                             </h:panelGrid>
                         </h:form>
                     </center>
@@ -545,55 +588,59 @@
                           closeOnEscape="true" draggable="false" closable="true"
                           widgetVar="graficaCurso" modal="true"  style="max-width: 1200px;"
                           showEffect="fold" hideEffect="fold" responsive="true">
-                    <h:form id="formGrafica">
+                    <center>
+                        <h:form id="formGrafica">
 
-                        <h1><h:outputText value="Desarrollo"/></h1>
-                        <h:panelGrid columns="1" id="gridGrafica">
-                            <p:chart type="bar" model="#{cursoChartController.barModel}" style="height:200px;" 
-                                     responsive="true"/>
+                            <h2>Desarrollo</h2>
+                            <h:panelGrid columns="1" id="gridGrafica">
+                                <p:chart type="bar" model="#{cursoChartController.barModel}" style="height:200px;" 
+                                         responsive="true"/>
 
+                                <br/>
+                                <br/>
+                                <p:dataTable id="usuarioCursoTable" reflow="true" 
+                                             value="#{cursoChartController.listaUsuariosSinEvidencia}" var="usuarioCurso"
+                                             emptyMessage="No se encontrarón registros" rowStyleClass="row-color"
+                                             paginator="true" paginatorPosition="bottom" rows="6" >
 
-                            <p:dataTable id="usuarioCursoTable" reflow="true" 
-                                         value="#{cursoChartController.listaUsuariosSinEvidencia}" var="usuarioCurso"
-                                         emptyMessage="No se encontrarón registros" rowStyleClass="row-color"
-                                         paginator="true" paginatorPosition="bottom" rows="10" >
+                                    <p:column filterBy="#{usuarioCurso.groupId.groupName}" filterMatchMode="in" >
+                                        <f:facet name="filter">
+                                            <p:selectCheckboxMenu id="gruposListaGrafica" label="Grupos"     
+                                                                  onHide="ejecutarFiltroGrafica();"
+                                                                  value="#{cursoChartController.gruposPersona}" filter="true"
+                                                                  converter="grupoConverter" >
 
-                                <p:column filterBy="#{usuarioCurso.groupId.groupName}" filterMatchMode="in" >
-                                    <f:facet name="filter">
-                                        <p:selectCheckboxMenu id="gruposListaGrafica" label="Grupos"     
-                                                              onHide="ejecutarFiltroGrafica();"
-                                                              value="#{cursoChartController.gruposPersona}" filter="true"
-                                                              converter="grupoConverter" >
+                                                <f:selectItems var="grupo" value="#{cursoChartController.listarGrupos()}" 
+                                                               itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
+                                            </p:selectCheckboxMenu>
+                                            <p:remoteCommand  name="ejecutarFiltroGrafica"
+                                                              update=":formGrafica, :formGrafica:usuarioCursoTable" process="@this gruposListaGrafica"
+                                                              action="#{cursoChartController.filtrarPersonas()}"/> 
+                                        </f:facet>
+                                        <h:outputText value="#{usuarioCurso.groupId.groupName}"/>
+                                    </p:column>
 
-                                            <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
-                                                           itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
-                                        </p:selectCheckboxMenu>
-                                        <p:remoteCommand  name="ejecutarFiltroGrafica"
-                                                          update=":formGrafica:usuarioCursoTable" process="@this gruposListaGrafica"
-                                                          action="#{cursoChartController.filtrarPersonas()}"/> 
-                                    </f:facet>
-                                    <h:outputText value="#{usuarioCurso.groupId.groupName}"/>
-                                </p:column>
+                                    <p:column headerText="Persona" filterMatchMode="in"
+                                              filterBy="#{usuarioCurso.firstName}" >
+                                        <f:facet name="filter">
+                                            <p:inputText value="#{cursoChartController.nombrePersona}" 
+                                                         placeholder="Ej. Arturo">
+                                                <p:ajax event="change" update=":formGrafica:usuarioCursoTable" 
+                                                        listener="#{cursoChartController.filtrarPersonas()}" />
+                                            </p:inputText>
+                                        </f:facet>
+                                        <h:outputText value="#{usuarioCurso.firstName} #{usuarioCurso.lastName}"/>
+                                    </p:column>
+                                </p:dataTable>
 
-                                <p:column headerText="Persona" filterMatchMode="in"
-                                          filterBy="#{usuarioCurso.firstName}" >
-                                    <f:facet name="filter">
-                                        <p:inputText value="#{cursoChartController.nombrePersona}" 
-                                                     placeholder="Ej. Arturo">
-                                            <p:ajax event="change" update=":formGrafica:usuarioCursoTable" 
-                                                    listener="#{cursoChartController.filtrarPersonas()}" />
-                                        </p:inputText>
-                                    </f:facet>
-                                    <h:outputText value="#{usuarioCurso.firstName} #{usuarioCurso.lastName}"/>
-                                </p:column>
-                            </p:dataTable>
+                            </h:panelGrid>
 
-                        </h:panelGrid>
-
-                        <center>
-                            <p:commandButton value="Cerrar" immediate="true" actionListener="#{cursoController.ocultarModal(10)}"/>
-                        </center>
-                    </h:form>
+                            <h:panelGrid columns="1">
+                                <p:commandButton value="Cerrar" actionListener="#{cursoController.ocultarModal(10)}"
+                                                 styleClass="btn btn-warning" immediate="true" />
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
 
                 </p:dialog>
 
@@ -615,8 +662,10 @@
                             <p:separator/>
 
                             <p:commandButton value="Si" icon="ui-icon-check" action="#{cursoController.eliminarTodosLosUsuariosDelCurso()}" 
-                                             update=":formCurso:tablaCurso, :formCurso:growlCurso" />
-                            <p:commandButton value="No" icon="ui-icon-close" oncomplete="PF('confirmarEliminacion').hide();"/>
+                                             update=":formCurso:tablaCurso, :formCurso:growlCurso" 
+                                             styleClass="boton-confirm-yes"/>
+                            <p:commandButton value="No" icon="ui-icon-close" oncomplete="PF('confirmarEliminacion').hide();"
+                                             styleClass="boton-confirm-no" style="margin-left: 12px"/>
                         </center>
                     </h:form>       
 

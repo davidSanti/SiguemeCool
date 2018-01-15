@@ -5,6 +5,7 @@
  */
 package com.sigueme.backend.model;
 
+import com.sigueme.backend.entities.Course;
 import com.sigueme.backend.entities.GroupCls;
 import java.util.List;
 import javax.ejb.Local;
@@ -32,4 +33,5 @@ public interface GroupClsFacadeLocal {
 
     List<GroupCls> listarGrupos();
 
+    List<GroupCls> listarGruposPorPersonasDelCurso(Course curso);
 }

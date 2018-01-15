@@ -5,6 +5,7 @@
  */
 package com.sigueme.backend.model;
 
+import com.sigueme.backend.entities.Course;
 import com.sigueme.backend.entities.GroupCls;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class GroupClsFacade extends AbstractFacade<GroupCls> implements GroupCls
         }
         return lista;
     }
-    
+
     @Override
     public List<GroupCls> findAll() {
         List<GroupCls> lista = new ArrayList<>();
@@ -52,6 +53,19 @@ public class GroupClsFacade extends AbstractFacade<GroupCls> implements GroupCls
             lista = query.getResultList();
         } catch (Exception ex) {
             System.out.println("Error en el metodo findAll Grupos= " + ex.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
+    public List<GroupCls> listarGruposPorPersonasDelCurso(Course curso) {
+        List<GroupCls> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT DISTINCT g FROM UserByCourse uc INNER JOIN uc.userId u INNER JOIN u.groupId g WHERE uc.courseId = :curso");
+            query.setParameter("curso", curso);
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Erro en el método filtrarGruposPorPersonasDelCurso=" + e.getMessage());
         }
         return lista;
     }

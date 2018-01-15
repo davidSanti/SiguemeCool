@@ -22,7 +22,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
-import javax.jws.soap.SOAPBinding.Use;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.BarChartSeries;
@@ -109,7 +108,22 @@ public class CursoChartController implements Serializable {
         if (this.curso != null && this.curso.getCourseId() != null) {
             listaUsuariosSinEvidencia = new ArrayList<>();
             listaUsuariosSinEvidencia = userByCourseFacadeLocal.listarUsuariosSinEvidencia(curso);
+            listarGrupos();
             generarBarModel();
+        }
+    }
+
+    public List<GroupCls> listarGrupos() {
+        if (curso != null && curso.getCourseId() != null) {
+            return groupFacadeLocal.listarGruposPorPersonasDelCurso(curso);
+        } else {
+            return groupFacadeLocal.findAll();
+        }
+    }
+
+    public void filtrarGrafica() {
+        if (gruposPersona.size() > 0) {
+            generarGrafica(gruposPersona);
         }
     }
 
@@ -119,10 +133,12 @@ public class CursoChartController implements Serializable {
             if (!nombrePersona.equals("")) {
                 buscarPersonaPorNombre();
             }
+            filtrarGrafica();
         } else {
             listarUsuarios();
             buscarPersonaPorNombre();
         }
+
     }
 
     public void filtrarPersonasPorGrupo() {
@@ -153,7 +169,7 @@ public class CursoChartController implements Serializable {
     }
 
     private void generarBarModel() {
-        generarGrafica();
+        generarGrafica(groupFacadeLocal.findAll());
     }
 
     public int contarPersonasPorGrupo(List<UserByCourse> lista, GroupCls grupo) {
@@ -166,10 +182,11 @@ public class CursoChartController implements Serializable {
         return cantidad;
     }
 
-    private void generarGrafica() {
+    private void generarGrafica(List<GroupCls> grupos) {
         barModel = new BarChartModel();
+        boolean hayDatos = false;
         List<UserByCourse> listaTotal = userByCourseFacadeLocal.listarUsuariosPorCurso(curso);
-        List<GroupCls> listaGrupos = groupFacadeLocal.findAll();
+        List<GroupCls> listaGrupos = grupos;
 
         BarChartSeries totalUsuarios = new BarChartSeries();
         totalUsuarios.setLabel("Total Cuenta");
@@ -177,6 +194,7 @@ public class CursoChartController implements Serializable {
         for (GroupCls grupo : listaGrupos) {
             int cantidad = contarPersonasPorGrupo(listaTotal, grupo);
             if (cantidad > 0) {
+                hayDatos = true;
                 totalUsuarios.set(grupo.getGroupName(), cantidad);
             }
         }
@@ -225,11 +243,6 @@ public class CursoChartController implements Serializable {
         barModel.setShowDatatip(false);
         barModel.setShowPointLabels(true);
         Axis yAxis = barModel.getAxis(AxisType.Y);
-    }
-    
-    public List<GroupCls> listarGrupos() {
-        System.out.println("aqui perro" + cursoFacadeLocal.listarGrupos(curso).size());
-        return cursoFacadeLocal.listarGrupos(curso);
     }
 
 }

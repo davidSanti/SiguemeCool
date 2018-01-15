@@ -85,7 +85,7 @@ public class CourseFacade extends AbstractFacade<Course> implements CourseFacade
         List<UserByCourse> lista = new ArrayList<>();
         boolean bandera = false;
         try {
-            Query query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.userId u WHERE uc.courseId = :curso and uc.attached IS NOT NULL AND u.userStatusId.userStatusId <> :estadoUsuario", UserByCourse.class);
+            Query query = em.createQuery("SELECT uc FROM UserByCourse uc JOIN uc.userId u WHERE uc.courseId = :curso AND (uc.attached IS NOT NULL OR uc.grade = true) AND u.userStatusId.userStatusId <> :estadoUsuario", UserByCourse.class);
             query.setParameter("curso", curso);
             query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
