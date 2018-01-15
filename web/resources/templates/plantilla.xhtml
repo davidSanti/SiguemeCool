@@ -21,14 +21,18 @@
         <div id="top" class="top">
             <ui:insert name="top">
                 <h:form>
-
                     <p:menubar model="#{menuController.model}">
-                        <p:menuitem>                            
-                            <img src="../../resources/img/logo3.png" height="50"/>
-                        </p:menuitem>
                         <f:facet name="options">
+                            <!--                    <a href="#" class="brand-logo logoSigueme right">
+                                                    <img src="../../resources/img/logo3.png" class="responsive-img" width="100px;"></img>
+                                                </a>-->
+                            <!--                            <p:menuitem>                            
+                                                            <img src="../../resources/img/logo3.png" height="30"/>
+                                                        </p:menuitem>-->
                             <p:menubar >
-                                <p:menuitem action="#{menuController.redireccion()}" icon="ui-icon-home" styleClass="buton" style="margin-right: 25px"></p:menuitem>
+                                <p:menuitem action="#{menuController.redireccion()}"  style="margin-right: 25px">
+                                    <img src="../../resources/img/LOGOO.png" class="responsive-img" width="50px;"></img>
+                                </p:menuitem>
                                 <p:submenu icon="ui-icon-person" styleClass="buton" > 
 
                                     <p:menuitem value="Modificar Cuenta" icon="ui-icon-pencil" 

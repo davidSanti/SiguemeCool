@@ -475,7 +475,7 @@
                                         </h:outputText>
                                     </p:column>
 
-                                    <p:column headerText="Calificar" width="55">
+                                    <p:column headerText="Validar" width="55">
                                         <p:commandButton icon="ui-icon-star" 
                                                          actionListener="#{cursoController.asignarUsuarioCurso(usuariosCurso)}"
                                                          oncomplete="PF('calificarCurso').show();"
@@ -498,13 +498,11 @@
                 <p:dialog id="calificarCurso"  resizable="false" 
                           closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="calificarCurso" modal="true"
-                          showEffect="fade" hideEffect="fade" width="600" >
+                          showEffect="fade" hideEffect="fade" width="400" >
+
                     <center>
-                        <h1><h:outputText value="Calificar Curso"></h:outputText></h1>
-                    </center>
-                    <br/>
-                    <h:form id="formCalificar">
-                        <center>
+                        <h:form id="formCalificar">
+                            <h2>Validar Curso</h2>
                             <p:panelGrid columns="2" id="gridCalificar">
 
                                 <p:outputLabel value="Curso"/>
@@ -531,14 +529,15 @@
                                 </p:selectOneMenu>
 
                             </p:panelGrid>
-                            <br/>
 
-                            <p:commandButton value="Guardar" iconPos="ui-icon-check"
-                                             action="#{cursoController.calificarUsuarioCurso()}"
-                                             update="formCurso:growlCurso, formVerCurso:usuariosTabla"/>
-                            <p:commandButton value="Cerrar" immediate="true" actionListener="#{cursoController.ocultarModal(8)}"/>
-                        </center>
-                    </h:form>
+                            <h:panelGrid columns="2">                         
+                                <p:commandButton value="Guardar" iconPos="ui-icon-check"
+                                                 action="#{cursoController.calificarUsuarioCurso()}"
+                                                 update="formCurso:growlCurso, formVerCurso:usuariosTabla"/>
+                                <p:commandButton value="Cerrar" immediate="true" actionListener="#{cursoController.ocultarModal(8)}"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
 
                 </p:dialog>
 
