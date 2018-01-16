@@ -68,6 +68,7 @@ public class MenuController implements Serializable {
         nuevaClave = "";
         this.listarPermisos();
         this.establecerPermisos();
+        algo();
     }
 
     public MenuModel getModel() {
@@ -265,5 +266,18 @@ public class MenuController implements Serializable {
 
     public String redireccion() {
         return "/pages/system/home.xhtml?redirect=true";
+    }
+
+    private List<String> images;
+
+    public void algo() {
+        images = new ArrayList<String>();
+        for (int i = 1; i <= 12; i++) {
+            images.add("galeria" + i + ".png");
+        }
+    }
+
+    public List<String> getImages() {
+        return images;
     }
 }

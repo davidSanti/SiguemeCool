@@ -17,6 +17,14 @@
 
                 </h4>
 
+                <h:form>
+                    <p:galleria value="#{menuController.images}" var="image" panelWidth="500" panelHeight="313" showCaption="true">
+                        <!--<p:graphicImage name="/resources/img/#{image}" alt="Image Description for #{image}" title="#{image}"/>-->
+                        <p:graphicImage value="../../resources/img/galeria/#{image}" alt="Image Description for #{image}" title="#{image}"/>
+                    </p:galleria>
+                </h:form>
+           
+
                 <h1><h:outputText value="Bienvenid@ al sistema de información Sigueme."/></h1> 
 
                 <p:dialog id="cambiarClave" widgetVar="cambiarClave" resizable="false" header="Cambiar Contraseña"
@@ -53,7 +61,7 @@
                                         goodLabel="Bien"
                                         feedback="true" promptLabel="Escriba su contraseña"
                                         maxlength="16">
-                                        <f:validateLength minimum="8" maximum="16" />
+                                <f:validateLength minimum="8" maximum="16" />
                             </p:password>
 
                             <p:commandButton value="Continuar" action="#{menuController.cambiarClaveUsuario()}" 

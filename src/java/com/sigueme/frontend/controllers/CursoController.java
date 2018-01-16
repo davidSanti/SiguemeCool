@@ -418,7 +418,8 @@ public class CursoController implements Serializable {
                     usuariosTemporalesPorCurso.add(usuarioCurso);
                 }
 //                usuariosLista.removeAll(usuariosListaAsignar);
-                usuariosLista.removeAll(usuariosLista);
+                usuariosLista = new ArrayList<>();
+                filtrarUsuarios();
             }
             System.out.println("cuantos??" + usuariosLista.size());
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registrado Correctamente"));
@@ -435,6 +436,18 @@ public class CursoController implements Serializable {
         usuariosListaAsignar =  new ArrayList<>();
         usuariosLista.addAll(listaOriginal);
         usuariosTemporalesPorCurso = new ArrayList<>();
+    }
+    
+    public void removerUsuarioAginar(User usuario) {  
+        for (User item : usuariosListaAsignar) {
+            
+        }
+        usuariosListaAsignar.remove(usuario);        
+//        usuariosLista.add(usuario);
+        UserByCourse usuarioCurso = new UserByCourse();
+        usuarioCurso.setUserId(usuario);
+        usuariosTemporalesPorCurso.remove(usuarioCurso);
+        filtrarUsuarios();
     }
 
     public void enviarCorreoAlEditarUsuariosCurso(List<User> usuariosChecked, List<User> usuariosUnChecked) {
