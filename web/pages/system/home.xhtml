@@ -16,58 +16,63 @@
                     <h2><h:outputText value="!Hola #{menuController.retornarNombreUsuario()}!"/></h2>
 
                 </h4>
-
+                <center>
+                    <h2><h:outputText value="Bienvenid@ al sistema de información Sigueme." style="color: #0284A8"/></h2> 
+                </center>
                 <h:form>
-                    <p:galleria value="#{menuController.images}" var="image" panelWidth="500" panelHeight="313" showCaption="true">
-                        <!--<p:graphicImage name="/resources/img/#{image}" alt="Image Description for #{image}" title="#{image}"/>-->
-                        <p:graphicImage value="../../resources/img/galeria/#{image}" alt="Image Description for #{image}" title="#{image}"/>
+                    <p:galleria value="#{menuController.images}" var="image" panelWidth="900" panelHeight="700" showCaption="true"
+                                style="left:25%!important;margin-top: 1%!important">
+                        <p:graphicImage value="../../resources/img/galeria/#{image}"  title="#{image}" 
+                                        height="500"/>
                     </p:galleria>
                 </h:form>
-           
 
-                <h1><h:outputText value="Bienvenid@ al sistema de información Sigueme."/></h1> 
 
-                <p:dialog id="cambiarClave" widgetVar="cambiarClave" resizable="false" header="Cambiar Contraseña"
+                <p:dialog id="cambiarClave" widgetVar="cambiarClave" resizable="false" width="380"
                           modal="true" closeOnEscape="false" showEffect="fade" hideEffect="fade" closable="false">
 
-                    <h:form id="formCambiarClave">
-                        <p:growl id="growlCambiar" showDetail="true" showSummary="false" sticky="false" life="5000"/> 
+                    <h2>Cambiar Contraseña</h2>
+                    <center>
+                        <h:form id="formCambiarClave">
+                            <p:growl id="growlCambiar" showDetail="true" showSummary="false" sticky="false" life="5000"/> 
 
-                        <h:panelGrid id="gridCambiarClave" columns="2">
+                            <h:panelGrid id="gridCambiarClave" columns="1" width="280">
 
-                            <p:outputLabel for="clave" value="Clave actual"/>
-                            <p:password id="clave" required="true" requiredMessage="Debes escribir la clave para guardar los cambios"
-                                        value="#{menuController.claveActual}" maxlength="16"
-                                        validatorMessage="La clave debe tener entre 8 y 16 carácteres">
-                                <f:validateLength minimum="8" maximum="16" />
-                            </p:password>
 
-                            <p:outputLabel for="password" value="Nueva Contraseña"/>
-                            <p:password id="password" required="true" 
-                                        requiredMessage="La clave es un campo obligatorio"
-                                        weakLabel="Débil" 
-                                        strongLabel="Fuerte" 
-                                        goodLabel="Bien"
-                                        feedback="true" promptLabel="Escriba su contraseña"
-                                        value="#{menuController.nuevaClave}" maxlength="16" match="password1" 
-                                        validatorMessage="Las contraseñas no coinciden" >
-                                <f:validateLength minimum="8" maximum="16" />
-                            </p:password>
+                                <p:password id="clave" required="true" requiredMessage="Debes escribir la clave para guardar los cambios"
+                                            value="#{menuController.claveActual}" maxlength="16"
+                                            validatorMessage="La clave debe tener entre 8 y 16 carácteres" 
+                                            pt:placeholder="Contraseña actual" >
+                                    <f:validateLength minimum="8" maximum="16" />
+                                </p:password>
 
-                            <p:outputLabel for="password1" value="Confirmar contraseña"/>
-                            <p:password id="password1" required="true" requiredMessage="debes confirmar la clave"
-                                        weakLabel="Débil" 
-                                        strongLabel="Fuerte" 
-                                        goodLabel="Bien"
-                                        feedback="true" promptLabel="Escriba su contraseña"
-                                        maxlength="16">
-                                <f:validateLength minimum="8" maximum="16" />
-                            </p:password>
 
-                            <p:commandButton value="Continuar" action="#{menuController.cambiarClaveUsuario()}" 
-                                             update="formCambiarClave:growlCambiar"/>
-                        </h:panelGrid>
-                    </h:form>
+                                <p:password id="password" required="true" 
+                                            requiredMessage="La clave es un campo obligatorio"
+                                            weakLabel="Débil" 
+                                            strongLabel="Fuerte" 
+                                            goodLabel="Bien"
+                                            feedback="true" promptLabel="Escriba su contraseña"
+                                            value="#{menuController.nuevaClave}" maxlength="16" match="password1" 
+                                            validatorMessage="Las contraseñas no coinciden" pt:placeholder="Nueva Contraseña" >
+                                    <f:validateLength minimum="8" maximum="16" />
+                                </p:password>
+
+
+                                <p:password id="password1" required="true" requiredMessage="debes confirmar la clave"
+                                            weakLabel="Débil" 
+                                            strongLabel="Fuerte" 
+                                            goodLabel="Bien"
+                                            feedback="true" promptLabel="Escriba su contraseña"
+                                            maxlength="16" pt:placeholder="Confirmar contraseña">
+                                    <f:validateLength minimum="8" maximum="16" />
+                                </p:password>
+
+                                <p:commandButton value="Continuar" action="#{menuController.cambiarClaveUsuario()}" 
+                                                 update="formCambiarClave:growlCambiar" styleClass="btn btn-primary"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
             </ui:define>
 

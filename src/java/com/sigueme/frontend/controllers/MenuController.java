@@ -265,14 +265,14 @@ public class MenuController implements Serializable {
     }
 
     public String redireccion() {
-        return "/pages/system/home.xhtml?redirect=true";
+        return "/pages/system/home.xhtml?faces-redirect=true";
     }
 
     private List<String> images;
 
     public void algo() {
         images = new ArrayList<String>();
-        for (int i = 1; i <= 12; i++) {
+        for (int i = 1; i <= 2; i++) {
             images.add("galeria" + i + ".png");
         }
     }

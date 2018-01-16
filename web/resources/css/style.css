@@ -8,6 +8,10 @@
     color:white !important;
     font-size: 1.3em;
 }
+.ui-galleria-panel{
+    left: 20%!important;
+    margin-top: 8%!important;
+}
 .ui-datatable-odd {
     /*background: none repeat scroll 0 0 #F2F5F9;*/
     /*background: none repeat scroll 0 0 #A0D2F0;*/
