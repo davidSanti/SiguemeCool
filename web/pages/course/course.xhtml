@@ -136,28 +136,24 @@
                             <h2>Registrar Curso</h2>
                             <h:panelGrid columns="1" id="gridRegistrar" width="280">
 
-                                <!--<p:outputLabel value="Nombre" for="courseName" />-->
                                 <p:inputText id="courseName" value="#{cursoController.curso.courseName}" title="CourseName" 
                                              required="true" requiredMessage="El campo nombre es obligatorio" maxlength="90"
-                                             pt:placeholder="Nombre">
+                                             pt:placeholder="Nombre" validatorMessage="El campo Nombre debe tener entre 10 y 90 carácteres">
                                     <f:validateLength minimum="10" maximum="90"/>
                                 </p:inputText>
 
-                                <!--<p:outputLabel value="Fecha Inicio" for="startDate" />-->
                                 <p:calendar id="startDate" value="#{cursoController.curso.startDate}" title="StartDate" 
                                             required="true" requiredMessage="El campo fecha inicio es obligatorio" 
                                             pattern="dd/MM/yyyy" pt:placeholder="Fecha de Inicio">
                                     <f:convertDateTime pattern="dd/MM/yyyy" />
                                 </p:calendar>
 
-                                <!--<p:outputLabel value="Fecha Fin" for="finishDate" />-->
                                 <p:calendar id="finishDate" value="#{cursoController.curso.finishDate}" title="FinishDate"
                                             required="true" requiredMessage="El campo fecha fin es obligatorio." pattern="dd/MM/yyyy"
                                             pt:placeholder="Fecha de finalización">
                                     <f:convertDateTime pattern="dd/MM/yyyy"/>
                                 </p:calendar>
 
-                                <!--<p:outputLabel value="Descripción" for="description" />-->
                                 <p:inputTextarea id="description" value="#{cursoController.curso.description}" title="Description" 
                                                  required="true" requiredMessage="La descripción es obligatoria" maxlength="500"
                                                  rows="5" autoResize="false" style="height: 90px!important"
@@ -241,16 +237,16 @@
                                         <p:column filterBy="#{usuariosTable.groupId.groupName}" filterMatchMode="in" >
                                             <f:facet name="filter">
                                                 <p:selectCheckboxMenu id="gruposFiltro" label="Grupos"     
-                                                                      onHide="ejecutarFiltroEditar();"
+                                                                      onHide="ejecutarFiltro();"
                                                                       value="#{cursoController.gruposPersona}" filter="true"
                                                                       converter="grupoConverter" >
 
                                                     <f:selectItems var="grupo" value="#{usuarioController.listarGrupos()}" 
                                                                    itemLabel="#{grupo.groupName}" itemValue="#{grupo}"/>
                                                 </p:selectCheckboxMenu>
-                                                <p:remoteCommand  name="ejecutarFiltroEditar"
+                                                <p:remoteCommand  name="ejecutarFiltro"
                                                                   update=":formAsociar:tablaUsuarios" process="@this gruposFiltro"
-                                                                  action="#{cursoController.filtrarPersonasPorGrupo()}"/> 
+                                                                  action="#{cursoController.filtrarPersonasAsignar()}"/> 
                                             </f:facet>
                                             <h:outputText value="#{usuariosCurso.groupId.groupName}"/>
                                         </p:column>

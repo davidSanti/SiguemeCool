@@ -256,6 +256,68 @@ public class CursoController implements Serializable {
         }
     }
 
+    public void filtrarPersonasAsignar() {
+        usuariosListaAsignar = new ArrayList<>();
+        if (!gruposPersona.isEmpty()) {
+            for (UserByCourse userByCourse : usuariosTemporalesPorCurso) {
+                for (GroupCls groupCls : gruposPersona) {
+                    if (Objects.equals(userByCourse.getUserId().getGroupId().getGroupId(), groupCls.getGroupId())) {
+                        usuariosListaAsignar.add(userByCourse.getUserId());
+                    }
+                }
+            }
+        } else {
+            for (UserByCourse userByCourse : usuariosTemporalesPorCurso) {
+                usuariosListaAsignar.add(userByCourse.getUserId());
+            }
+        }
+    }
+
+    /*Este metodo valida si el curso tiene usuarios asignados, de ser asi registra el curso, asigna los usuarios seleccionados y 
+      cierra las ventanas modales que se abrieron anteriormente y limpia el filtro de grupo y rol
+     */
+    public void asociarUsuarios() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (!usuariosLista.isEmpty()) {
+                
+                usuariosListaAsignar.addAll(usuariosLista);
+
+                for (User user : usuariosLista) {
+                    System.out.println("item" + user.getFirstName());
+                    UserByCourse usuarioCurso = new UserByCourse();
+                    usuarioCurso.setUserId(user);
+                    usuariosTemporalesPorCurso.add(usuarioCurso);
+                }
+                usuariosLista = new ArrayList<>();
+                filtrarUsuarios();
+            }
+            System.out.println("cuantos??" + usuariosLista.size());
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registrado Correctamente"));
+
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Error al asociar los usuarios al curso"));
+        }
+    }
+
+    public void removerTodosLosUsuariosAginar() {
+        for (User user : usuariosListaAsignar) {
+            removerUsuarioDeListaTemporal(user);
+        }
+//            usuariosListaAsignar.remove(user);
+        filtrarUsuarios();
+        filtrarPersonasAsignar();
+
+    }
+
+    public void removerUsuarioAginar(User usuario) {
+
+        removerUsuarioDeListaTemporal(usuario);
+        usuariosListaAsignar.remove(usuario);
+        filtrarUsuarios();
+        filtrarPersonasAsignar();
+    }
+
     //Éste método obtiene todos los usuaros asociados a un curso, elimina los registros de la tabla user_by_course y por último elimina el curso seleccionado
     public void eliminarCurso(Course course) {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -369,85 +431,6 @@ public class CursoController implements Serializable {
      */
     public List<User> devolverUsuarios() {
         return this.usuariosLista;
-    }
-
-    /*Este metodo valida si el curso tiene usuarios asignados, de ser asi registra el curso, asigna los usuarios seleccionados y 
-      cierra las ventanas modales que se abrieron anteriormente y limpia el filtro de grupo y rol
-     */
-//    public void asociarUsuarios() {
-//        FacesContext context = FacesContext.getCurrentInstance();
-//        try {
-//            if (!usuariosLista.isEmpty()) {
-//                this.cursoFacadeLocal.create(curso);
-//                for (int i = 0; i < usuariosLista.size(); i++) {
-//                    UserByCourse userbyCourse = new UserByCourse();
-//                    userbyCourse.setCourseId(curso);
-//
-//                    userbyCourse.setUserId(usuariosLista.get(i));
-//
-//                    userByCourseFacadeLocal.create(userbyCourse);
-//                }
-//                //Envio de Coreo
-//                this.enviarCorreo(usuariosLista,
-//                        "Nueva Capacitación Asignada",
-//                        "Tienes una nueva Capacitación, dale un vistazo.");
-//                ocultarModal(3);
-//                ocultarModal(1);
-//                limpiarFiltro();
-//                listarCursos();
-//
-//                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registrado Correctamente"));
-//            } else {
-//                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No se puede crear el curso hasta que los usuarios se asocien"));
-//            }
-//        } catch (Exception ex) {
-//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Error al asociar los usuarios al curso"));
-//        }
-//    }
-    public void asociarUsuarios() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        try {
-            if (!usuariosLista.isEmpty()) {
-                usuariosListaAsignar = new ArrayList<>();
-                usuariosListaAsignar.addAll(usuariosLista);
-
-                for (User user : usuariosLista) {
-                    System.out.println("item" + user.getFirstName());
-                    UserByCourse usuarioCurso = new UserByCourse();
-                    usuarioCurso.setUserId(user);
-                    usuariosTemporalesPorCurso.add(usuarioCurso);
-                }
-//                usuariosLista.removeAll(usuariosListaAsignar);
-                usuariosLista = new ArrayList<>();
-                filtrarUsuarios();
-            }
-            System.out.println("cuantos??" + usuariosLista.size());
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registrado Correctamente"));
-
-        } catch (Exception ex) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Error al asociar los usuarios al curso"));
-        }
-    }
-
-    public void removerTodosLosUsuariosAginar() {
-        List<User> listaOriginal = new ArrayList<>();
-        listaOriginal.addAll(usuariosListaAsignar);
-        usuariosListaAsignar.removeAll(listaOriginal);
-        usuariosListaAsignar =  new ArrayList<>();
-        usuariosLista.addAll(listaOriginal);
-        usuariosTemporalesPorCurso = new ArrayList<>();
-    }
-    
-    public void removerUsuarioAginar(User usuario) {  
-        for (User item : usuariosListaAsignar) {
-            
-        }
-        usuariosListaAsignar.remove(usuario);        
-//        usuariosLista.add(usuario);
-        UserByCourse usuarioCurso = new UserByCourse();
-        usuarioCurso.setUserId(usuario);
-        usuariosTemporalesPorCurso.remove(usuarioCurso);
-        filtrarUsuarios();
     }
 
     public void enviarCorreoAlEditarUsuariosCurso(List<User> usuariosChecked, List<User> usuariosUnChecked) {
@@ -733,7 +716,6 @@ public class CursoController implements Serializable {
                 }
             }
         }
-
         return listaFiltrada;
     }
 
