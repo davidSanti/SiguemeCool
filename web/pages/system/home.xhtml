@@ -17,15 +17,17 @@
 
                 </h4>
                 <center>
-                    <h2><h:outputText value="Bienvenid@ al sistema de información Sigueme." style="color: #0284A8"/></h2> 
+                    <h2><h:outputText value="Bienvenid@ al sistema de información Sigueme." style="color: #0284A8"/></h2>
+                    
+                    <h:form>
+                        <p:galleria value="#{menuController.images}" var="image" 
+                                    panelWidth="900" panelHeight="700" showCaption="true"
+                                    style="margin-top: 1%!important">
+                            <p:graphicImage value="../../resources/img/galeria/#{image}" title="#{image}" 
+                                            height="500" style="right:50%!important"/>
+                        </p:galleria>
+                    </h:form>
                 </center>
-                <h:form>
-                    <p:galleria value="#{menuController.images}" var="image" panelWidth="900" panelHeight="700" showCaption="true"
-                                style="left:25%!important;margin-top: 1%!important">
-                        <p:graphicImage value="../../resources/img/galeria/#{image}"  title="#{image}" 
-                                        height="500"/>
-                    </p:galleria>
-                </h:form>
 
 
                 <p:dialog id="cambiarClave" widgetVar="cambiarClave" resizable="false" width="380"
@@ -72,13 +74,13 @@
                                                  update="formCambiarClave:growlCambiar" styleClass="btn btn-primary"/>
                             </h:panelGrid>
 
-                           
-                    </h:form>
-                </center>
-            </p:dialog>
-        </ui:define>
 
-    </ui:composition>
+                        </h:form>
+                    </center>
+                </p:dialog>
+            </ui:define>
 
-</body>
+        </ui:composition>
+
+    </body>
 </html>

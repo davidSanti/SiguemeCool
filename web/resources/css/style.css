@@ -8,8 +8,9 @@
     color:white !important;
     font-size: 1.3em;
 }
+/*//Estilos de las imagenes del panel de la galeria*/
 .ui-galleria-panel{
-    left: 20%!important;
+    left: 1%!important;
     margin-top: 8%!important;
 }
 .ui-datatable-odd {
@@ -289,6 +290,7 @@ h2{
     background-color: #31b0d5!important;
     border-color: #269abc!important;
 }
+
 
 /*cosas*/
 /*.ui-widget-overlay{

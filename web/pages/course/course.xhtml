@@ -5,7 +5,8 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <body>
 
@@ -18,26 +19,33 @@
                         <br/>
                         <h2><h:outputText value="Lista De Cursos"/></h2>
                     </center>
-                    <p:growl id="growlCurso" showDetail="true" showSummary="false" sticky="false" life="3000"/>
-                    <p:commandButton value="Registrar" onclick="PF('registrarCurso').show()"  styleClass="btn btn-warning" style="width: 10%!important"/>
 
-                    <br/>
-                    <h:commandLink>
-                        <p:graphicImage url="/resources/img/pdf-icon-10.png" width="40" height="40"/>
+                    <p:growl id="growlCurso" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+                    <h:commandLink >
+                        <p:graphicImage url="/resources/img/pdf-icon-10.png" width="40" height="40"
+                                        />
                         <p:dataExporter type="pdf" target="tablaCurso" fileName="Reporte Pdf"/>
                     </h:commandLink>
 
                     <h:commandLink>
-                        <p:graphicImage url="/resources/img/Excel-2-icon.png" width="40" height="40" style="margin-top: 9px;"/>
+                        <p:graphicImage url="/resources/img/Excel-2-icon.png" width="40" height="40" 
+                                        style="margin-top: 9px;"
+                                        />
                         <p:dataExporter type="xls" target="tablaCurso" fileName="Reporte Excel"/>
                     </h:commandLink>
-
 
                     <p:dataTable id="tablaCurso" value="#{cursoController.cursos}" var="curso"
                                  emptyMessage="No se encontrarón registros"  reflow="true" 
                                  paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color">
 
-                        <p:column headerText="Nombre" filterBy="#{curso.courseName}" filterMatchMode="contains">
+                        <f:facet name="header">
+
+                            <p:commandButton value="Registrar" onclick="PF('registrarCurso').show()"  
+                                             styleClass="btn btn-primary"  
+                                             style="width: 30%!important"/>
+                        </f:facet>
+                        
+                       <p:column headerText="Nombre" filterBy="#{curso.courseName}" filterMatchMode="contains">
                             <f:facet name="filter">
                                 <p:inputText  value="#{cursoController.busqueda}">
                                     <p:ajax event="keyup" update="tablaCurso" 
@@ -114,20 +122,8 @@
 
                         </p:column>
                     </p:dataTable>
+
                 </h:form>
-
-<!--                <div class="fixed-action-btn toolbar">
-                    <a class="btn-floating btn-large red">
-                        <i class="large material-icons">mode_edit</i>
-                    </a>
-                    <ul>
-                        <li class="waves-effect waves-light"><a href="#!"><i class="material-icons">insert_chart</i></a></li>
-                        <li class="waves-effect waves-light"><a href="#!"><i class="material-icons">format_quote</i></a></li>
-                        <li class="waves-effect waves-light"><a href="#!"><i class="material-icons">publish</i></a></li>
-                        <li class="waves-effect waves-light"><a href="#!"><i class="material-icons">attach_file</i></a></li>
-                    </ul>
-                </div>-->
-
 
                 <p:dialog id="registrarCurso"  resizable="false"
                           closeOnEscape="false" draggable="false" closable="false"
