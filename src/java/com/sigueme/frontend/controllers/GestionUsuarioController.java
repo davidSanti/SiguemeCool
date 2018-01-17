@@ -35,7 +35,7 @@ import org.primefaces.context.RequestContext;
 @Named(value = "gestionUsuarioController")
 @ViewScoped
 public class GestionUsuarioController implements Serializable {
-
+    
     @EJB
     private UserFacadeLocal userFacadeLocal;
     @EJB
@@ -46,12 +46,12 @@ public class GestionUsuarioController implements Serializable {
     private PermissionFacadeLocal permissionFacadeLocal;
     @EJB
     private PermissionRoleFacadeLocal permissionRoleFacadeLocal;
-
+    
     private List<GroupCls> listaGrupos;
     private List<Role> listaRoles;
     private List<Permission> listaPermisos;
     private List<PermissionRole> listaPermisosRol;
-
+    
     private GroupCls grupo;
     private Role rol;
     private Permission permiso;
@@ -60,36 +60,38 @@ public class GestionUsuarioController implements Serializable {
 
     public GestionUsuarioController() {
     }
-
+    
     @PostConstruct
     public void init() {
-
+        
         listarGrupos();
         listarRoles();
         listarPermisos();
-
+        
         grupo = new GroupCls();
         rol = new Role();
         permiso = new Permission();
         permisoRol = new PermissionRole();
-
+        listarDependecia(null);
+        
     }
-
+    
     public void listarGrupos() {
         listaGrupos = new ArrayList<>();
         this.listaGrupos = groupFacadeLocal.findAll();
     }
-
+    
     public void listarRoles() {
         listaRoles = new ArrayList<>();
         this.listaRoles = roleFacadeLocal.findAll();
     }
-
+    
     public void listarPermisos() {
         listaPermisosRol = new ArrayList<>();
         listaPermisos = new ArrayList<>();
         this.listaPermisosRol = permissionRoleFacadeLocal.findAll();
-        this.listaPermisos = permissionFacadeLocal.findAll();
+//        this.listaPermisos = permissionFacadeLocal.findAll();
+        listarDependecia(null);
     }
 
     /*Inicio método Módulo Grupos*/
@@ -105,24 +107,24 @@ public class GestionUsuarioController implements Serializable {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
                         "Ya se encuentra un Grupo registrado con ese nombre, verifica y vuelve a intentarlo"));
             }
-
+            
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Ha ocurrido un error al registrar el grupo, intenta más tarde"));
         }
-
+        
     }
-
+    
     public boolean verificarNombreGrupo() {
         boolean bandera = true;
         List<GroupCls> lista = groupFacadeLocal.findAll();
         String nombreOriginal = grupo.getGroupName().replaceAll(" ", "");
         nombreOriginal = nombreOriginal.toLowerCase();
-
+        
         for (GroupCls item : lista) {
             String nombreItem = item.getGroupName().toLowerCase();
             nombreItem = nombreItem.replaceAll(" ", "");
-
+            
             if (nombreItem.equals(nombreOriginal)) {
                 if (!Objects.equals(item.getGroupId(), grupo.getGroupId())) {
                     bandera = false;
@@ -131,15 +133,15 @@ public class GestionUsuarioController implements Serializable {
         }
         return bandera;
     }
-
+    
     public void registrarRol() {
-
+        
     }
-
+    
     public void editarGrupo(GroupCls grupo) {
         this.grupo = grupo;
     }
-
+    
     public void eliminarGrupo(GroupCls grupo) {
         this.grupo = grupo;
         FacesContext context = FacesContext.getCurrentInstance();
@@ -158,13 +160,13 @@ public class GestionUsuarioController implements Serializable {
                     "Ha ocurrido un error al eliminar el grupo, intenta más tarde"));
         }
     }
-
+    
     public boolean asignarUsuariosAlMSC() {
         boolean bandera = true;
         List<GroupCls> list = new ArrayList<>();
         list.add(grupo);
         try {
-
+            
             List<User> lista = userFacadeLocal.filtrarUsuariosPorGrupo(list, new ArrayList<>());
             for (User user : lista) {
                 System.out.println("uer" + user.getFirstName());
@@ -177,11 +179,11 @@ public class GestionUsuarioController implements Serializable {
         }
         return bandera;
     }
-
+    
     public void editarGrupo() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-
+            
             if (verificarNombreGrupo()) {
                 groupFacadeLocal.edit(grupo);
                 ocultarModal(2);
@@ -190,9 +192,9 @@ public class GestionUsuarioController implements Serializable {
             } else {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
                         "Ya se encuentra registrado un Grupo con ese nombre, verifica y vuelve a intentarlo"));
-
+                
             }
-
+            
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Ha ocurrido un error al editar el grupo, intenta más tarde"));
@@ -205,11 +207,11 @@ public class GestionUsuarioController implements Serializable {
     public void registrarPermiso() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-
+            
             if (verificarNombrePermiso()) {
                 if (verificarUrlPermiso()) {
 //                    groupFacadeLocal.create(grupo);
-                    ocultarModal(2);
+                    ocultarModal(3);
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
                             "El permiso Se ha registrado correctamente"));
                 } else {
@@ -220,28 +222,30 @@ public class GestionUsuarioController implements Serializable {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
                         "Ya se encuentra registrado un permiso con ese nombre, verifica y vuelve a intentarlo"));
             }
-
+            
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Ha ocurrido un error al Registrar el permiso, intenta más tarde"));
         }
     }
-
+    
     public void editarPermiso(Permission permission) {
         this.permiso = permission;
         listarDependecia(permission);
         verificarDependencia();
     }
-
+    
     public void listarDependecia(Permission permission) {
         listaPermisos = permissionFacadeLocal.listarPermisosSinDependencia();
-        listaPermisos.remove(permission);
+        if (permission != null && permission.getPermissionId() != null) {
+            listaPermisos.remove(permission);
+        }
     }
-
+    
     public void editarPermiso() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-
+            
             if (verificarNombrePermiso()) {
                 if (verificarUrlPermiso()) {
                     permissionFacadeLocal.edit(permiso);
@@ -256,25 +260,25 @@ public class GestionUsuarioController implements Serializable {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
                         "Ya se encuentra registrado un permiso con ese nombre, verifica y vuelve a intentarlo"));
             }
-
+            
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Ha ocurrido un error al editar el permiso, intenta más tarde"));
             System.out.println("cul es el puto erro'" + e.getMessage() + e.getLocalizedMessage());
         }
     }
-
+    
     public boolean verificarUrlPermiso() {
         boolean bandera = true;
         List<Permission> lista = permissionFacadeLocal.findAll();
         String nombreOriginal = permiso.getUrl().replaceAll(" ", "");
         nombreOriginal = nombreOriginal.toLowerCase();
-
+        
         for (Permission item : lista) {
             if (item.getUrl() != null && !item.getUrl().equals("")) {
                 String nombreItem = item.getUrl().toLowerCase();
                 nombreItem = nombreItem.replaceAll(" ", "");
-
+                
                 if (nombreItem.equals(nombreOriginal)) {
                     if (!Objects.equals(item.getPermissionId(), permiso.getPermissionId())) {
                         System.out.println("aaaaa entro");
@@ -285,17 +289,17 @@ public class GestionUsuarioController implements Serializable {
         }
         return bandera;
     }
-
+    
     public boolean verificarNombrePermiso() {
         boolean bandera = true;
         List<Permission> lista = permissionFacadeLocal.findAll();
         String nombreOriginal = permiso.getDescription().replaceAll(" ", "");
         nombreOriginal = nombreOriginal.toLowerCase();
-
+        
         for (Permission item : lista) {
             String nombreItem = item.getDescription().toLowerCase();
             nombreItem = nombreItem.replaceAll(" ", "");
-
+            
             if (nombreItem.equals(nombreOriginal)) {
                 if (!Objects.equals(item.getPermissionId(), permiso.getPermissionId())) {
                     bandera = false;
@@ -304,7 +308,7 @@ public class GestionUsuarioController implements Serializable {
         }
         return bandera;
     }
-
+    
     public boolean verificarDependencia(ValueChangeEvent event) {
         System.out.println("estoy entradno");
         if (this.permiso.getDependency() != null) {
@@ -314,7 +318,7 @@ public class GestionUsuarioController implements Serializable {
         }
         return validacionDependencia;
     }
-
+    
     public boolean verificarDependencia() {
         if (this.permiso.getDependency() != null) {
             validacionDependencia = false;
@@ -342,6 +346,8 @@ public class GestionUsuarioController implements Serializable {
                 //Aqui el registrar
                 req.execute("PF('registrarPermiso').hide()");
                 formulario = "formRegistrarPermiso:gridRegistrarPermiso";
+                permiso = new Permission();
+                listarPermisos();
                 break;
             case 4:
                 req.execute("PF('editarPermiso').hide()");
@@ -360,13 +366,13 @@ public class GestionUsuarioController implements Serializable {
         List<Role> lista = roleFacadeLocal.findAll();
         String nombreOriginal = rol.getDescription().replaceAll(" ", "");
         nombreOriginal = nombreOriginal.toLowerCase();
-
+        
         System.out.println("nombre:" + nombreOriginal);
         for (Role item : lista) {
             String nombreItem = item.getDescription().toLowerCase();
             nombreItem = nombreItem.replaceAll(" ", "");
             System.out.println("nombre:" + nombreItem);
-
+            
             if (nombreItem.equals(nombreOriginal)) {
                 if (!Objects.equals(item.getRoleId(), rol.getRoleId())) {
                     bandera = false;
@@ -381,73 +387,73 @@ public class GestionUsuarioController implements Serializable {
     public List<GroupCls> getListaGrupos() {
         return listaGrupos;
     }
-
+    
     public void setListaGrupos(List<GroupCls> listaGrupos) {
         this.listaGrupos = listaGrupos;
     }
-
+    
     public List<Role> getListaRoles() {
         return listaRoles;
     }
-
+    
     public void setListaRoles(List<Role> listaRoles) {
         this.listaRoles = listaRoles;
     }
-
+    
     public List<Permission> getListaPermisos() {
         return listaPermisos;
     }
-
+    
     public void setListaPermisos(List<Permission> listaPermisos) {
         this.listaPermisos = listaPermisos;
     }
-
+    
     public List<PermissionRole> getListaPermisosRol() {
         return listaPermisosRol;
     }
-
+    
     public void setListaPermisosRol(List<PermissionRole> listaPermisosRol) {
         this.listaPermisosRol = listaPermisosRol;
     }
-
+    
     public Role getRol() {
         return rol;
     }
-
+    
     public void setRol(Role rol) {
         this.rol = rol;
     }
-
+    
     public Permission getPermiso() {
         return permiso;
     }
-
+    
     public void setPermiso(Permission permiso) {
         this.permiso = permiso;
     }
-
+    
     public PermissionRole getPermisoRol() {
         return permisoRol;
     }
-
+    
     public void setPermisoRol(PermissionRole permisoRol) {
         this.permisoRol = permisoRol;
     }
-
+    
     public GroupCls getGrupo() {
         return grupo;
     }
-
+    
     public void setGrupo(GroupCls grupo) {
         this.grupo = grupo;
     }
-
+    
     public boolean isValidacionDependencia() {
         return validacionDependencia;
     }
-
+    
     public void setValidacionDependencia(boolean validacionDependencia) {
         this.validacionDependencia = validacionDependencia;
     }
-
+    
 }
