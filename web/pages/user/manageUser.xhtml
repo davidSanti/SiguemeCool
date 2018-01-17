@@ -19,7 +19,6 @@
                     </h:form>
 
                     <h:form id="formGroupTable" styleClass="top-formTable">
-                        <p:commandButton value="Registrar" oncomplete="PF('registrarGrupo').show()" update="registrarGrupo"/>
                         <br/>
                         <h2><h:outputText value="Grupo"/></h2>
 
@@ -28,6 +27,10 @@
                                      paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color"
                                      styleClass="manageUser-table">
 
+                            <f:facet name="header">
+                                <p:commandButton value="Registrar" oncomplete="PF('registrarGrupo').show()" update="registrarGrupo"/>
+
+                            </f:facet>
                             <p:column headerText="Grupos">
                                 <h:outputText value="#{grupo.groupName}"/>
                             </p:column>
@@ -40,10 +43,16 @@
 
                                 <p:commandButton icon="ui-icon-pencil" actionListener="#{gestionUsuarioController.editarGrupo(grupo)}"
                                                  oncomplete="PF('editarGrupo').show();" update="editarGrupo"/>
-                                
-                                
+
+
                                 <p:commandButton icon="ui-icon-trash"  actionListener="#{gestionUsuarioController.eliminarGrupo(grupo)}" 
-                                                 update="formGroupTable:tablaGrupo,growlForm " />
+                                                 update="formGroupTable:tablaGrupo,growlForm " 
+                                                 disabled="#{grupo.groupId == 1}">
+                                    <!--El disable se utiliza por que cuando un grupo se elmina todos los usuarios se asignan al MSC (por ende no se debe borrar)S-->
+                                    <p:confirm header="Confirmación" icon="ui-icon-alert"
+                                               message="Estas Seguro de eliminar este Grupo?
+                                               Todos los usuarios se asociarán al MSC" />
+                                </p:commandButton>
                             </p:column>
 
                         </p:dataTable>
@@ -57,6 +66,11 @@
                                      emptyMessage="No se encontrarón registros"  reflow="true" 
                                      paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color"
                                      styleClass="manageUser-table">
+
+                            <f:facet name="header">
+                                <p:commandButton value="Registrar"
+                                                 oncomplete="PF('registrarPermiso').show()"/>    
+                            </f:facet>
 
                             <p:column headerText="Permiso">
                                 <h:outputText value="#{permiso.description}"/>
@@ -182,6 +196,56 @@
 
                 <!--Inicio de Código para las ventanas modales (Dialog) del módulo Permisos-->
 
+                <p:dialog id="registrarPermiso"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="registrarPermiso" modal="true" width="350"
+                          showEffect="fade" hideEffect="fade">
+
+                    <center>
+                        <h:form id="formRegistrarPermiso">
+                            <h2>Registrar Permiso</h2>
+                            <h:panelGrid columns="1" id="gridRegistrarPermiso" width="250" >
+
+                                <p:inputText id="descripcion" value="#{gestionUsuarioController.permiso.description}" title="Descripción Permiso" 
+                                             required="true" requiredMessage="El campo Descripción es obligatorio" maxlength="100"
+                                             pt:placeholder='Nombre Permiso'>
+                                    <f:validateLength minimum="3" maximum="100"/>
+                                </p:inputText>
+
+                                <p:selectOneMenu id="dependencia" label="Dependencia" style="width: 93%!important"
+                                                 value="#{gestionUsuarioController.permiso.dependency}" filter="true"
+                                                 converter="permisoConverter" >
+
+                                    <f:selectItem value="#{null}" noSelectionOption="true" itemLabel="-- Dependencia --" />
+                                    <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisos}" 
+                                                   itemLabel="#{permiso.description}" itemValue="#{permiso}"/>                                  
+                                </p:selectOneMenu>
+
+                                <p:inputText id="url" value="#{gestionUsuarioController.permiso.url}" title="Url Permiso" 
+                                             maxlength="100"
+                                             pt:minlength="10" pt:maxlength="100" 
+                                             pt:placeholder='Url'>
+                                    <f:validateLength minimum="10" maximum="100"/>
+                                </p:inputText>                                
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                
+                                <p:commandButton value="Registrar" action="#{gestionUsuarioController.registrarPermiso()}"
+                                                 update=":growlForm, :formTablePermission:permisoTabla, formRegistrarPermiso"
+                                                 styleClass="btn btn-primary"/>
+
+                                <p:commandButton value="Cerrar" immediate="true"
+                                                 actionListener="#{gestionUsuarioController.ocultarModal(3)}"
+                                                 update=":formTablePermission:permisoTabla, formRegistrarPermiso"
+                                                 styleClass="btn btn-warning"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+
                 <p:dialog id="editarPermiso"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
                           widgetVar="editarPermiso" modal="true"
@@ -228,6 +292,18 @@
                                          update=":formTablePermission:permisoTabla"/>
                     </h:form>
                 </p:dialog>
+
+
+                <h:form>   
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="290">
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes boton-confirm-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no boton-confirm-no" icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </center>
+                    </p:confirmDialog>
+                </h:form>  
 
             </ui:define>
 

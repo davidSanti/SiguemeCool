@@ -9,10 +9,12 @@ import com.sigueme.backend.entities.GroupCls;
 import com.sigueme.backend.entities.Permission;
 import com.sigueme.backend.entities.PermissionRole;
 import com.sigueme.backend.entities.Role;
+import com.sigueme.backend.entities.User;
 import com.sigueme.backend.model.GroupClsFacadeLocal;
 import com.sigueme.backend.model.PermissionFacadeLocal;
 import com.sigueme.backend.model.PermissionRoleFacadeLocal;
 import com.sigueme.backend.model.RoleFacadeLocal;
+import com.sigueme.backend.model.UserFacadeLocal;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,8 @@ import org.primefaces.context.RequestContext;
 @ViewScoped
 public class GestionUsuarioController implements Serializable {
 
+    @EJB
+    private UserFacadeLocal userFacadeLocal;
     @EJB
     private GroupClsFacadeLocal groupFacadeLocal;
     @EJB
@@ -140,15 +144,38 @@ public class GestionUsuarioController implements Serializable {
         this.grupo = grupo;
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-            groupFacadeLocal.remove(this.grupo);
-            listarGrupos();
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                    "El grupo se han eliminado correctamente "));
+            if (asignarUsuariosAlMSC()) {
+                groupFacadeLocal.remove(this.grupo);
+                listarGrupos();
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                        "El grupo se han eliminado correctamente "));
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "Algunas personas no pudieron ser asignadas al MSC, intenta más tarde"));
+            }
         } catch (Exception ex) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Ha ocurrido un error al eliminar el grupo, intenta más tarde"));
-
         }
+    }
+
+    public boolean asignarUsuariosAlMSC() {
+        boolean bandera = true;
+        List<GroupCls> list = new ArrayList<>();
+        list.add(grupo);
+        try {
+
+            List<User> lista = userFacadeLocal.filtrarUsuariosPorGrupo(list, new ArrayList<>());
+            for (User user : lista) {
+                System.out.println("uer" + user.getFirstName());
+                //Se asigna el grupo del MSC que tiene el id de grupo 1
+                user.setGroupId(groupFacadeLocal.find(1));
+                userFacadeLocal.edit(user);
+            }
+        } catch (Exception e) {
+            bandera = false;
+        }
+        return bandera;
     }
 
     public void editarGrupo() {
@@ -181,7 +208,7 @@ public class GestionUsuarioController implements Serializable {
 
             if (verificarNombrePermiso()) {
                 if (verificarUrlPermiso()) {
-                    groupFacadeLocal.create(grupo);
+//                    groupFacadeLocal.create(grupo);
                     ocultarModal(2);
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
                             "El permiso Se ha registrado correctamente"));
@@ -313,8 +340,8 @@ public class GestionUsuarioController implements Serializable {
                 break;
             case 3:
                 //Aqui el registrar
-                req.execute("PF('').hide()");
-                formulario = "::";
+                req.execute("PF('registrarPermiso').hide()");
+                formulario = "formRegistrarPermiso:gridRegistrarPermiso";
                 break;
             case 4:
                 req.execute("PF('editarPermiso').hide()");
