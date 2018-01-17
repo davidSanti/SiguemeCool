@@ -104,7 +104,7 @@
                                              actionListener="#{miCursoController.asignarUsuarioCursos(curso,true)}" update="Descargar" 
                                              disabled="#{curso.attached == null and curso.description == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   
 
-                            <p:commandButton actionListener="#{miCursoController.eliminarEvidencia(curso)}" update="formMiCurso"
+                            <p:commandButton action="#{miCursoController.eliminarEvidenciaCurso(curso)}" update="formMiCurso"
                                              disabled="#{curso.attached == null || curso.grade != null ? true : false }" icon="ui-icon-circle-close" >
                                 <p:confirm header="Confirmación" message="Estas Seguro de eliminar este curso?" icon="ui-icon-alert"/>
 
@@ -192,7 +192,7 @@
                             <h:outputText value="#{miCursoController.determinarCalificacion(miCursoController.usuariosMiCurso)}"></h:outputText>
 
                             <p:outputLabel value="Adjunto"/>
-                            <p:commandButton ajax="false" immediate="true" value="Descargar" action="#{miCursoController.descargarAdjuntoDeNuevo()}"
+                            <p:commandButton ajax="false" immediate="true" value="Descargar" 
                                              update=":formMiCurso:growlMiCurso"   styleClass="botonOpcional-form" style="width: 40%!important">
                                 <p:fileDownload value="#{miCursoController.downloadFile}"/>
                             </p:commandButton> 

@@ -231,8 +231,8 @@ public class MiCursoController implements Serializable {
             String archivo = cargarAdjunto();
             if (usuariosMiCurso.getAttached() != null && !archivo.equals(usuariosMiCurso.getAttached())) {
                 System.out.println("eliminar anterior archivo");
-                File f = new File("C:\\Users\\Microsoft Windows 10\\Documents\\_SUSTS\\DEVELOP\\SIGUEME\\Sigueme\\build\\web\\archivos\\Curso_Total_1030692952.jpg");
-                f.delete();
+//                File f = new File("C:\\Users\\Microsoft Windows 10\\Documents\\_SUSTS\\DEVELOP\\SIGUEME\\Sigueme\\build\\web\\archivos\\Curso_Total_1030692952.jpg");
+//                f.delete();
 //                eliminarEvidencia(2);
             }
             this.usuariosMiCurso.setAttached(archivo);
@@ -295,10 +295,9 @@ public class MiCursoController implements Serializable {
         }
     }
 
-    public void eliminarEvidencia(UserByCourse usuarioCurso) {
+    public void eliminarEvidenciaCurso(UserByCourse usuarioCurso) {
         FacesContext context = FacesContext.getCurrentInstance();
         usuariosMiCurso = usuarioCurso;
-
         if (eliminarEvidencia(1)) {
             usuariosMiCurso = new UserByCourse();
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Tu evidencia se ha eliminado correctamente"));
@@ -364,12 +363,6 @@ public class MiCursoController implements Serializable {
             System.out.println("Error al cargar el arhcivo" + e.getMessage());
         } catch (Exception e) {
             System.out.println("Error al cargar el arhcivo" + e.getMessage());
-        } finally {
-            try {
-                output.close();
-            } catch (IOException ex) {
-                Logger.getLogger(MiCursoController.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
         return pathReal;
     }
@@ -397,20 +390,22 @@ public class MiCursoController implements Serializable {
                     downloadFile = new DefaultStreamedContent(stream, URLConnection.guessContentTypeFromStream(stream), f.getName());
                 }
             }
+            stream.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(UserByCourse.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException ex) {
-                Logger.getLogger(MiCursoController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
         }
+//        finally {
+//            try {
+//                stream.close();
+//            } catch (IOException ex) {
+//                Logger.getLogger(MiCursoController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//
+//        }
     }
 
     public String determinarCalificacion(UserByCourse usuarioCurso) {
