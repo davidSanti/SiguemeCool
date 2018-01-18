@@ -306,7 +306,7 @@ public class UsuarioController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
             if (Crypto.Desencriptar(this.usuario.getUserPassword()).equals(this.claveOriginal)) {
-                if (this.nuevaClave != null) {
+                if (this.nuevaClave != null && !nuevaClave.equals("")) {
                     this.usuario.setUserPassword(Crypto.Encriptar(nuevaClave));
                     cerrarSesion();
                 }

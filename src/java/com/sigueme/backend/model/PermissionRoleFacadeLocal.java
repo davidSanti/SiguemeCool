@@ -33,4 +33,6 @@ public interface PermissionRoleFacadeLocal {
     int count();
 
     List<Permission> listarPermisosPorRol(Role rol);
+
+    void eliminarPermisosRol(Permission permisoEliminado);
 }

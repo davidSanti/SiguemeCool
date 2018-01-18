@@ -280,7 +280,7 @@ public class CursoController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
             if (!usuariosLista.isEmpty()) {
-                
+
                 usuariosListaAsignar.addAll(usuariosLista);
 
                 for (User user : usuariosLista) {
@@ -297,6 +297,26 @@ public class CursoController implements Serializable {
 
         } catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Error al asociar los usuarios al curso"));
+        }
+    }
+
+    public void registrarUsuariosCurso() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        List<User> listaCompleta = new ArrayList<>();
+        try {
+            cursoFacadeLocal.create(curso);
+            for (UserByCourse userByCourse : usuariosTemporalesPorCurso) {
+                userByCourse.setCourseId(curso);
+                userByCourseFacadeLocal.create(userByCourse);
+                listaCompleta.add(userByCourse.getUserId());
+            }
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "El curso se ha registrado correctamente"));
+            //Enviar correo
+//            enviarCorreo(listaCompleta, "Nueva Capacitación Asignada", "Tienes una nueva Capacitación, dale un vistazo.");
+            ocultarModal(1);
+            ocultarModal(3);
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al registrar los usuarios al curso"));
         }
     }
 

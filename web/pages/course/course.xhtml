@@ -44,8 +44,8 @@
                                              styleClass="btn btn-primary"  
                                              style="width: 30%!important"/>
                         </f:facet>
-                        
-                       <p:column headerText="Nombre" filterBy="#{curso.courseName}" filterMatchMode="contains">
+
+                        <p:column headerText="Nombre" filterBy="#{curso.courseName}" filterMatchMode="contains">
                             <f:facet name="filter">
                                 <p:inputText  value="#{cursoController.busqueda}">
                                     <p:ajax event="keyup" update="tablaCurso" 
@@ -182,6 +182,7 @@
                           showEffect="fold" hideEffect="fold" width="800">
                     <center>
                         <h:form id="formAsociar">
+                            <h2>Asociar usuarios al curso</h2>
                             <p:panelGrid columns="2">
 
                                 <h:panelGroup>
@@ -273,7 +274,7 @@
                                 <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(3)}" 
                                                  immediate="true" update="editarCurso, formAsociar"
                                                  styleClass="btn btn-warning"/>
-                                <p:commandButton value="Enviar" action="#{cursoController.asociarUsuarios()}" 
+                                <p:commandButton value="Enviar" action="#{cursoController.registrarUsuariosCurso()}" 
                                                  update=":formCurso, :formCurso:tablaCurso, :formRegistrar"
                                                  styleClass="btn btn-success"/>
                             </h:panelGrid>
@@ -352,7 +353,8 @@
                           showEffect="fold" hideEffect="fold" width="800" >
                     <center>
                         <h:form id="formEditarUsuariosCurso">
-                            <h2>Usuarios Por Curso</h2>
+                            <h2>Asociar usuarios al curso</h2>
+
                             <p:panelGrid columns="2">
 
                                 <h:panelGroup>

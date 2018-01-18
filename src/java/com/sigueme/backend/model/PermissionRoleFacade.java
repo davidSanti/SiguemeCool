@@ -41,12 +41,22 @@ public class PermissionRoleFacade extends AbstractFacade<PermissionRole> impleme
             Query query = em.createQuery("SELECT p FROM PermissionRole pr JOIN pr.permissionId p WHERE pr.roleId = :rol ORDER BY p.permissionId ASC", Permission.class);
             query.setParameter("rol", rol);
 
-            lista = query.getResultList();                        
+            lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el método: listarPermisosPorRol =" + e.getMessage());
         }
         return lista;
 
+    }
+
+    @Override
+    public void eliminarPermisosRol(Permission permisoEliminado) {
+        try {
+            Query query = em.createQuery("DELETE FROM PermissionRole pr WHERE pr.permissionId = :permiso");
+            query.setParameter("permiso", permisoEliminado);
+            query.executeUpdate();
+        } catch (Exception e) {
+        }
     }
 
 }

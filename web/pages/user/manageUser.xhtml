@@ -62,14 +62,14 @@
                         <br/>
                         <h2><h:outputText value="Permisos"/></h2>
 
-                        <p:dataTable value="#{gestionUsuarioController.listaPermisos}" var="permiso" id="permisoTabla"
+                        <p:dataTable value="#{gestionUsuarioController.listarPermisos()}" var="permiso" id="permisoTabla"
                                      emptyMessage="No se encontrarón registros"  reflow="true" 
                                      paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color"
                                      styleClass="manageUser-table">
 
                             <f:facet name="header">
                                 <p:commandButton value="Registrar"
-                                                 oncomplete="PF('registrarPermiso').show()"/>    
+                                                 oncomplete="PF('registrarPermiso').show()"/>  
                             </f:facet>
 
                             <p:column headerText="Permiso">
@@ -81,10 +81,14 @@
                             </p:column>
 
                             <p:column headerText="Acciones">
-                                <p:commandButton icon="ui-icon-circle-zoomin"/>
                                 <p:commandButton icon="ui-icon-pencil" actionListener="#{gestionUsuarioController.editarPermiso(permiso)}"
                                                  oncomplete="PF('editarPermiso').show();" update="editarPermiso"/>
-                                <p:commandButton icon="ui-icon-trash"/>
+                                <p:commandButton icon="ui-icon-trash" action="#{gestionUsuarioController.eliminarPermiso(permiso)}"
+                                                 update="growlForm">
+                                    <p:confirm header="Confirmación" icon="ui-icon-alert"
+                                               message="Estas Seguro de eliminar este Permiso?
+                                               Los usuarios no podrán acceder a esta página" />
+                                </p:commandButton>
                             </p:column>
 
                         </p:dataTable>
@@ -92,13 +96,16 @@
 
 
                     <h:form styleClass="top-formTable">
-                        <br/>
-                        <h2><h:outputText value="Roles"/></h2>
+                        <h2>Roles</h2>
 
                         <p:dataTable value="#{gestionUsuarioController.listaRoles}" var="rol"
                                      emptyMessage="No se encontrarón registros"  reflow="true" 
                                      paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color"
                                      styleClass="manageUser-table">
+
+                            <f:facet name="header">
+                                <p:commandButton value="Registrar" oncomplete="PF('registrarRol').show()" update="registrarRol"/>                                
+                            </f:facet>
 
                             <p:column headerText="Rol">
                                 <h:outputText value="#{rol.description}"/>
@@ -208,7 +215,7 @@
 
                                 <p:inputText id="descripcion" value="#{gestionUsuarioController.permiso.description}" title="Descripción Permiso" 
                                              required="true" requiredMessage="El campo Descripción es obligatorio" maxlength="100"
-                                             pt:placeholder='Nombre Permiso'>
+                                             pt:placeholder='Nombre Permiso' validatorMessage="La descripción debe contener entre 3 y 100 carácteres">
                                     <f:validateLength minimum="3" maximum="100"/>
                                 </p:inputText>
 
@@ -224,14 +231,14 @@
                                 <p:inputText id="url" value="#{gestionUsuarioController.permiso.url}" title="Url Permiso" 
                                              maxlength="100"
                                              pt:minlength="10" pt:maxlength="100" 
-                                             pt:placeholder='Url'>
+                                             pt:placeholder='Url' validatorMessage="La Url debe contener entre 10 y 100 carácteres">
                                     <f:validateLength minimum="10" maximum="100"/>
                                 </p:inputText>                                
 
                             </h:panelGrid>
 
                             <h:panelGrid columns="2">
-                                
+
                                 <p:commandButton value="Registrar" action="#{gestionUsuarioController.registrarPermiso()}"
                                                  update=":growlForm, :formTablePermission:permisoTabla, formRegistrarPermiso"
                                                  styleClass="btn btn-primary"/>
@@ -248,49 +255,160 @@
 
                 <p:dialog id="editarPermiso"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="editarPermiso" modal="true"
+                          widgetVar="editarPermiso" modal="true" width="350"
                           showEffect="fade" hideEffect="fade">
-                    <h:form id="formEditarPermiso">
-                        <center>
-                            <h1><h:outputText value="Editar Permiso"/></h1>
-                            <br/>
-                        </center>
-                        <h:panelGrid columns="2" id="gridEditarPermiso" >
+                    <center>
+                        <h:form id="formEditarPermiso">
+                            <h2>Editar Permiso</h2>
+                            <h:panelGrid columns="1" id="gridEditarPermiso" width="250">
 
-                            <p:outputLabel value="Descripción" for="descripcion" />
-                            <p:inputText id="descripcion" value="#{gestionUsuarioController.permiso.description}" title="Descripción Permiso" 
-                                         required="true" requiredMessage="El campo Descripción es obligatorio" maxlength="100">
-                                <f:validateLength minimum="3" maximum="100"/>
-                            </p:inputText>
+                                <p:inputText id="descripcion" value="#{gestionUsuarioController.permiso.description}" title="Descripción Permiso" 
+                                             required="true" requiredMessage="El campo Descripción es obligatorio" maxlength="100"
+                                             pt:placeholder="Descripción" validatorMessage="La descrición debe contener entre 5 y 50 carácteres">
+                                    <f:validateLength minimum="3" maximum="100"/>
+                                </p:inputText>
 
-                            <p:outputLabel value="Dependencia" for="dependencia" />
-                            <p:selectOneMenu id="dependencia" label="Dependencia"     
-                                             value="#{gestionUsuarioController.permiso.dependency}" filter="true"
-                                             converter="permisoConverter" >
+                                <p:selectOneMenu id="dependencia" label="Dependencia"  style="width: 93%!important"   
+                                                 value="#{gestionUsuarioController.permiso.dependency}" filter="true"
+                                                 converter="permisoConverter" 
+                                                 disabled="#{gestionUsuarioController.verificarSiEsPadre() eq false}">
 
-                                <f:selectItem value="#{null}" noSelectionOption="true" itemLabel="-- Seleciona un Permiso --" />
-                                <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisos}" 
-                                               itemLabel="#{permiso.description}" itemValue="#{permiso}"/>                                  
-                            </p:selectOneMenu>
+                                    <f:selectItem value="#{null}" noSelectionOption="true" itemLabel="-- Seleciona un Permiso --" />
+                                    <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisos}" 
+                                                   itemLabel="#{permiso.description}" itemValue="#{permiso}"/>                                  
+                                </p:selectOneMenu>
 
-                            <p:outputLabel value="Url" for="aht" />
-                            <p:inputText id="aht" value="#{gestionUsuarioController.permiso.url}" title="Url Permiso" 
-                                         maxlength="100"
-                                         pt:minlength="10" pt:maxlength="100" 
-                                         >
-                                <!--required="true" requiredMessage="El Aht nombre es obligatorio" pt:required="true"-->
-                                <f:validateLength minimum="10" maximum="100"/>
-                            </p:inputText>                                
+                                <p:inputText id="url" value="#{gestionUsuarioController.permiso.url}" title="Url Permiso" 
+                                             maxlength="100"
+                                             pt:minlength="10" pt:maxlength="100" 
+                                             pt:placeholder="Url"
+                                             disabled="#{gestionUsuarioController.verificarSiEsPadre() eq false}">
+                                    <f:validateLength minimum="10" maximum="100"/>
+                                </p:inputText>                                
 
-                        </h:panelGrid>
+                            </h:panelGrid>
 
-                        <p:commandButton value="Guardar" action="#{gestionUsuarioController.editarPermiso()}"
-                                         update=":growlForm, :formTablePermission:permisoTabla, formEditarPermiso "/>
+                            <h:panelGrid columns="2">
 
-                        <p:commandButton value="Cerrar" immediate="true"
-                                         actionListener="#{gestionUsuarioController.ocultarModal(4)}"
-                                         update=":formTablePermission:permisoTabla"/>
-                    </h:form>
+                                <p:commandButton value="Cerrar" immediate="true"
+                                                 actionListener="#{gestionUsuarioController.ocultarModal(4)}"
+                                                 update=":formTablePermission:permisoTabla"
+                                                 styleClass="btn btn-warning"/>
+
+                                <p:commandButton value="Guardar" action="#{gestionUsuarioController.editarPermiso()}"
+                                                 update=":growlForm, :formTablePermission:permisoTabla, formEditarPermiso "
+                                                 styleClass="btn btn-success"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
+                </p:dialog>
+
+                <!--Fin de código para las ventanas modales del módulo de permisos-->
+
+                <!--Comienzo de código para las ventanas modaldes del módulo de roles-->
+                <p:dialog id="registrarRol"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="registrarRol" modal="true" width="350"
+                          showEffect="fade" hideEffect="fade">
+                    <center>
+                        <h:form id="formRegistrarRol">
+                            <h2>Registrar Rol</h2>
+                            <h:panelGrid columns="1" id="gridRegistrarRol" width="250">
+
+                                <p:inputText id="descripcion" value="#{gestionUsuarioController.rol.description}" title="Descripción Rol" 
+                                             required="true" requiredMessage="El campo Descripción es obligatorio" maxlength="50"
+                                             pt:placeholder="Descripción" validatorMessage="La descrición debe contener entre 5 y 50 carácteres">
+                                    <f:validateLength minimum="5" maximum="50"/>
+                                </p:inputText>
+
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+
+                                <p:commandButton value="Cerrar" immediate="true"
+                                                 actionListener="#{gestionUsuarioController.ocultarModal(5)}"
+                                                 styleClass="btn btn-warning"/>
+
+                                <p:commandButton value="Continuar" 
+                                                 update=":growlForm, :formTablePermission:permisoTabla, formRegistrarRol, asignarPermisos, :formAsignarPermisos:listaPermisos"
+                                                 styleClass="btn btn-success"
+                                                 actionListener="#{gestionUsuarioController.abrirModalAsignarPerimsos()}"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
+                </p:dialog>
+
+                <p:dialog id="asignarPermisos"  resizable="false" responsive="true"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="asignarPermisos" modal="true" width="800"
+                          showEffect="fade" hideEffect="fade">
+
+                    <center>
+                        <h2>Asignar Permisos</h2>
+                        <h:form id="formAsignarPermisos">
+                            <p:panelGrid columns="2">
+                                <h:panelGrid id="gridAsignarPermisos">
+                                    <p:selectManyMenu id="listaPermisos" value="#{gestionUsuarioController.listaAsignarPermisos}" 
+                                                      showCheckbox="true" scrollHeight="150"
+                                                      converter="permisoConverter" styleClass="usuarios-checkBox" 
+                                                      style="width: 300px !important; height: 150px!important" >
+
+                                        <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisosConUrl}"
+                                                       itemLabel="#{permiso.description}" itemValue="#{permiso}">
+                                        </f:selectItems>
+                                    </p:selectManyMenu>      
+                                    <p:commandButton value="Asignar" update=":formAsignarPermisos"
+                                                     action="#{gestionUsuarioController.asignarPermisoRol()}"
+                                                     styleClass="btn btn-primary"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid>
+
+                                    <p:dataTable id="tablaAsignar"
+                                                 value="#{gestionUsuarioController.listaPermisosRol}" var="permisoRol" 
+                                                 emptyMessage="No se encontrarón registros" reflow="true"
+                                                 paginator="true" paginatorPosition="bottom" rows="5"  rowStyleClass="algo">
+
+                                        <p:column headerText="Descripción">
+                                            <h:outputText value="#{permisoRol.permissionId.description}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Crear">
+                                            <h:outputText value="#{permisoRol.opCreate}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Editar">
+                                            <h:outputText value="#{permisoRol.opEdit}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Eliminar">
+                                            <h:outputText value="#{permisoRol.opDelete}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Otra">
+                                            <h:outputText value="#{permisoRol.opOther}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Acciones">
+                                            <p:commandButton icon="ui-icon-close" update=":formAsignarPermisos"
+                                                             action="#{gestionUsuarioController.removerPermisoRol(permisoRol)}"/>
+                                        </p:column>
+
+                                    </p:dataTable>   
+                                    
+                                </h:panelGrid>
+                            </p:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Registrar" action="#{gestionUsuarioController.registrarRol()}"
+                                                 styleClass="btn btn-success"/>
+                                <p:commandButton value="Cerrar" actionListener="#{gestionUsuarioController.ocultarModal(6)}"
+                                                 styleClass="btn btn-warning"/>
+
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
                 </p:dialog>
 
 
