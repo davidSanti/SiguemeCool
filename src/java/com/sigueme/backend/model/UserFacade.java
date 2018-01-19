@@ -59,10 +59,8 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         try {
             Query query;
             if (usuariosExcluidos.isEmpty()) {
-                System.out.println("1");
                 query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
             } else {
-                System.out.println("2");
 //                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
                 query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.userId NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
                 query.setParameter("usuariosExcluidos", usuariosExcluidos);
@@ -193,8 +191,9 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     public List<User> listarSupervisorPorGrupo(GroupCls grupo) {
         List<User> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT u FROM User u WHERE u.groupId = :grupo ORDER BY u.userId DESC");
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.groupId = :grupo AND u.userStatusId.userStatusId <> :estadoUsuario ORDER BY u.userId DESC");
             query.setParameter("grupo", grupo);
+            query.setParameter("estadoUsuario", 2);
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el metodo buscarPorCedula= " + e.getMessage());
@@ -207,9 +206,10 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
         List<User> lista = new ArrayList();
         User user = null;
         try {
-            Query quey = em.createQuery("SELECT u FROM User u WHERE (u.identification = :identificacion OR u.peopleSoft = :identificacion) AND u.email = :correo ", User.class);
+            Query quey = em.createQuery("SELECT u FROM User u WHERE (u.identification = :identificacion OR u.peopleSoft = :identificacion) AND u.email = :correo AND u.userStatusId.userStatusId <> :estadoUsuario", User.class);
             quey.setParameter("identificacion", identificacion);
             quey.setParameter("correo", correo);
+            quey.setParameter("estadoUsuario", 2);
             lista = quey.getResultList();
             if (!lista.isEmpty()) {
                 user = lista.get(0);

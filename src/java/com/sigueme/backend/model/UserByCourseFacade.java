@@ -96,8 +96,9 @@ public class UserByCourseFacade extends AbstractFacade<UserByCourse> implements 
     public List<User> listarUsuariosSinEvidencia(Course curso) {
         List<User> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT u FROM UserByCourse uc JOIN uc.userId u WHERE uc.courseId = :curso AND uc.attached IS NULL AND uc.description IS NULL ORDER BY u.groupId ASC");
+            Query query = em.createQuery("SELECT u FROM UserByCourse uc JOIN uc.userId u WHERE uc.courseId = :curso AND uc.attached IS NULL AND uc.description IS NULL AND u.userStatusId.userStatusId <> :userStatus ORDER BY u.groupId ASC");
             query.setParameter("curso", curso);
+            query.setParameter("userStatus", 2);
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el metodo listarUsuariosSinEvidencia= " + e.getMessage());

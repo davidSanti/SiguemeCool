@@ -132,10 +132,6 @@ public class GestionUsuarioController implements Serializable {
         return bandera;
     }
 
-    public void registrarRol() {
-
-    }
-
     public void editarGrupo(GroupCls grupo) {
         this.grupo = grupo;
     }
@@ -388,60 +384,39 @@ public class GestionUsuarioController implements Serializable {
     }
 
     /*Fin método Módulo Permiso*/
-    public void ocultarModal(int opcion) {
-        RequestContext req = RequestContext.getCurrentInstance();
-        String formulario = null;
-        switch (opcion) {
-            case 1:
-                req.execute("PF('registrarGrupo').hide()");
-                formulario = "formRegistrarGrupo:gridRegistrarGrupo";
-                break;
-            case 2:
-                req.execute("PF('editarGrupo').hide()");
-                formulario = ":formEditarGrupo:gridEditarGrupo";
-                listarGrupos();
-                break;
-            case 3:
-                //Aqui el registrar
-                req.execute("PF('registrarPermiso').hide()");
-                formulario = "formRegistrarPermiso:gridRegistrarPermiso";
-                permiso = new Permission();
-                listarPermisos();
-                break;
-            case 4:
-                req.execute("PF('editarPermiso').hide()");
-                formulario = ":formEditarPermiso:gridEditarPermiso";
-                listarPermisos();
-                break;
-            case 5:
-                req.execute("PF('registrarRol').hide()");
-                formulario = ":formRegistrarRol:gridRegistrarRol";
-                rol = new Role();
-                break;
-            case 6:
-                req.execute("PF('asignarPermisos').hide()");
-                formulario = ":formAsignarPermisos:gridAsignarPermisos";
-                //joder la tabla y seleccionar por default todos
-                listaPermisosRol = new ArrayList<>();
-                break;
-            default:
-                break;
+
+ /*Inicio Módulo Rol*/
+    public void registrarRol() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            roleFacadeLocal.create(rol);
+            for (PermissionRole permissionRole : listaPermisosRol) {
+//                    System.out.println("peros" + permissionRole.getPermissionId().getDescription());
+//                    System.out.println("cre" + permissionRole.getOpCreate());
+//                    System.out.println("ed" + permissionRole.getOpEdit());
+//                    System.out.println("dele" + permissionRole.getOpDelete());
+//                    System.out.println("ot" + permissionRole.getOpOther());
+                permissionRoleFacadeLocal.create(permissionRole);
+            }
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                    "Los permisos se asignaron correctamente"));
+
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al asignar los permisos, intenta más tarde"));
         }
-        req.reset(formulario);
+
     }
 
-    /*Inicio Módulo Rol*/
     public boolean verificarNombreRol() {
         boolean bandera = true;
         List<Role> lista = roleFacadeLocal.findAll();
         String nombreOriginal = rol.getDescription().replaceAll(" ", "");
         nombreOriginal = nombreOriginal.toLowerCase();
 
-        System.out.println("nombre:" + nombreOriginal);
         for (Role item : lista) {
             String nombreItem = item.getDescription().toLowerCase();
             nombreItem = nombreItem.replaceAll(" ", "");
-            System.out.println("nombre:" + nombreItem);
 
             if (nombreItem.equals(nombreOriginal)) {
                 if (!Objects.equals(item.getRoleId(), rol.getRoleId())) {
@@ -454,11 +429,17 @@ public class GestionUsuarioController implements Serializable {
 
     public void abrirModalAsignarPerimsos() {
         RequestContext req = RequestContext.getCurrentInstance();
-        if (permiso != null) {
-            listarPermisosConDependencia();
-            listaPermisosRol = new ArrayList<>();
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (verificarNombreRol()) {
+            if (permiso != null) {
+                listarPermisosConDependencia();
+                listaPermisosRol = new ArrayList<>();
+            }
+            req.execute("PF('asignarPermisos').show()");
+        } else {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                    "Ya exite un rol con el mismo nombre, verifica por favor"));
         }
-        req.execute("PF('asignarPermisos').show()");
     }
 
     public void listarPermisosConDependencia() {
@@ -493,7 +474,53 @@ public class GestionUsuarioController implements Serializable {
         listaPermisosRol.remove(PermisoRol);
     }
 
+    //Falta remover todos y el row edit
+    public void hacer() {
+        System.out.println("hacer");
+    }
+
     /*Inicio Módulo Rol*/
+    public void ocultarModal(int opcion) {
+        RequestContext req = RequestContext.getCurrentInstance();
+        String formulario = null;
+        switch (opcion) {
+            case 1:
+                req.execute("PF('registrarGrupo').hide()");
+                formulario = "formRegistrarGrupo:gridRegistrarGrupo";
+                break;
+            case 2:
+                req.execute("PF('editarGrupo').hide()");
+                formulario = ":formEditarGrupo:gridEditarGrupo";
+                listarGrupos();
+                break;
+            case 3:
+                //Aqui el registrar
+                req.execute("PF('registrarPermiso').hide()");
+                formulario = "formRegistrarPermiso:gridRegistrarPermiso";
+                permiso = new Permission();
+                listarPermisos();
+                break;
+            case 4:
+                req.execute("PF('editarPermiso').hide()");
+                formulario = ":formEditarPermiso:gridEditarPermiso";
+                listarPermisos();
+                break;
+            case 5:
+                req.execute("PF('registrarRol').hide()");
+                formulario = ":formRegistrarRol:gridRegistrarRol";
+                rol = new Role();
+                break;
+            case 6:
+                req.execute("PF('asignarPermisos').hide()");
+                formulario = ":formAsignarPermisos:gridAsignarPermisos";
+                listaPermisosRol = new ArrayList<>();
+                break;
+            default:
+                break;
+        }
+        req.reset(formulario);
+    }
+
     //Getter y setter
     public List<GroupCls> getListaGrupos() {
         return listaGrupos;

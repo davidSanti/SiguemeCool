@@ -341,7 +341,7 @@
 
                 <p:dialog id="asignarPermisos"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="asignarPermisos" modal="true" width="800"
+                          widgetVar="asignarPermisos" modal="true" width="900"
                           showEffect="fade" hideEffect="fade">
 
                     <center>
@@ -368,35 +368,67 @@
                                     <p:dataTable id="tablaAsignar"
                                                  value="#{gestionUsuarioController.listaPermisosRol}" var="permisoRol" 
                                                  emptyMessage="No se encontrarón registros" reflow="true"
-                                                 paginator="true" paginatorPosition="bottom" rows="5"  rowStyleClass="algo">
+                                                 paginator="true" paginatorPosition="bottom" rows="5"  rowStyleClass="algo"
+                                                 editable="true" >
 
-                                        <p:column headerText="Descripción">
+                                        <p:column  styleClass="alignLeft" headerText="Descripción" width="100">
                                             <h:outputText value="#{permisoRol.permissionId.description}"/>
                                         </p:column>
 
-                                        <p:column headerText="Crear">
-                                            <h:outputText value="#{permisoRol.opCreate}"/>
+                                        <p:column  styleClass="alignLeft" headerText="Crear">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{permisoRol.opCreate ? 'Si' : 'No'}"/>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:selectBooleanCheckbox value="#{permisoRol.opCreate}"/>
+                                                </f:facet>
+                                            </p:cellEditor>                        
                                         </p:column>
 
-                                        <p:column headerText="Editar">
-                                            <h:outputText value="#{permisoRol.opEdit}"/>
+                                        <p:column  styleClass="alignLeft" headerText="Editar">                                      
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{permisoRol.opEdit ? 'Si' : 'No'}"/>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:selectBooleanCheckbox value="#{permisoRol.opEdit}"/>
+                                                </f:facet>
+                                            </p:cellEditor>                        
                                         </p:column>
 
-                                        <p:column headerText="Eliminar">
-                                            <h:outputText value="#{permisoRol.opDelete}"/>
+                                        <p:column  styleClass="alignLeft" headerText="Eliminar">                                      
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{permisoRol.opDelete ? 'Si' : 'No'}"/>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:selectBooleanCheckbox value="#{permisoRol.opDelete}"/>
+                                                </f:facet>
+                                            </p:cellEditor>                        
                                         </p:column>
 
-                                        <p:column headerText="Otra">
-                                            <h:outputText value="#{permisoRol.opOther}"/>
+                                        <p:column  styleClass="alignLeft" headerText="Otro">                                      
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{permisoRol.opOther ? 'Si' : 'No'}"/>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:selectBooleanCheckbox value="#{permisoRol.opOther}"/>
+                                                </f:facet>
+                                            </p:cellEditor>                        
                                         </p:column>
 
-                                        <p:column headerText="Acciones">
+                                        <p:column headerText="" width="20">
+                                            <p:rowEditor id="editOption"/>
+                                        </p:column>
+                                        
+                                        <p:column headerText="" width="30">  
                                             <p:commandButton icon="ui-icon-close" update=":formAsignarPermisos"
                                                              action="#{gestionUsuarioController.removerPermisoRol(permisoRol)}"/>
                                         </p:column>
-
                                     </p:dataTable>   
-                                    
+
                                 </h:panelGrid>
                             </p:panelGrid>
 

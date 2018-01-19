@@ -261,7 +261,8 @@ public class CursoController implements Serializable {
         if (!gruposPersona.isEmpty()) {
             for (UserByCourse userByCourse : usuariosTemporalesPorCurso) {
                 for (GroupCls groupCls : gruposPersona) {
-                    if (Objects.equals(userByCourse.getUserId().getGroupId().getGroupId(), groupCls.getGroupId())) {
+                    if (Objects.equals(userByCourse.getUserId().getGroupId().getGroupId(), groupCls.getGroupId())
+                            && userByCourse.getUserId().getUserStatusId().getUserStatusId() != 2) {
                         usuariosListaAsignar.add(userByCourse.getUserId());
                     }
                 }
@@ -731,7 +732,8 @@ public class CursoController implements Serializable {
 
         for (UserByCourse item : listaParaFiltrar) {
             for (GroupCls grupo : gruposPersona) {
-                if (item.getUserId().getGroupId().equals(grupo)) {
+                if (item.getUserId().getGroupId().equals(grupo)
+                        && item.getUserId().getUserStatusId().getUserStatusId() != 2) {
                     listaFiltrada.add(item);
                 }
             }

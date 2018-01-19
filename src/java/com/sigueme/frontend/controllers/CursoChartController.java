@@ -146,7 +146,7 @@ public class CursoChartController implements Serializable {
         listarUsuarios();
         for (User item : listaUsuariosSinEvidencia) {
             for (GroupCls grupo : gruposPersona) {
-                if (item.getGroupId().equals(grupo)) {
+                if (item.getGroupId().equals(grupo) && item.getUserStatusId().getUserStatusId() != 2) {
                     listaTemporal.add(item);
                 }
             }
@@ -159,7 +159,8 @@ public class CursoChartController implements Serializable {
     public void buscarPersonaPorNombre() {
         List<User> listaTemporal = new ArrayList<>();
         for (User item : listaUsuariosSinEvidencia) {
-            if (item.getFirstName().contains(nombrePersona) || item.getLastName().contains(nombrePersona)) {
+            if ((item.getFirstName().contains(nombrePersona) || item.getLastName().contains(nombrePersona))
+                    && item.getUserStatusId().getUserStatusId() != 2) {
                 listaTemporal.add(item);
             }
         }

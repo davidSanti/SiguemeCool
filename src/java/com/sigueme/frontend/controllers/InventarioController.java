@@ -127,7 +127,7 @@ public class InventarioController implements Serializable {
         boolean bandera = puestoSerial == null;
         if (bandera) {
             try {
-                this.deskFacadeLocal.create(puesto);
+//                this.deskFacadeLocal.create(puesto);
                 banderaRegistro = true;
                 context.addMessage(
                         null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registro exitoso"));
@@ -203,11 +203,15 @@ public class InventarioController implements Serializable {
             String parteLiteral = partes[0];
             String parteNumerica = partes[1];
 
+            if (parteNumerica.length() <= 2) {
+                parteNumerica = 0 + parteNumerica;
+            }
             parteLiteral = parteLiteral + " ";
             parteNumerica = "- " + parteNumerica;
 
             serialCodeCorregido = parteLiteral.concat(parteNumerica);
         }
+        System.out.println("ss" + serialCodeCorregido.toUpperCase());
         return serialCodeCorregido.toUpperCase();
     }
 
