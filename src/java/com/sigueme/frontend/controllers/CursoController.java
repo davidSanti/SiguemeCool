@@ -239,7 +239,7 @@ public class CursoController implements Serializable {
         this.usuariosListaAsignar = usuariosListaAsignar;
     }
 
-    //Aquí se llama al método que valida las fechas y si éste devuelva "true" llama al método encargado de abrir el modal para asiganar usuarios
+    //Aquí se llama al método que valida las fechas y si éste devuelva "true" llama al método encargado de abrir el modal para asignar usuarios
     public void registrarCurso() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (validarFechas()) {

@@ -30,4 +30,7 @@ public interface ConventionFacadeLocal {
 
     int count();
     
+    List<Convention> listaConvenciones();
+
+  
 }

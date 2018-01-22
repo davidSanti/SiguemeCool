@@ -43,4 +43,9 @@ public class ConventionFacade extends AbstractFacade<Convention> implements Conv
         }
         return lista;
     }
+
+    @Override
+    public List<Convention> listaConvenciones() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
