@@ -34,5 +34,7 @@ public interface PermissionRoleFacadeLocal {
 
     List<Permission> listarPermisosPorRol(Role rol);
 
-    void eliminarPermisosRol(Permission permisoEliminado);
+    void eliminarPermisosRol(Permission permisoEliminado, Role rolEliminado);
+
+    List<PermissionRole> listarPermisosPorRol2(Role rol);
 }

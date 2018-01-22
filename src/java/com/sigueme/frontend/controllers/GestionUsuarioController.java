@@ -26,6 +26,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -50,6 +52,7 @@ public class GestionUsuarioController implements Serializable {
     private List<GroupCls> listaGrupos;
     private List<Role> listaRoles;
     private List<Permission> listaPermisos;
+    private List<Permission> listaPermisosRegistrar;
     private List<Permission> listaPermisosConUrl;
     private List<Permission> listaAsignarPermisos;
     private List<PermissionRole> listaPermisosRol;
@@ -59,6 +62,8 @@ public class GestionUsuarioController implements Serializable {
     private Permission permiso;
     private PermissionRole permisoRol;
     private boolean validacionDependencia = false; //Se creo esta variable para validar si un permiso tiene dependencia DEBE TENER URL
+    private boolean validarBotonEditar = false;
+    private int nuevoRolUsuario;
 
     public GestionUsuarioController() {
     }
@@ -74,8 +79,9 @@ public class GestionUsuarioController implements Serializable {
         rol = new Role();
         permiso = new Permission();
         permisoRol = new PermissionRole();
+        nuevoRolUsuario = 0;
         listarDependecia(null);
-
+        listaPermisosRegistrar = permissionFacadeLocal.listarPermisosSinDependencia();
     }
 
     public void listarGrupos() {
@@ -343,6 +349,24 @@ public class GestionUsuarioController implements Serializable {
         return validacionDependencia;
     }
 
+    public boolean verificarSiEliminarPermiso(Permission permiso) {
+        boolean bandera = false;
+        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestPathInfo();
+        listarPermisos();
+        Permission permisoOriginal = null;
+        for (Permission p : listaPermisos) {
+            if (p.getUrl() != null && p.getUrl().equals(url.replaceFirst("/", ""))) {
+                permisoOriginal = p;
+                break;
+            }
+        }
+
+        if (permisoOriginal != null && Objects.equals(permisoOriginal.getPermissionId(), permiso.getPermissionId())) {
+            bandera = true;
+        }
+        return bandera;
+    }
+
     public void eliminarPermiso(Permission permiso) {
         FacesContext context = FacesContext.getCurrentInstance();
         this.permiso = permiso;
@@ -368,7 +392,7 @@ public class GestionUsuarioController implements Serializable {
     public boolean eliminarPermisosoRol() {
         boolean bandera = false;
         try {
-            permissionRoleFacadeLocal.eliminarPermisosRol(permiso);
+            permissionRoleFacadeLocal.eliminarPermisosRol(permiso, new Role());
             bandera = true;
         } catch (Exception e) {
         }
@@ -389,18 +413,20 @@ public class GestionUsuarioController implements Serializable {
     public void registrarRol() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-            roleFacadeLocal.create(rol);
-            for (PermissionRole permissionRole : listaPermisosRol) {
-//                    System.out.println("peros" + permissionRole.getPermissionId().getDescription());
-//                    System.out.println("cre" + permissionRole.getOpCreate());
-//                    System.out.println("ed" + permissionRole.getOpEdit());
-//                    System.out.println("dele" + permissionRole.getOpDelete());
-//                    System.out.println("ot" + permissionRole.getOpOther());
-                permissionRoleFacadeLocal.create(permissionRole);
+            if (!listaPermisosRol.isEmpty()) {
+                roleFacadeLocal.create(rol);
+                for (PermissionRole permissionRole : listaPermisosRol) {
+                    permissionRole.setRoleId(rol);
+                    permissionRoleFacadeLocal.create(permissionRole);
+                }
+                ocultarModal(5);
+                ocultarModal(6);
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                        "Los permisos se asignaron correctamente"));
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "No puedes registrar un rol sin asignarle permisos"));
             }
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                    "Los permisos se asignaron correctamente"));
-
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Ha ocurrido un error al asignar los permisos, intenta más tarde"));
@@ -428,14 +454,13 @@ public class GestionUsuarioController implements Serializable {
     }
 
     public void abrirModalAsignarPerimsos() {
-        RequestContext req = RequestContext.getCurrentInstance();
         FacesContext context = FacesContext.getCurrentInstance();
         if (verificarNombreRol()) {
             if (permiso != null) {
                 listarPermisosConDependencia();
                 listaPermisosRol = new ArrayList<>();
             }
-            req.execute("PF('asignarPermisos').show()");
+            abrirModal(1);
         } else {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
                     "Ya exite un rol con el mismo nombre, verifica por favor"));
@@ -479,6 +504,176 @@ public class GestionUsuarioController implements Serializable {
         System.out.println("hacer");
     }
 
+    public void editarRol(Role rol) {
+        this.rol = rol;
+        validarBotonEditar = true;
+    }
+
+    public void editarRol() {
+        RequestContext req = RequestContext.getCurrentInstance();
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            if (verificarNombreRol()) {
+                roleFacadeLocal.edit(rol);
+                ocultarModal(5);
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "Ya exite un rol con el mismo nombre, verifica por favor"));
+            }
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al editar el rol, intenta más tarde"));
+        }
+    }
+
+    public void asignarPermisosPorRolAbrirModal() {
+        listaPermisosRol = permissionRoleFacadeLocal.listarPermisosPorRol2(rol);
+        listarPermisosConDependencia();
+        listaPermisosConUrl.removeAll(permissionRoleFacadeLocal.listarPermisosPorRol(rol));
+
+        abrirModal(1);
+    }
+
+    public void editarPermisoRolCerrarModal() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (!listaPermisosRol.isEmpty()) {
+            if (editarPermisoRol()) {
+                ocultarModal(5);
+                ocultarModal(6);
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                        "Permiso editado correctamente"));
+            } else {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                        "Ocurrió un error al asignar los permisos, intenta más tarde"));
+            }
+
+        } else {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                    "No puedes tener un rol sin permisos"));
+        }
+    }
+
+    public boolean editarPermisoRol() {
+        boolean banderaEdicion = true;
+        try {
+            List<PermissionRole> listaOriginal = permissionRoleFacadeLocal.listarPermisosPorRol2(rol);
+            //En esta primera parte se compara la lista actual de la tabla llamada "listaPermisosRol" vs la lista original
+            for (PermissionRole permisoAgregar : listaPermisosRol) {
+                boolean bandera = false;
+                for (PermissionRole itemOriginal : listaOriginal) {
+                    if (Objects.equals(itemOriginal.getPermissionId().getPermissionId(), permisoAgregar.getPermissionId().getPermissionId())) {
+                        bandera = true;
+                    }
+                }
+                //si el elemto no se encuentra en la lista origina se agrega 
+                if (!bandera) {
+                    permisoAgregar.setRoleId(rol);
+                    permissionRoleFacadeLocal.create(permisoAgregar);
+                } else {
+                    permissionRoleFacadeLocal.edit(permisoAgregar);
+
+                }
+            }
+
+            //En la segunda parte comparamos las listas para remover algún permmiso que se encuentre en la lsita original pero no en la actual
+            for (int i = 0; i < listaOriginal.size(); i++) {
+                boolean bandera = true;
+                for (PermissionRole permisoRemover : listaPermisosRol) {
+                    if (Objects.equals(listaOriginal.get(i).getPermissionId().getPermissionId(), permisoRemover.getPermissionId().getPermissionId())) {
+                        bandera = false;
+                    }
+                }
+                if (bandera) {
+                    permissionRoleFacadeLocal.remove(listaOriginal.get(i));
+                }
+            }
+        } catch (Exception e) {
+            banderaEdicion = false;
+        }
+        return banderaEdicion;
+    }
+
+    public boolean verificarSiEliminar(Role rol) {
+        if (Objects.equals(rol.getRoleId(), retornarRolEnSesion().getRoleId())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public Role retornarRolEnSesion() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpSession sesion = (HttpSession) context.getExternalContext().getSession(true);
+        String path = ((HttpServletRequest) context.getExternalContext().getRequest()).getContextPath();
+        Role rolEnSesion = (Role) sesion.getAttribute("rol");
+        return rolEnSesion;
+    }
+
+    public void eliminarRol(Role role) {
+        this.rol = role;
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            List<Role> roles = new ArrayList<>();
+            roles.add(rol);
+            List<User> listaUsuarios = userFacadeLocal.filtrarUsuariosPorRol(roles, new ArrayList<>());
+
+            if (listaUsuarios.isEmpty()) {
+                //remover Permisos Rol
+                permissionRoleFacadeLocal.eliminarPermisosRol(new Permission(), rol);
+
+                roleFacadeLocal.remove(rol);
+                listarRoles();
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                        "Rol eliminado correctamente"));
+            } else {
+                abrirModal(2);
+            }
+        } catch (Exception e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Ha ocurrido un error al eliminar el rol"));
+        }
+    }
+
+    public void asignarNuevoRolUsuarios() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (nuevoRolUsuario > 0 && nuevoRolUsuario != rol.getRoleId()) {
+            try {
+                permissionRoleFacadeLocal.eliminarPermisosRol(new Permission(), rol);
+                if (asignarNuevoRolUsuarios(roleFacadeLocal.find(nuevoRolUsuario))) {
+                    roleFacadeLocal.remove(rol);
+                    ocultarModal(7);
+                    listarRoles();
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                            "Rol eliminado correctamente"));
+                } else {
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
+                            "No todos los usuarios se asignaron al nuevo rol, intentalo de nuevo"));
+                }
+
+            } catch (Exception e) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                        "Ha ocurrido un error al eliminar el rol"));
+            }
+        } else {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "",
+                    "Debes selecionar un rol"));
+        }
+    }
+
+    public boolean asignarNuevoRolUsuarios(Role nuevoRol) {
+        boolean bandera = true;
+        try {
+            List<User> lista = userFacadeLocal.filtrarUsuariosPorRol(rol);
+            for (User user : lista) {
+                user.setRoleId(nuevoRol);
+                userFacadeLocal.edit(user);
+            }
+        } catch (Exception e) {
+            bandera = false;
+        }
+        return bandera;
+    }
+
     /*Inicio Módulo Rol*/
     public void ocultarModal(int opcion) {
         RequestContext req = RequestContext.getCurrentInstance();
@@ -509,16 +704,36 @@ public class GestionUsuarioController implements Serializable {
                 req.execute("PF('registrarRol').hide()");
                 formulario = ":formRegistrarRol:gridRegistrarRol";
                 rol = new Role();
+                validarBotonEditar = false;
                 break;
             case 6:
                 req.execute("PF('asignarPermisos').hide()");
                 formulario = ":formAsignarPermisos:gridAsignarPermisos";
                 listaPermisosRol = new ArrayList<>();
+                listaAsignarPermisos = new ArrayList<>();
+                break;
+            case 7:
+                req.execute("PF('confirmarAsignacionRol').hide()");
                 break;
             default:
                 break;
         }
         req.reset(formulario);
+    }
+
+    public void abrirModal(int opcion) {
+        RequestContext req = RequestContext.getCurrentInstance();
+
+        switch (opcion) {
+            case 1:
+                req.execute("PF('asignarPermisos').show()");
+                break;
+            case 2:
+                req.execute("PF('confirmarAsignacionRol').show()");
+                break;
+            default:
+                break;
+        }
     }
 
     //Getter y setter
@@ -608,6 +823,30 @@ public class GestionUsuarioController implements Serializable {
 
     public void setListaPermisosConUrl(List<Permission> listaPermisosConUrl) {
         this.listaPermisosConUrl = listaPermisosConUrl;
+    }
+
+    public boolean isValidarBotonEditar() {
+        return validarBotonEditar;
+    }
+
+    public void setValidarBotonEditar(boolean validarBotonEditar) {
+        this.validarBotonEditar = validarBotonEditar;
+    }
+
+    public int getNuevoRolUsuario() {
+        return nuevoRolUsuario;
+    }
+
+    public void setNuevoRolUsuario(int nuevoRolUsuario) {
+        this.nuevoRolUsuario = nuevoRolUsuario;
+    }
+
+    public List<Permission> getListaPermisosRegistrar() {
+        return listaPermisosRegistrar;
+    }
+
+    public void setListaPermisosRegistrar(List<Permission> listaPermisosRegistrar) {
+        this.listaPermisosRegistrar = listaPermisosRegistrar;
     }
 
 }

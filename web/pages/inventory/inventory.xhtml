@@ -161,7 +161,7 @@
                 <p:dialog id="modalAsignarElementos" resizable="false" closeOnEscape="false" 
                           draggable="false" closable="true" widgetVar="modalAsignarElementos" 
                           modal="true" showEffect="fade" hideEffect="fade" width="800">
-                    <center><h1><h:outputText value="Elementos del MSC"/></h1></center>
+                    <h2>Elementos del MSC</h2>
                     <center>
                         <h:form id="formAsociarElementos">
                             <p:growl id="growlAsociarElementos" showDetail="true" showSummary="false" sticky="false" life="2500"/> 
@@ -195,7 +195,11 @@
                                 </p:dataTable>
 
                             </h:panelGrid>
-                            <p:commandButton value="Cerrar" oncomplete="PF('modalAsignarElementos').hide()"/>
+
+                            <h:panelGrid columns="1">                                
+                                <p:commandButton value="Cerrar" oncomplete="PF('modalAsignarElementos').hide()"
+                                                 styleClass="btn btn-warning"/>
+                            </h:panelGrid>
                         </h:form>
                     </center>
                 </p:dialog>
@@ -301,51 +305,51 @@
                           draggable="false" closable="false" widgetVar="modalMigrarElementos" 
                           modal="true" showEffect="fade" hideEffect="fade" width="850">
                     <center>
-                    <h:form id="formMigrarElementos">
-                        <center><h2>Migrar Elementos</h2></center>
-                        <h:panelGrid columns="2" id="gridMigrarElementos">
-                            <p:panel>
-                                <h:form>
+                        <h:form id="formMigrarElementos">
+                            <center><h2>Migrar Elementos</h2></center>
+                            <h:panelGrid columns="2" id="gridMigrarElementos">
+                                <p:panel>
+                                    <h:form>
+                                        <center>
+                                            <h:outputText value="Elementos en el puesto #{inventarioController.serialCodeOrigen}"/>
+                                        </center>  
+                                        <p:selectManyMenu id="advanced" value="#{inventarioController.elementosPorPuestos}" 
+                                                          converter="elementoConverter" style=" height: 150px!important;width: 300px !important"
+                                                          showCheckbox="true">
+
+                                            <f:selectItems value="#{inventarioController.elementosPorPuestosOrigen}" var="elemento"
+                                                           itemLabel="#{elemento.typeId.description}" itemValue="#{elemento}" />
+
+                                        </p:selectManyMenu>
+                                    </h:form>
+                                </p:panel>
+
+                                <p:panel>
                                     <center>
-                                        <h:outputText value="Elementos en el puesto #{inventarioController.serialCodeOrigen}"/>
-                                    </center>  
-                                    <p:selectManyMenu id="advanced" value="#{inventarioController.elementosPorPuestos}" 
-                                                      converter="elementoConverter" style=" height: 150px!important;width: 300px !important"
-                                                      showCheckbox="true">
+                                        <h:outputText value="Elementos en el puesto #{inventarioController.serialCodeDestino}"/>
+                                    </center>
+                                    <p:dataTable value="#{inventarioController.elementosPorPuestosDestino}" var="elementoPuesto"
+                                                 emptyMessage="No se encontrarón registros" rowStyleClass="row-color"
+                                                 paginator="true" paginatorPosition="bottom" rows="6" reflow="true">
 
-                                        <f:selectItems value="#{inventarioController.elementosPorPuestosOrigen}" var="elemento"
-                                                       itemLabel="#{elemento.typeId.description}" itemValue="#{elemento}" />
+                                        <p:column headerText="Elemento">
+                                            <h:outputText value="#{elementoPuesto.typeId.description}"/>
+                                        </p:column>
 
-                                    </p:selectManyMenu>
-                                </h:form>
-                            </p:panel>
+                                        <p:column headerText="Serial Code">
+                                            <h:outputText value="#{elementoPuesto.serialCode}"/>
+                                        </p:column>
 
-                            <p:panel>
-                                <center>
-                                    <h:outputText value="Elementos en el puesto #{inventarioController.serialCodeDestino}"/>
-                                </center>
-                                <p:dataTable value="#{inventarioController.elementosPorPuestosDestino}" var="elementoPuesto"
-                                             emptyMessage="No se encontrarón registros" rowStyleClass="row-color"
-                                             paginator="true" paginatorPosition="bottom" rows="6" reflow="true">
-
-                                    <p:column headerText="Elemento">
-                                        <h:outputText value="#{elementoPuesto.typeId.description}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Serial Code">
-                                        <h:outputText value="#{elementoPuesto.serialCode}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Acciones">
-                                        <p:commandButton value="Ver info" icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.asignarElemento(elementoPuesto)}"
-                                                         oncomplete="PF('modalVerElemento').show()" update="modalVerElemento"/>
-                                    </p:column>
-                                </p:dataTable>
-                            </p:panel>
-                        </h:panelGrid>
+                                        <p:column headerText="Acciones">
+                                            <p:commandButton value="Ver info" icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.asignarElemento(elementoPuesto)}"
+                                                             oncomplete="PF('modalVerElemento').show()" update="modalVerElemento"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:panel>
+                            </h:panelGrid>
 
 
-                        
+
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Cerrar" action="#{inventarioController.cerrarModal(3)}" 
                                                  styleClass="btn btn-warning"/>
@@ -356,45 +360,48 @@
                             </h:panelGrid>
 
 
-                    </h:form>
+                        </h:form>
                     </center>
                 </p:dialog>
 
 
                 <p:dialog id="modalVerElemento" resizable="false" closeOnEscape="true" 
                           draggable="false" closable="true" widgetVar="modalVerElemento" 
-                          modal="true" showEffect="fade" hideEffect="fade">
-                    <center><h2>Detalle Elemento</h2></center>
-                    <br/>
-                    <h:form>
-                        <p:panelGrid columns="2">
+                          modal="true" showEffect="fade" hideEffect="fade" width="350">
+                    <h2>Detalle Elemento</h2>
+                    <center>
+                        <h:form >
+                            <p:panelGrid columns="2" >
 
-                            <h:outputLabel value="Tipo"/>
-                            <h:outputLabel value="#{inventarioController.elemento.typeId.description}"/>
+                                <h:outputLabel value="Tipo"/>
+                                <h:outputLabel value="#{inventarioController.elemento.typeId.description}"/>
 
-                            <h:outputLabel value="Serial Code"/>
-                            <h:outputLabel value="#{inventarioController.elemento.serialCode}"/>
+                                <h:outputLabel value="Serial Code"/>
+                                <h:outputLabel value="#{inventarioController.elemento.serialCode}"/>
 
-                            <h:outputLabel value="Placa Inventario"/>
-                            <h:outputLabel value="#{inventarioController.elemento.inventoryPlaque}"/>
+                                <h:outputLabel value="Placa Inventario"/>
+                                <h:outputLabel value="#{inventarioController.elemento.inventoryPlaque}"/>
 
-                            <h:outputLabel value="Marca"/>
-                            <h:outputLabel value="#{inventarioController.elemento.brand}"/>    
+                                <h:outputLabel value="Marca"/>
+                                <h:outputLabel value="#{inventarioController.elemento.brand}"/>    
 
-                            <h:outputLabel value="Modelo"/>
-                            <h:outputLabel value="#{inventarioController.elemento.model}"/>    
+                                <h:outputLabel value="Modelo"/>
+                                <h:outputLabel value="#{inventarioController.elemento.model}"/>    
 
-                            <h:outputLabel value="Nombre PC" rendered="#{inventarioController.verificarTipoElemento() eq true}"/>
-                            <h:outputLabel value="#{inventarioController.elemento.pcName}" rendered="#{inventarioController.verificarTipoElemento() eq true}"/>  
+                                <h:outputLabel value="Nombre PC" rendered="#{inventarioController.verificarTipoElemento() eq true}"/>
+                                <h:outputLabel value="#{inventarioController.elemento.pcName}" rendered="#{inventarioController.verificarTipoElemento() eq true}"/>  
 
-                            <h:outputLabel value="Descripción"/>
-                            <h:outputLabel value="#{inventarioController.elemento.description}"/>
+                                <h:outputLabel value="Descripción"/>
+                                <h:outputLabel value="#{inventarioController.elemento.description}"/>
 
-                        </p:panelGrid>
-                        <br/>
-                        <center><p:commandButton value="Cerrar" onclick="PF('modalVerElemento').hide()" immediate="true" 
-                                                 styleClass="btn btn-warning"/></center> 
-                    </h:form>
+                            </p:panelGrid>
+
+                            <h:panelGrid columns="1">                                
+                                <p:commandButton value="Cerrar" onclick="PF('modalVerElemento').hide()" immediate="true" 
+                                                 styleClass="btn btn-warning btn-block"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center> 
                 </p:dialog>
 
             </ui:define>

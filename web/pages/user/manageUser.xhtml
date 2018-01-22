@@ -84,7 +84,8 @@
                                 <p:commandButton icon="ui-icon-pencil" actionListener="#{gestionUsuarioController.editarPermiso(permiso)}"
                                                  oncomplete="PF('editarPermiso').show();" update="editarPermiso"/>
                                 <p:commandButton icon="ui-icon-trash" action="#{gestionUsuarioController.eliminarPermiso(permiso)}"
-                                                 update="growlForm">
+                                                 update="permisoTabla, :growlForm"
+                                                 disabled="#{gestionUsuarioController.verificarSiEliminarPermiso(permiso) eq true}">
                                     <p:confirm header="Confirmación" icon="ui-icon-alert"
                                                message="Estas Seguro de eliminar este Permiso?
                                                Los usuarios no podrán acceder a esta página" />
@@ -95,13 +96,13 @@
                     </h:form>
 
 
-                    <h:form styleClass="top-formTable">
+                    <h:form styleClass="top-formTable" id="formRol">
                         <h2>Roles</h2>
 
                         <p:dataTable value="#{gestionUsuarioController.listaRoles}" var="rol"
                                      emptyMessage="No se encontrarón registros"  reflow="true" 
                                      paginator="true" paginatorPosition="bottom" rows="5" rowStyleClass="row-color"
-                                     styleClass="manageUser-table">
+                                     styleClass="manageUser-table" id="tablaRol">
 
                             <f:facet name="header">
                                 <p:commandButton value="Registrar" oncomplete="PF('registrarRol').show()" update="registrarRol"/>                                
@@ -113,8 +114,16 @@
 
                             <p:column headerText="Acciones">
                                 <p:commandButton icon="ui-icon-circle-zoomin"/>
-                                <p:commandButton icon="ui-icon-pencil"/>
-                                <p:commandButton icon="ui-icon-trash"/>
+                                
+                                <p:commandButton icon="ui-icon-pencil" oncomplete="PF('registrarRol').show()" 
+                                                 actionListener="#{gestionUsuarioController.editarRol(rol)}"
+                                                 update="registrarRol" />
+                                <p:commandButton icon="ui-icon-trash" action="#{gestionUsuarioController.eliminarRol(rol)}"
+                                                 update="formRol:tablaRol, :growlForm"
+                                                 disabled="#{gestionUsuarioController.verificarSiEliminar(rol) eq false}">
+                                    <p:confirm header="Confirmación" icon="ui-icon-alert"
+                                               message="Estas Seguro de eliminar este Rol?"/>
+                                </p:commandButton>
                             </p:column>
 
                         </p:dataTable>
@@ -224,7 +233,7 @@
                                                  converter="permisoConverter" >
 
                                     <f:selectItem value="#{null}" noSelectionOption="true" itemLabel="-- Dependencia --" />
-                                    <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisos}" 
+                                    <f:selectItems var="permiso" value="#{gestionUsuarioController.listaPermisosRegistrar}" 
                                                    itemLabel="#{permiso.description}" itemValue="#{permiso}"/>                                  
                                 </p:selectOneMenu>
 
@@ -312,7 +321,10 @@
                           showEffect="fade" hideEffect="fade">
                     <center>
                         <h:form id="formRegistrarRol">
-                            <h2>Registrar Rol</h2>
+
+                            <h2><h:outputText value="Registrar Rol" rendered="#{gestionUsuarioController.validarBotonEditar eq false}"/></h2>
+                            <h2><h:outputText value="Modificar Rol" rendered="#{gestionUsuarioController.validarBotonEditar eq true}"/></h2>
+
                             <h:panelGrid columns="1" id="gridRegistrarRol" width="250">
 
                                 <p:inputText id="descripcion" value="#{gestionUsuarioController.rol.description}" title="Descripción Rol" 
@@ -321,7 +333,13 @@
                                     <f:validateLength minimum="5" maximum="50"/>
                                 </p:inputText>
 
+                                <p:column/>
+                                <p:column/>
 
+                                <p:commandButton value="Editar permisos" actionListener="#{gestionUsuarioController.asignarPermisosPorRolAbrirModal()}"
+                                                 update="asignarPermisos"
+                                                 rendered="#{gestionUsuarioController.validarBotonEditar eq true}"
+                                                 styleClass="btn-block botonOpcional-form"/>
                             </h:panelGrid>
 
                             <h:panelGrid columns="2">
@@ -330,10 +348,15 @@
                                                  actionListener="#{gestionUsuarioController.ocultarModal(5)}"
                                                  styleClass="btn btn-warning"/>
 
-                                <p:commandButton value="Continuar" 
+                                <p:commandButton value="Continuar" rendered="#{gestionUsuarioController.validarBotonEditar eq false}"
                                                  update=":growlForm, :formTablePermission:permisoTabla, formRegistrarRol, asignarPermisos, :formAsignarPermisos:listaPermisos"
                                                  styleClass="btn btn-success"
                                                  actionListener="#{gestionUsuarioController.abrirModalAsignarPerimsos()}"/>
+
+                                <p:commandButton value="Guardar" rendered="#{gestionUsuarioController.validarBotonEditar eq true}"
+                                                 update=":growlForm, :formTablePermission:permisoTabla, formRegistrarRol, asignarPermisos, :formAsignarPermisos:listaPermisos"
+                                                 styleClass="btn btn-success"
+                                                 actionListener="#{gestionUsuarioController.editarRol()}"/>
                             </h:panelGrid>
                         </h:form>
                     </center>
@@ -422,7 +445,7 @@
                                         <p:column headerText="" width="20">
                                             <p:rowEditor id="editOption"/>
                                         </p:column>
-                                        
+
                                         <p:column headerText="" width="30">  
                                             <p:commandButton icon="ui-icon-close" update=":formAsignarPermisos"
                                                              action="#{gestionUsuarioController.removerPermisoRol(permisoRol)}"/>
@@ -434,15 +457,57 @@
 
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Registrar" action="#{gestionUsuarioController.registrarRol()}"
-                                                 styleClass="btn btn-success"/>
+                                                 rendered="#{gestionUsuarioController.validarBotonEditar eq false}"
+                                                 styleClass="btn btn-success" update=":growlForm:growlManageUser, :formRol:tablaRol"/>
+
+                                <p:commandButton value="Guardar" action="#{gestionUsuarioController.editarPermisoRolCerrarModal()}"
+                                                 rendered="#{gestionUsuarioController.validarBotonEditar eq true}"
+                                                 styleClass="btn btn-success" update=":growlForm:growlManageUser"/>
                                 <p:commandButton value="Cerrar" actionListener="#{gestionUsuarioController.ocultarModal(6)}"
                                                  styleClass="btn btn-warning"/>
-
                             </h:panelGrid>
                         </h:form>
                     </center>
                 </p:dialog>
 
+
+                <p:dialog id="confirmarAsignacionRol"  resizable="false" 
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="confirmarAsignacionRol" modal="true"
+                          showEffect="fade" hideEffect="fade"  header="Confirmar">
+
+                    <center>
+                        <h:form>
+                            <h:outputText value="Exiten usuarios con este rol,"/>                         
+                            <br/>
+
+                            <h:outputText value="debes asignar uno nuevo para poder realizar la eliminación"/>
+                            <br/>
+                            <br/>
+                            
+                            <h:panelGrid>
+                                <p:selectOneMenu id="rolVer" label="Rol"
+                                                 value="#{gestionUsuarioController.nuevoRolUsuario}"  >
+
+                                    <f:selectItem itemLabel="-- Seleciona un Rol --" 
+                                                  noSelectionOption="true" itemDisabled="true"/>
+
+                                    <f:selectItems var="rol" value="#{gestionUsuarioController.listaRoles}" 
+                                                   itemLabel="#{rol.description}" itemValue="#{rol.roleId}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Si" icon="ui-icon-check" action="#{gestionUsuarioController.asignarNuevoRolUsuarios()}" 
+                                                 update=":growlForm:growlManageUser, :formRol:tablaRol" 
+                                                 styleClass="btn btn-success"/>
+                                <p:commandButton value="No" icon="ui-icon-close" oncomplete="PF('confirmarAsignacionRol').hide();"
+                                                 styleClass="btn btn-warning" style="margin-left: 12px"/>
+                            </h:panelGrid>
+                        </h:form>       
+                    </center>
+
+                </p:dialog>
 
                 <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="290">

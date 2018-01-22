@@ -50,12 +50,35 @@ public class PermissionRoleFacade extends AbstractFacade<PermissionRole> impleme
     }
 
     @Override
-    public void eliminarPermisosRol(Permission permisoEliminado) {
+    public List<PermissionRole> listarPermisosPorRol2(Role rol) {
+        List<PermissionRole> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("DELETE FROM PermissionRole pr WHERE pr.permissionId = :permiso");
-            query.setParameter("permiso", permisoEliminado);
+            Query query = em.createQuery("SELECT pr FROM PermissionRole pr WHERE pr.roleId = :rol ORDER BY pr.permissionId.permissionId ASC", PermissionRole.class);
+            query.setParameter("rol", rol);
+
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el método: listarPermisosPorRol2 =" + e.getMessage());
+        }
+        return lista;
+
+    }
+
+    @Override
+    public void eliminarPermisosRol(Permission permisoEliminado, Role rolEliminado) {
+        try {
+            Query query = null;
+            if (rolEliminado != null && rolEliminado.getRoleId() != null) {
+                query = em.createQuery("DELETE FROM PermissionRole pr WHERE pr.roleId = :rol");
+                query.setParameter("rol", rolEliminado);
+
+            } else if (permisoEliminado != null && permisoEliminado.getPermissionId() != null) {
+                query = em.createQuery("DELETE FROM PermissionRole pr WHERE pr.permissionId = :permiso");
+                query.setParameter("permiso", permisoEliminado);
+            }
             query.executeUpdate();
         } catch (Exception e) {
+            System.out.println("error en el métdo eliminarPermisosRol= " + e.getMessage());
         }
     }
 

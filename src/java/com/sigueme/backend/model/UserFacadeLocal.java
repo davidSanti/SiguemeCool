@@ -38,6 +38,8 @@ public interface UserFacadeLocal {
 
     List<User> filtrarUsuariosPorRol(List<Role> listaRoles, List<Integer> usuariosExcluidos);
 
+    List<User> filtrarUsuariosPorRol(Role rol);
+            
     List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos, List<Integer> usuariosExcluidos);
 
     List<User> buscarPersonaPorNombre(String nombre);

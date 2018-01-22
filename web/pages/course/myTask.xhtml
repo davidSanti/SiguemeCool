@@ -163,13 +163,13 @@
                         <br></br>
                         <center>
                             <h:panelGrid columns="2">
-                                
-                           
-                            <p:commandButton id="guardar" value="Guardar" action="#{miCursoController.subirEvidencia()}" 
-                                             ajax="false"  update="subirEvidencia, :formMiCurso:growlMiCurso" styleClass="btn btn-success " />
-                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(6)}" immediate="true" 
-                                             update="subirEvidencia" styleClass="btn btn-warning " />
-                             </h:panelGrid>
+
+
+                                <p:commandButton id="guardar" value="Guardar" action="#{miCursoController.subirEvidencia()}" 
+                                                 ajax="false"  update="subirEvidencia, :formMiCurso:growlMiCurso" styleClass="btn btn-success " />
+                                <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(6)}" immediate="true" 
+                                                 update="subirEvidencia" styleClass="btn btn-warning " />
+                            </h:panelGrid>
                         </center>
                     </h:form>
                 </p:dialog>
@@ -179,31 +179,34 @@
                           widgetVar="Descargar" modal="true" showEffect="fold" hideEffect="fold"
                           responsive="true" width="500" >
                     <h2>Descargar archivo</h2>
-                    <h:form id="formDescaga">
+                    <center>
+                        <h:form id="formDescaga">
 
-                        <p:panelGrid columns="2" style="width:480px">
-                            <p:outputLabel value="Curso"/>
-                            <h:outputText value="#{miCursoController.usuariosMiCurso.courseId.courseName}"></h:outputText>
+                            <p:panelGrid columns="2" style="width:480px">
+                                <p:outputLabel value="Curso"/>
+                                <h:outputText value="#{miCursoController.usuariosMiCurso.courseId.courseName}"></h:outputText>
 
-                            <p:outputLabel value="Descripción"/>
-                            <h:outputText value="#{miCursoController.usuariosMiCurso.description}"></h:outputText>
+                                <p:outputLabel value="Descripción"/>
+                                <h:outputText value="#{miCursoController.usuariosMiCurso.description}"></h:outputText>
 
-                            <p:outputLabel value="Calificación"/>
-                            <h:outputText value="#{miCursoController.determinarCalificacion(miCursoController.usuariosMiCurso)}"></h:outputText>
+                                <p:outputLabel value="Calificación"/>
+                                <h:outputText value="#{miCursoController.determinarCalificacion(miCursoController.usuariosMiCurso)}"></h:outputText>
 
-                            <p:outputLabel value="Adjunto"/>
-                            <p:commandButton ajax="false" immediate="true" value="Descargar" 
-                                             update=":formMiCurso:growlMiCurso"   styleClass="botonOpcional-form" style="width: 40%!important">
-                                <p:fileDownload value="#{miCursoController.downloadFile}"/>
-                            </p:commandButton> 
+                                <p:outputLabel value="Adjunto"/>
+                                <p:commandButton ajax="false" immediate="true" value="Descargar" 
+                                                 update=":formMiCurso:growlMiCurso"   styleClass="botonOpcional-form" style="width: 40%!important">
+                                    <p:fileDownload value="#{miCursoController.downloadFile}"/>
+                                </p:commandButton> 
 
-                        </p:panelGrid>
-                        <center>
-                            <p:commandButton value="Cerrar"  action="#{cursoController.ocultarModal(7)}" immediate="true" styleClass="btn btn-warning"
-                                             update="Descargar"/> 
-                        </center>
+                            </p:panelGrid>
 
-                    </h:form>
+                            <h:panelGrid columns="1">                                
+                                <p:commandButton value="Cerrar"  action="#{cursoController.ocultarModal(7)}" immediate="true" styleClass="btn btn-warning"
+                                                 update="Descargar"/> 
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
 
                 </p:dialog>
 
@@ -213,8 +216,8 @@
                           responsive="true" width="800" >
 
                     <h2>Total Evidencias</h2>
-                    <h:form id="formGrafica">
-                        <center>
+                    <center>
+                        <h:form id="formGrafica">
                             <p:panelGrid columns="2">
                                 <p:chart type="pie" model="#{miCursoController.pieModel}" style="width:400px;height:300px" />
 
@@ -235,14 +238,16 @@
 
                                 </p:dataTable>
                             </p:panelGrid>
-                            <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(11)}" immediate="true" update="Grafica"  styleClass="btn btn-warning"/>   
-                        </center>
-                    </h:form>
+                            <h:panelGrid columns="1">
+                                <p:commandButton value="Cerrar" action="#{cursoController.ocultarModal(11)}" immediate="true" update="Grafica"  styleClass="btn btn-warning"/>   
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
 
                 </p:dialog>
 
 
-               <h:form>   
+                <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                         <center>
                             <h:panelGrid columns="2">

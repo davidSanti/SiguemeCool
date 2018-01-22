@@ -96,6 +96,19 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
     }
 
     @Override
+    public List<User> filtrarUsuariosPorRol(Role rol) {
+        List<User> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT u FROM User u WHERE u.roleId = :rol");
+            query.setParameter("rol", rol);
+            lista = query.getResultList();
+        } catch (Exception ex) {
+            System.out.println("Error en el metodo filtrarUsuariosPorRol= " + ex.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
     public List<User> filtrarUsuariosPorRolYGrupos(List<Role> listaRoles, List<GroupCls> listaGrupos, List<Integer> usuariosExcluidos) {
         List<User> lista = new ArrayList<>();
         try {
