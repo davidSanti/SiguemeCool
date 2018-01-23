@@ -36,6 +36,7 @@ public class TiposElementosController implements Serializable {
     public void init() {
         tipoElemento = new ElementType();
         listaTiposdeElementos = new ArrayList<>();
+        listarTiposdeElementos();
     }
 
     public TiposElementosController() {
@@ -57,47 +58,61 @@ public class TiposElementosController implements Serializable {
         this.listaTiposdeElementos = listaTiposdeElementos;
     }
 
-//    public void ocultarModal(int opcion) {
-//        RequestContext req = RequestContext.getCurrentInstance();
-//        String formulario = null;
-//        switch (opcion) {
-//            case 1:
-//                req.execute("PF('registrarTipoElemento').hide()");
-//                formulario = "formTiposdeElemento:gridRegistrar";
+    public void listarTiposdeElementos() {
+        listaTiposdeElementos = tipoElementoFacadeLocal.findAll();
+    }
+
+    public void ocultarModal(int opcion) {
+        RequestContext req = RequestContext.getCurrentInstance();
+        String formulario = null;
+        switch (opcion) {
+            case 1:
+                req.execute("PF('registroTipoElemento').hide()");
+                formulario = ":formTipoElemento:gridTipoElemento";
+                init();
+                break;
+            case 2:
+                req.execute("PF('editarTipoElemento').hide()");
+                formulario = ":formTipoDeElemento:gridTipoDeElemento";
 //                init();
-//                break;
-//
-//            default:
-//                break;
-//        }
-//        req.reset(formulario);
-//    }
+                break;
+            default:
+                break;
+        }
+        req.reset(formulario);
+    }
 
-//    public void registrarCurso() {
-//        FacesContext context = FacesContext.getCurrentInstance();
-//        if () {
-//            try {
-//                this.tipoElemento.setElementTypeId(Integer.MIN_VALUE);
-//                this.abrirModal(1);
-//
-//            } catch (Exception ex) {
-//                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo registrar"));
-//            }
-//        } else {
-//            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Verifique la fechas por favor"));
-//
-//        }
-//    }
+    public void registrarTipoElemento() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            tipoElementoFacadeLocal.create(tipoElemento);
+            ocultarModal(2);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "la tipo elemento se ha registrado correctamente"));
+        } catch (Exception ex) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un error al registrar la tipo elemento, intentalo de nuevo"));
+        }
+    }
 
-//    public void abrirModal(int opciones) {
-//        RequestContext request = RequestContext.getCurrentInstance();
-//        switch (opciones) {
-//            case 1:
-//                request.execute("PF('registrarTipoElemento').show()");
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+    public void editarYCerrar() {
+        if (editartipoDeElemento()) {
+            ocultarModal(2);
+        }
+    }
 
+    public void editarTipoElemento(ElementType tipoElemento) {
+        this.tipoElemento = tipoElemento;
+    }
+
+    public boolean editartipoDeElemento() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        boolean banderita = false;
+        try {
+            tipoElementoFacadeLocal.edit(tipoElemento);
+            banderita = true;
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "El tipo elemento se ha modificado correctamente"));
+        } catch (Exception ex) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un error al modificar la tipo elemento, intentalo de nuevo"));
+        }
+        return banderita;
+    }
 }

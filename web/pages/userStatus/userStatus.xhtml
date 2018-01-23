@@ -2,8 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
@@ -12,45 +12,41 @@
         <ui:composition template="./../../resources/templates/plantilla.xhtml">
 
             <ui:define name="content">
-                <h:form id="formConvenciones">
-                    <p:growl id="growlConvencion" showDetail="true" showSummary="false" sticky="false" life="3000"/>
-
+                <h:form id="formEstadosusuario">
                     <center>
                         <br/>
-                        <h2><h:outputText value="Lista Convenciones"/></h2>
+                        <h2><h:outputText value="Lista Estados Usuarios"/></h2>
                     </center>
 
-                    <p:dataTable id="tablaConvenciones"  var="convencion" value="#{convencionesController.listaConvenciones}"
-                                 emptyMessage="No se encontrarón registros"  reflow="true" 
-                                 paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color">
+                    <p:dataTable  id="tablaEstadousuario" value="#{userStatusController.listaEstadoUsuario}" 
+                                  var="estadoUsuario"
+                                  emptyMessage="No se encontrarón registros"  reflow="true" 
+                                  paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color" >
 
                         <f:facet name="header">
 
-                            <p:commandButton value="Registrar" onclick="PF('registroConvencion').show()"  
+                            <p:commandButton value="Registrar" onclick="PF('registroEstadousuario').show()"  
                                              styleClass="btn btn-primary"  
                                              style="width: 30%!important"/>
                         </f:facet>
 
-                        <p:column headerText="Descripción" filterBy="#{convencionesController.convencion.description}" filterMatchMode="contains">
-                            <f:facet name="filter">
-                            </f:facet>
-
-                            <h:outputText value="#{convencion.description}">  
+                        <p:column headerText="Descripcion" filterBy="#{estadoUsuario.description}">
+                            <h:outputText value="#{estadoUsuario.description}">
                             </h:outputText>
                         </p:column>
 
-                        <p:column headerText="Accciones" exportable="false">  
-                           
 
-                            <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarConvencion').show()" update="editarConvencion"
-                                             actionListener="#{convencionesController.editarConvencion(convencion)}">
+                        <p:column headerText="Accciones" exportable="false">  
+
+                            <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarEstadousuario').show()" update="editarEstadousuario"
+                                             actionListener="#{userStatusController.editarEstadosUsuario(estadoUsuario)}">
 
                             </p:commandButton>
-
-                            <p:commandButton icon="ui-icon-trash" action="#{convencionesController.eliminarConvencion(convencion)}"
-                                             update="formConvenciones, formConvenciones:tablaConvenciones"
-                                             disabled="#{convencionesController.validarBotonEliminar(convencion) eq true}">
-                                <p:confirm header="Confirmación" message="Estas Seguro de eliminar este convencion? Todos los puestos se asignaran al MSC" icon="ui-icon-alert"/>
+                            
+                            <p:commandButton icon="ui-icon-trash" action="#{userStatusController.eliminarEstadoUsuario(estadoUsuario)}"
+                                             update="formEstadosusuario"
+                                             >
+                                <p:confirm header="Confirmación" message="Estas Seguro de eliminar este Estado Usuario? " icon="ui-icon-alert"/>
                             </p:commandButton>
 
                         </p:column>
@@ -58,18 +54,18 @@
 
                 </h:form>
 
-                <p:dialog id="registrarConvencion"  resizable="false"
+                <p:dialog id="registrarEstadousuario"  resizable="false"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="registroConvencion" modal="true" width="380"
+                          widgetVar="registroEstadousuario" modal="true" width="380"
                           showEffect="fold" hideEffect="fold" responsive="true">
 
                     <center>
-                        <h:form id="formConvencion">
+                        <h:form id="formEstadousuario">
 
-                            <h2>Registrar Convención</h2>
-                            <h:panelGrid columns="1" id="gridRegistrarConvencion" width="280">
+                            <h2>Registrar Tipo Elemento</h2>
+                            <h:panelGrid columns="1" id="gridEstadousuario" width="280">
 
-                                <p:inputText id="description" value="#{convencionesController.convencion.description}" title="Description" 
+                                <p:inputText id="description" value="#{userStatusController.estadousuario.description}" title="Description" 
                                              required="true" requiredMessage="La descripción es obligatoria" maxlength="70"
                                              pt:placeholder="Descripción">
                                     <f:validateLength minimum="3" maximum="70"/>
@@ -78,12 +74,12 @@
                             </h:panelGrid> 
 
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Cerrar" action="#{convencionesController.ocultarModal(1)}"
-                                                 immediate="true" update="formConvenciones"
+                                <p:commandButton value="Cerrar" action="#{userStatusController.ocultarModal(1)}"
+                                                 immediate="true" update="formEstadosusuario"
                                                  styleClass="btn btn-warning"/>
 
-                                <p:commandButton value="Registrar" action="#{convencionesController.registrarConvesiones()}"
-                                                 update=":formConvenciones,formConvencion:gridRegistrarConvencion"
+                                <p:commandButton value="Registrar" action="#{userStatusController.registrarEstadousuario()}"
+                                                 update=":formEstadosusuario,formEstadousuario:gridEstadousuario"
                                                  styleClass="btn btn-primary"/>   
                             </h:panelGrid>
 
@@ -92,16 +88,16 @@
 
                 </p:dialog>
 
-                <p:dialog id="editarConvencion"  resizable="false"
+                <p:dialog id="editarEstadousuario"  resizable="false"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="editarConvencion" modal="true" width="380"
+                          widgetVar="editarEstadousuario" modal="true" width="380"
                           showEffect="fold" hideEffect="fold" responsive="true">
 
                     <center>
-                        <h:form id="formEditar">
-                            <h2>Modificar Convención</h2>
-                            <h:panelGrid columns="1" id="gridEditar" width="280">
-                                <p:inputTextarea id="description" value="#{convencionesController.convencion.description}" title="Description" 
+                        <h:form id="formEditarEstadousuario">
+                            <h2>Modificar Estado usuario</h2>
+                            <h:panelGrid columns="1" id="gridEditarEstadousuario" width="280">
+                                <p:inputTextarea id="description" value="#{userStatusController.estadousuario.description}" title="Description" 
                                                  required="true" requiredMessage="La descripción es obligatoria" maxlength="70"
                                                  pt:placeholder="Descripción">
                                     <f:validateLength minimum="3" maximum="70"/>
@@ -110,17 +106,18 @@
                             </h:panelGrid>
 
                             <h:panelGrid columns="2" >                                
-                                <p:commandButton value="Cerrar" action="#{convencionesController.ocultarModal(2)}" 
-                                                 immediate="true" update="formConvenciones"
+                                <p:commandButton value="Cerrar" action="#{userStatusController.ocultarModal(2)}" 
+                                                 immediate="true" update="formEstadosusuario"
                                                  styleClass="btn btn-warning"/>
-                                <p:commandButton value="Guardar" action="#{convencionesController.editarYCerrar()}"
-                                                 update=":formConvenciones, formEditar:gridEditar"
+                                <p:commandButton value="Guardar" action="#{userStatusController.editarYCerrar()}"
+                                                 update="formEstadosusuario, formEditarEstadousuario:gridEditarEstadousuario"
                                                  styleClass="btn btn-success"/>
                             </h:panelGrid>
 
                         </h:form>
                     </center>
                 </p:dialog>
+
                 <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                         <center>
@@ -130,7 +127,7 @@
                             </h:panelGrid>
                         </center>
                     </p:confirmDialog>
-                </h:form>             
+                </h:form> 
 
             </ui:define>
 

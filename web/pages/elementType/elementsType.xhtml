@@ -18,18 +18,101 @@
                         <h2><h:outputText value="Lista de Tipos de Elementos"/></h2>
                     </center>
 
-                    <p:dataTable  id="tablaConvenciones" value="#{tiposElementosController.listaTiposdeElementos}" 
-                                  var="elementos"
+                    <p:dataTable  id="tablaTipoElemento" value="#{tiposElementosController.listaTiposdeElementos}" 
+                                  var="tipoElemento"
                                   emptyMessage="No se encontrarón registros"  reflow="true" 
                                   paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color" >
 
-                        <p:column headerText="Descripcion" filterBy="#{elementos.description}">
-                            <h:outputText value="#{elementos.description}">
+                        <f:facet name="header">
+
+                            <p:commandButton value="Registrar" onclick="PF('registroTipoElemento').show()"  
+                                             styleClass="btn btn-primary"  
+                                             style="width: 30%!important"/>
+                        </f:facet>
+
+                        <p:column headerText="Descripcion" filterBy="#{tipoElemento.description}">
+                            <h:outputText value="#{tipoElemento.description}">
                             </h:outputText>
                         </p:column>
 
+
+                        <p:column headerText="Accciones" exportable="false">  
+
+                            <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarTipoElemento').show()"
+                                             update="editarTipoElemento"
+                                             actionListener="#{tiposElementosController.editarTipoElemento(tipoElemento)}"> 
+                            </p:commandButton>
+
+                        </p:column>
                     </p:dataTable>
+
                 </h:form>
+
+                <p:dialog id="registrarTipoElemento"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="registroTipoElemento" modal="true" width="380"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+
+                    <center>
+                        <h:form id="formTipoElemento">
+
+                            <h2>Registrar Tipo Elemento</h2>
+                            <h:panelGrid columns="1" id="gridTipoElemento" width="280">
+
+                                <p:inputText id="description" value="#{tiposElementosController.tipoElemento.description}" title="Description" 
+                                             required="true" requiredMessage="La descripción es obligatoria" maxlength="70"
+                                             pt:placeholder="Descripción">
+                                    <f:validateLength minimum="3" maximum="70"/>
+                                </p:inputText>
+
+                            </h:panelGrid> 
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{tiposElementosController.ocultarModal(1)}"
+                                                 immediate="true" update="formTiposdeElementos"
+                                                 styleClass="btn btn-warning"/>
+
+                                <p:commandButton value="Registrar" action="#{tiposElementosController.registrarTipoElemento()}"
+                                                 update=":formTiposdeElementos,formTipoElemento:gridTipoElemento"
+                                                 styleClass="btn btn-primary"/>   
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+
+                </p:dialog>
+
+
+                <p:dialog id="editarTipoElemento"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="editarTipoElemento" modal="true" width="380"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+
+                    <center>
+                        <h:form id="formTipoDeElemento">
+                            <h2>Modificar Tipo Elemento</h2>
+                            <h:panelGrid columns="1" id="gridTipoDeElemento" width="280">
+                                <p:inputTextarea id="description" value="#{tiposElementosController.tipoElemento.description}" title="Description" 
+                                                 required="true" requiredMessage="La descripción es obligatoria" maxlength="70"
+                                                 pt:placeholder="Descripción">
+                                    <f:validateLength minimum="3" maximum="70"/>
+                                </p:inputTextarea>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" >                                
+                                <p:commandButton value="Cerrar" action="#{tiposElementosController.ocultarModal(2)}" 
+                                                 immediate="true" update="formTiposdeElementos"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Guardar" action="#{tiposElementosController.editarYCerrar()}"
+                                                 update=":formTipoDeElemento:gridTipoDeElemento, :formTiposdeElementos"
+                                                 styleClass="btn btn-success"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+
             </ui:define>
 
         </ui:composition>

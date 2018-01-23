@@ -6,6 +6,7 @@
 package com.sigueme.backend.model;
 
 import com.sigueme.backend.entities.Convention;
+import com.sigueme.backend.entities.Desk;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -29,4 +30,6 @@ public interface ConventionFacadeLocal {
     List<Convention> findRange(int[] range);
 
     int count();
+
+    List<Desk> listarPuestosPorCovenciones(Convention covencion);
 }

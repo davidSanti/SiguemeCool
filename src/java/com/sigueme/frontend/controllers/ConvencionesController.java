@@ -6,12 +6,12 @@
 package com.sigueme.frontend.controllers;
 
 import com.sigueme.backend.entities.Convention;
-import com.sigueme.backend.entities.Course;
+import com.sigueme.backend.entities.Desk;
 import com.sigueme.backend.model.ConventionFacadeLocal;
+import com.sigueme.backend.model.DeskFacadeLocal;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -30,9 +30,12 @@ public class ConvencionesController implements Serializable {
 
     @EJB
     private ConventionFacadeLocal convencionFacadeLocal;
+    @EJB
+    private DeskFacadeLocal deskFacadeLocal;
 
     private Convention convencion;
     private List<Convention> listaConvencion;
+    private List<Desk> listaEscritorios;
 
     @PostConstruct
     public void init() {
@@ -98,10 +101,10 @@ public class ConvencionesController implements Serializable {
         }
     }
 
-    public void editarConvencion(Convention convencion){
+    public void editarConvencion(Convention convencion) {
         this.convencion = convencion;
     }
-    
+
     public boolean editarConvencion() {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean banderita = false;
@@ -110,9 +113,49 @@ public class ConvencionesController implements Serializable {
             banderita = true;
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La convención se ha modificado correctamente"));
         } catch (Exception ex) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un erro al modificar la convención, intentalo de nuevo"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un error al modificar la convención, intentalo de nuevo"));
         }
         return banderita;
+    }
+
+    public boolean validarBotonEliminar(Convention convencion) {
+        //Se realiza esto para impedir que se elimine la convención del MSC que es la número 1
+        boolean bandera = convencion.getConventionId() == 1;
+        return bandera;
+    }
+
+    public void eliminarConvencion(Convention convencion) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        this.convencion = convencion;
+        try {
+            listaEscritorios = convencionFacadeLocal.listarPuestosPorCovenciones(convencion);
+
+            if (!listaEscritorios.isEmpty()) {
+                asignarPuestosAlMsc();
+            }
+            convencionFacadeLocal.remove(convencion);
+
+            listarConvenciones();
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La convención se ha eliminado correctamente"));
+        } catch (Exception ex) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un error al eliminar la convención, intentalo de nuevo"));
+        }
+
+    }
+
+    public void asignarPuestosAlMsc() {
+        if (!listaEscritorios.isEmpty()) {
+            try {
+                Convention convencionMsc = convencionFacadeLocal.find(1);
+                for (Desk item : listaEscritorios) {
+                    item.setConventionId(convencionMsc);
+                    deskFacadeLocal.edit(item);
+                }
+
+            } catch (Exception e) {
+            }
+
+        }
     }
 
     public void listarConvenciones() {

@@ -6,6 +6,7 @@
 package com.sigueme.backend.model;
 
 import com.sigueme.backend.entities.Convention;
+import com.sigueme.backend.entities.Desk;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -40,6 +41,20 @@ public class ConventionFacade extends AbstractFacade<Convention> implements Conv
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Ha ocurrido un error en el método: findAll Convenciones");
+        }
+        return lista;
+    }
+    
+    @Override
+    public List<Desk> listarPuestosPorCovenciones(Convention covencion) {
+        List<Desk> lista = new ArrayList<>();
+        try {
+            Query query = em.createQuery("SELECT d FROM Desk d WHERE d.conventionId = :covencion ");
+            query.setParameter("covencion", covencion);
+            
+            lista = query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en el método:listarPuestosPorCovenciones = " + e.getMessage());
         }
         return lista;
     }

@@ -95,4 +95,5 @@ public class DeskFacade extends AbstractFacade<Desk> implements DeskFacadeLocal 
         }
         return lista;
     }
+    
 }
