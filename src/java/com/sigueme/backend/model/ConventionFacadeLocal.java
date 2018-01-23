@@ -29,8 +29,4 @@ public interface ConventionFacadeLocal {
     List<Convention> findRange(int[] range);
 
     int count();
-    
-    List<Convention> listaConvenciones();
-
-  
 }

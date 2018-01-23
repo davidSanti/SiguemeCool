@@ -38,7 +38,7 @@ public class ConvencionesController implements Serializable {
     public void init() {
         convencion = new Convention();
         listaConvencion = new ArrayList<>();
-        listaConvenciones();
+        listarConvenciones();
     }
 
     public ConvencionesController() {
@@ -86,9 +86,9 @@ public class ConvencionesController implements Serializable {
         try {
             convencionFacadeLocal.create(convencion);
             ocultarModal(1);
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "se pudo registrar"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "la convención se ha registrado correctamente"));
         } catch (Exception ex) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo registrar"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un error al registrar la convención, intentalo de nuevo"));
         }
     }
 
@@ -98,28 +98,26 @@ public class ConvencionesController implements Serializable {
         }
     }
 
+    public void editarConvencion(Convention convencion){
+        this.convencion = convencion;
+    }
+    
     public boolean editarConvencion() {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean banderita = false;
         try {
             convencionFacadeLocal.edit(this.convencion);
             banderita = true;
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "se pudo registrar"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La convención se ha modificado correctamente"));
         } catch (Exception ex) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "No se pudo registrar"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un erro al modificar la convención, intentalo de nuevo"));
         }
         return banderita;
     }
 
-    public List<Convention> listaConvenciones() {
-
-        List<Convention> convencion = new ArrayList<>();
-        convencion = convencionFacadeLocal.findAll();
-        for (int i = 0; i < convencion.size(); i++) {
-            System.out.println("convencion" + convencion.get(i).getDescription());
-        }
-        return convencion;
-
+    public void listarConvenciones() {
+        listaConvencion = new ArrayList<>();
+        listaConvencion = convencionFacadeLocal.findAll();
     }
 
 }

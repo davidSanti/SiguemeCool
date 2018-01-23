@@ -350,15 +350,17 @@ public class MiCursoController implements Serializable {
         FileOutputStream output = null;
         try {
 //            String nombre = file.getFileName();
-            String nombre = renombrarArchivo(file.getFileName());
-            pathReal = "archivos\\" + nombre;
-            path += "\\" + nombre;
-            InputStream input = file.getInputstream();
-            byte[] data = new byte[input.available()];
-            input.read(data);
-            output = new FileOutputStream(path);
-            output.write(data);
-            output.close();
+            if (file != null && !file.getFileName().equals("")) {
+                String nombre = renombrarArchivo(file.getFileName());
+                pathReal = "archivos\\" + nombre;
+                path += "\\" + nombre;
+                InputStream input = file.getInputstream();
+                byte[] data = new byte[input.available()];
+                input.read(data);
+                output = new FileOutputStream(path);
+                output.write(data);
+                output.close();
+            }
         } catch (IOException e) {
             System.out.println("Error al cargar el arhcivo" + e.getMessage());
         } catch (Exception e) {

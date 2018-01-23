@@ -49,7 +49,6 @@ public class Desk implements Serializable {
     private String serialCode;
 
     @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "desk_location")
     private String deskLocation;

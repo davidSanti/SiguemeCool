@@ -18,8 +18,16 @@
                 </center>
 
                 <h:form style="margin: 8px;">
-                    <p:commandButton value="Migrar Elementos" oncomplete="PF('modalMigrar').show()" update="modalMigrar"/>
-                    <p:commandButton value="Registrar" onclick="PF('registrarPuesto').show()"/>
+                    <center>
+                        <h:panelGrid columns="3">       
+                            <p:commandButton value="Migrar Elementos" oncomplete="PF('modalMigrar').show()"
+                                             update="modalMigrar" styleClass="btn btn-info"/>
+                            <p:commandButton value="Registrar" oncomplete="PF('registrarPuesto').show()"
+                                             styleClass="btn btn-primary"/>
+                            <p:commandButton value="Carga Masiva" oncomplete="PF('cargaMasiva').show()" 
+                                             styleClass="btn btn-warning"/>
+                        </h:panelGrid>
+                    </center>
                 </h:form>
 
                 <h:form id="formInventario" prependId="false">
@@ -28,6 +36,10 @@
                     <p:dataTable id="tablaInventario" emptyMessage="No se encontrarón registros"
                                  var="puesto" value="#{inventarioController.puestos}" widgetVar="tablaInventario"
                                  paginator="true" paginatorPosition="bottom" rows="10" reflow="true" rowStyleClass="row-color" >
+                        <f:facet name="header">
+
+
+                        </f:facet>
 
                         <p:column headerText="Puesto" filterBy="#{puesto.serialCode}" filterMatchMode="in">
                             <f:facet name="filter">
@@ -266,13 +278,13 @@
 
                 <p:dialog id="modalMigrar" resizable="false" closeOnEscape="false" 
                           draggable="false" closable="false" widgetVar="modalMigrar" 
-                          modal="true" showEffect="fade" hideEffect="fade">
+                          modal="true" showEffect="fade" hideEffect="fade" width="350">
                     <center>
                         <h:form id="formMigrar" >
                             <p:growl id="growlMigrar" showSummary="false" showDetail="true" sticky="false" life="3000"/>                      
                             <center><h2>Validar Puesto</h2></center> 
 
-                            <h:panelGrid columns="1" id="gridMigrar" width="280">
+                            <h:panelGrid columns="1" id="gridMigrar" width="250">
 
 
                                 <p:autoComplete id="origen" required="true" requiredMessage="El puesto de origen es un campo obligatorio."
@@ -299,7 +311,6 @@
                         </h:form>
                     </center>
                 </p:dialog>
-
 
                 <p:dialog id="modalMigrarElementos" resizable="false" closeOnEscape="false" 
                           draggable="false" closable="false" widgetVar="modalMigrarElementos" 
@@ -348,8 +359,6 @@
                                 </p:panel>
                             </h:panelGrid>
 
-
-
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Cerrar" action="#{inventarioController.cerrarModal(3)}" 
                                                  styleClass="btn btn-warning"/>
@@ -359,11 +368,9 @@
                                                  styleClass="btn btn-primary"/>   
                             </h:panelGrid>
 
-
                         </h:form>
                     </center>
                 </p:dialog>
-
 
                 <p:dialog id="modalVerElemento" resizable="false" closeOnEscape="true" 
                           draggable="false" closable="true" widgetVar="modalVerElemento" 
@@ -402,6 +409,31 @@
                             </h:panelGrid>
                         </h:form>
                     </center> 
+                </p:dialog>
+
+                <p:dialog id="cargaMasiva" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="cargaMasiva" 
+                          modal="true" showEffect="fade" hideEffect="fade" width="350">
+                    <center>
+                        <h:form id="formCargaMasiva" enctype="multipart/form-data" >
+                            <p:growl id="growlCargaMasiva" showSummary="false" showDetail="true" sticky="false" life="3000"/>                      
+                            <center><h2>Carga Masiva de Puestos</h2></center> 
+
+                            <h:panelGrid columns="1" id="gridCargaMasiva" width="250">
+                                <p:fileUpload value="#{cargaMasivaController.file}" mode="simple"
+                                              required="true" pt:required="true"/>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{cargaMasivaController.cerrarModal(1)}" update="formMigrar" immediate="true"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Enviar" action="#{cargaMasivaController.cargaMasivaDePuestos()}" 
+                                                 update="formCargaMasiva, :formInventario:tablaInventario" 
+                                                 styleClass="btn btn-success" ajax="false"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
                 </p:dialog>
 
             </ui:define>
