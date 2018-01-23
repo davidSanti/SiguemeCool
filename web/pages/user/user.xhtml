@@ -19,8 +19,7 @@
                         <h2><h:outputText value="Lista De Usuarios"/></h2>
                     </center>
 
-                    <p:commandButton value="Registrar" update="registrarUsuario"
-                                     oncomplete="PF('registrarUsuario').show();"/>
+                   
 
                     <p:growl id="growlUsuario" showDetail="true" showSummary="false" sticky="false" life="3000"/>
 
@@ -29,9 +28,13 @@
                                  paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color">
 
                         <f:facet name="header">
+                             <p:commandButton value="Registrar" update="registrarUsuario"
+                                     oncomplete="PF('registrarUsuario').show();"
+                                     styleClass="btn btn-primary" style="width: 30%!important"/>
                             <p:outputPanel>
-                                <h:outputText value="Buscar por campos" />
-                                <p:inputText value="#{usuarioController.parametroBusqueda}"  style="width:250px">
+                                <h:outputText value="" />
+                                <p:inputText value="#{usuarioController.parametroBusqueda}"  style="max-width: 27%!important"
+                                             pt:placeholder="Buscar por campos">
                                     <p:ajax event="keyup" update="tablaUsuario" 
                                             listener="#{usuarioController.filtrarTodosLosCampos()}" />
                                 </p:inputText>

@@ -21,7 +21,7 @@
                     </center>
 
                     <p:growl id="growlCurso" showDetail="true" showSummary="false" sticky="false" life="3000"/>
-                    <h:commandLink >
+<!--                    <h:commandLink >
                         <p:graphicImage url="/resources/img/pdf-icon-10.png" width="40" height="40"
                                         />
                         <p:dataExporter type="pdf" target="tablaCurso" fileName="Reporte Pdf"/>
@@ -32,7 +32,7 @@
                                         style="margin-top: 9px;"
                                         />
                         <p:dataExporter type="xls" target="tablaCurso" fileName="Reporte Excel"/>
-                    </h:commandLink>
+                    </h:commandLink>-->
 
                     <p:dataTable id="tablaCurso" value="#{cursoController.cursos}" var="curso"
                                  emptyMessage="No se encontrarón registros"  reflow="true" 
@@ -482,11 +482,21 @@
 
                                 <p:panelGrid columns="1">
                                     <h:outputText value="Usuarios"/>
+                                    
                                     <p:commandLink oncomplete="PF('graficaCurso').show();"  
                                                    actionListener="#{cursoChartController.listarUsuarios()}"
                                                    update=":formGrafica:gridGrafica">
                                         <p:graphicImage url="/resources/img/probabilidad-y-estadistica-gif-6.gif" width="50"/>
                                     </p:commandLink>
+
+                                    <h:commandLink value="PDF">
+                                        <p:dataExporter type="pdf" target="usuariosTabla" fileName="Reporte usuarios por curso"/>
+                                    </h:commandLink>
+
+                                    <h:commandLink value="XLS">
+                                        <p:dataExporter type="xls" target="usuariosTabla" fileName="Reporte usuarios por curso"/>
+                                    </h:commandLink>
+
                                 </p:panelGrid>
 
                                 <p:dataTable id="usuariosTabla" reflow="true"
@@ -495,7 +505,7 @@
                                              paginator="true" paginatorPosition="bottom" rows="5"  rowStyleClass="algo">
 
                                     <p:column filterBy="#{usuariosTable.groupId.groupName}" filterMatchMode="in" >
-                                        <f:facet name="filter">
+                                        <f:facet name="filter" >
                                             <p:selectCheckboxMenu id="gruposLista" label="Grupos"     
                                                                   onHide="ejecutarFiltro();"
                                                                   value="#{cursoController.gruposPersona}" filter="true"
@@ -521,7 +531,7 @@
                                         </h:outputText>
                                     </p:column>
 
-                                    <p:column headerText="Validar" width="55">
+                                    <p:column headerText="Validar" width="55" exportable="false">
                                         <p:commandButton icon="ui-icon-star" 
                                                          actionListener="#{cursoController.asignarUsuarioCurso(usuariosCurso)}"
                                                          oncomplete="PF('calificarCurso').show();"
@@ -609,6 +619,18 @@
                                              emptyMessage="No se encontrarón registros" rowStyleClass="row-color"
                                              paginator="true" paginatorPosition="bottom" rows="6" >
 
+                                    <f:facet name="header" >
+                                        <h:outputText value="Usuarios sin evidencia"/>
+                                        <br/>
+                                        <h:commandLink value="PDF">
+                                            <p:dataExporter type="pdf" target="usuarioCursoTable" fileName="Reporte usuarios Sin evidencia"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink value="XLS" style="margin-left: 20px">
+                                            <p:dataExporter type="xls" target="usuarioCursoTable" fileName="Reporte usuarios Sin evidencia"/>
+                                        </h:commandLink>
+                                    </f:facet>
+
                                     <p:column filterBy="#{usuarioCurso.groupId.groupName}" filterMatchMode="in" >
                                         <f:facet name="filter">
                                             <p:selectCheckboxMenu id="gruposListaGrafica" label="Grupos"     
@@ -621,7 +643,7 @@
                                             </p:selectCheckboxMenu>
                                             <p:remoteCommand  name="ejecutarFiltroGrafica"
                                                               update=":formGrafica, :formGrafica:usuarioCursoTable" process="@this gruposListaGrafica"
-                                                              action="#{cursoChartController.filtrarPersonas()}"/> 
+                                                              action="#{cursoChartController.filtrarPersonas()}"/>                                        
                                         </f:facet>
                                         <h:outputText value="#{usuarioCurso.groupId.groupName}"/>
                                     </p:column>

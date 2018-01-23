@@ -19,7 +19,6 @@
                     </center>
                     <p:growl id="growlElements" showDetail="true" showSummary="false" sticky="false"
                              life="3000"/>
-                    <p:commandButton value="Registrar" oncomplete="PF('registrarElementos').show()"/>
 
                     <p:dataTable id="tablaElmentos" emptyMessage="No se encontrarón registros"
                                  var="elemento" value="#{elementoController.elementosLista}"
@@ -27,11 +26,13 @@
                                  rowStyleClass="row-color">
 
                         <f:facet name="header">
+                            <p:commandButton value="Registrar" oncomplete="PF('registrarElementos').show()"
+                                             styleClass="btn btn-primary" style="width: 30%!important"/>
                             <p:outputPanel>
-                                <h:outputText value="Buscar por campos" />
-                                <p:inputText value="#{elementoController.filtroMultiCriterio}"  style="width:250px">
+                                <p:inputText value="#{elementoController.filtroMultiCriterio}"  style="max-width: 25%!important">
                                     <p:ajax event="keyup" update="tablaElmentos" 
-                                            listener="#{elementoController.filtrarElementos()}" />
+                                            listener="#{elementoController.filtrarElementos()}"
+                                            pt:placeholder="Buscar por campos"/>
                                 </p:inputText>
                                 <p:commandButton icon="ui-icon-closethick" update="tablaElmentos"
                                                  action="#{elementoController.limpiarFiltro()}"/>
