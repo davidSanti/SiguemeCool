@@ -69,12 +69,16 @@ public class ConvencionesController implements Serializable {
         switch (opcion) {
             case 1:
                 req.execute("PF('registroConvencion').hide()");
-                formulario = "formConvencion:gridRegistrarConvencion";
+                formulario = ":formRegistrarConvencion:gridRegistrarConvencion";
                 init();
                 break;
             case 2:
                 req.execute("PF('editarConvencion').hide()");
-                formulario = "formEditar:gridEditar";
+                formulario = ":formEditarConvencion:gridEditarConvencion";
+                init();
+                break;
+            case 3:
+                req.execute("PF('modalTablaConvencion').hide()");
                 init();
                 break;
 

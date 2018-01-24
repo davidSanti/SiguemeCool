@@ -16,6 +16,17 @@
                     <center>
                         <br/>
                         <h2><h:outputText value="Lista De Elementos"/></h2> 
+                        <h:panelGrid columns="3">
+                            <p:commandButton value="Registrar" oncomplete="PF('registrarElementos').show()"
+                                             styleClass="btn btn-primary"/>
+                            
+                            <p:commandButton value="Carga Masiva" oncomplete="PF('cargaMasiva').show()" 
+                                             styleClass="btn btn-warning"/>
+
+                            <p:commandButton value="Tipo Elemento" oncomplete="PF('tablaTipoElementos').show()"
+                                             update="tablaTipoElementos"
+                                             styleClass="btn btn-success"/>
+                        </h:panelGrid>
                     </center>
                     <p:growl id="growlElements" showDetail="true" showSummary="false" sticky="false"
                              life="3000"/>
@@ -26,10 +37,8 @@
                                  rowStyleClass="row-color">
 
                         <f:facet name="header">
-                            <p:commandButton value="Registrar" oncomplete="PF('registrarElementos').show()"
-                                             styleClass="btn btn-primary" style="width: 30%!important"/>
                             <p:outputPanel>
-                                <p:inputText value="#{elementoController.filtroMultiCriterio}"  style="max-width: 25%!important">
+                                <p:inputText value="#{elementoController.filtroMultiCriterio}"  style="max-width: 27%!important">
                                     <p:ajax event="keyup" update="tablaElmentos" 
                                             listener="#{elementoController.filtrarElementos()}"
                                             pt:placeholder="Buscar por campos"/>
@@ -81,8 +90,7 @@
                                               oncomplete="PF('editarElementos').show()" update="editarElementos"/>
 
                             <p:commandButton  icon="ui-icon-trash" action="#{elementoController.eliminarElemento(elemento)}"
-                                              update="tablaElmentos, formElementos:growlElements"
-                                              styleClass="btn-danger">
+                                              update="tablaElmentos, formElementos:growlElements">
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Estas Seguro de eliminar este Elemento?" />
                             </p:commandButton>
@@ -301,6 +309,31 @@
                     </center>
                 </p:dialog>
 
+                <p:dialog id="cargaMasiva" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="cargaMasiva" 
+                          modal="true" showEffect="fade" hideEffect="fade" width="350">
+                    <center>
+                        <h:form id="formCargaMasiva" enctype="multipart/form-data" >
+                            <p:growl id="growlCargaMasiva" showSummary="false" showDetail="true" sticky="false" life="3000"/>                      
+                            <center><h2>Carga Masiva de Elementos</h2></center> 
+
+                            <h:panelGrid columns="1" id="gridCargaMasiva" width="250">
+                                <p:fileUpload value="#{cargaMasivaController.file}" mode="simple"
+                                              required="true" pt:required="true"/>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{cargaMasivaController.cerrarModal(1)}"  immediate="true"
+                                                 styleClass="btn btn-warning" update=":formCargaMasiva"/>
+                                <p:commandButton value="Enviar" action="#{cargaMasivaController.cargaMasivaDeElementos()}" 
+                                                 update=":formCargaMasiva, :formElementos" 
+                                                 styleClass="btn btn-success" ajax="false"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+
                 <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                         <center>
@@ -312,6 +345,115 @@
                     </p:confirmDialog>
                 </h:form>  
 
+
+                <!--Inicio de los modales de Tipo elemento-->
+                <p:dialog id="tablaTipoElementos"  resizable="false" width="700"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="tablaTipoElementos" modal="true"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+                    <center>
+                        <h2>Lista de Tipos de Elementos</h2>
+                        <h:form id="formTiposdeElementos">
+                            <p:growl id="growlTipoElemento" showDetail="true" showSummary="false" sticky="false" life="3000" /> 
+
+                            <p:dataTable  id="tablaTipoElemento" value="#{tiposElementosController.listaTiposdeElementos}" 
+                                          var="tipoElemento"
+                                          emptyMessage="No se encontrarón registros"  reflow="true" 
+                                          paginator="true" paginatorPosition="bottom" rows="6" rowStyleClass="row-color" >
+
+                                <f:facet name="header">
+                                    <p:commandButton value="Registrar" onclick="PF('registroTipoElemento').show()"  
+                                                     styleClass="btn btn-primary"  
+                                                     style="width: 30%!important"/>
+                                </f:facet>
+
+                                <p:column headerText="Descripcion" filterBy="#{tipoElemento.description}">
+                                    <h:outputText value="#{tipoElemento.description}">
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="Accciones" exportable="false">  
+
+                                    <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarTipoElemento').show()"
+                                                     update="editarTipoElemento"
+                                                     actionListener="#{tiposElementosController.editarTipoElemento(tipoElemento)}"> 
+                                    </p:commandButton>
+
+                                </p:column>
+                            </p:dataTable>
+
+                            <h:panelGrid>
+                                <p:commandButton value="Cerrar" immediate="true" styleClass="btn btn-warning"
+                                                 actionListener="#{tiposElementosController.ocultarModal(3)}"/>
+                            </h:panelGrid>
+                        </h:form>
+                    </center>
+                </p:dialog>
+
+
+                <p:dialog id="registrarTipoElemento"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="registroTipoElemento" modal="true" width="380"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+
+                    <center>
+                        <h:form id="formTipoElemento">
+                            <h2>Registrar Tipo Elemento</h2>
+                            <h:panelGrid columns="1" id="gridTipoElemento" width="280">
+
+                                <p:inputText id="description" value="#{tiposElementosController.tipoElemento.description}" title="Description" 
+                                             required="true" requiredMessage="La descripción es obligatoria" maxlength="70"
+                                             pt:placeholder="Descripción" validatorMessage="La descripción debe tener entre 3 y 70 carácteres">
+                                    <f:validateLength minimum="3" maximum="70"/>
+                                </p:inputText>
+
+                            </h:panelGrid> 
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{tiposElementosController.ocultarModal(1)}"
+                                                 immediate="true" update="formTiposdeElementos"
+                                                 styleClass="btn btn-warning"/>
+
+                                <p:commandButton value="Registrar" action="#{tiposElementosController.registrarTipoElemento()}"
+                                                 update=":formTiposdeElementos"
+                                                 styleClass="btn btn-primary"/>   
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+
+                <p:dialog id="editarTipoElemento"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="editarTipoElemento" modal="true" width="380"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+
+                    <center>
+                        <h:form id="formTipoDeElemento">
+                            <h2>Modificar Tipo Elemento</h2>
+                            <h:panelGrid columns="1" id="gridTipoDeElemento" width="280">
+                                <p:inputTextarea id="description" value="#{tiposElementosController.tipoElemento.description}" title="Description" 
+                                                 required="true" requiredMessage="La descripción es obligatoria" maxlength="70"
+                                                 pt:placeholder="Descripción">
+                                    <f:validateLength minimum="3" maximum="70"/>
+                                </p:inputTextarea>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" >                                
+                                <p:commandButton value="Cerrar" action="#{tiposElementosController.ocultarModal(2)}" 
+                                                 immediate="true" update="formTiposdeElementos"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Guardar" action="#{tiposElementosController.editarYCerrar()}"
+                                                 update=":formTipoDeElemento:gridTipoDeElemento, :formTiposdeElementos"
+                                                 styleClass="btn btn-success"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+
+                <!--Fin de los modales de Tipo elemento-->
             </ui:define>
 
         </ui:composition>

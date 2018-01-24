@@ -19,7 +19,7 @@
                         <h2><h:outputText value="Lista De Usuarios"/></h2>
                     </center>
 
-                   
+
 
                     <p:growl id="growlUsuario" showDetail="true" showSummary="false" sticky="false" life="3000"/>
 
@@ -28,9 +28,9 @@
                                  paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color">
 
                         <f:facet name="header">
-                             <p:commandButton value="Registrar" update="registrarUsuario"
-                                     oncomplete="PF('registrarUsuario').show();"
-                                     styleClass="btn btn-primary" style="width: 30%!important"/>
+                            <p:commandButton value="Registrar" update="registrarUsuario"
+                                             oncomplete="PF('registrarUsuario').show();"
+                                             styleClass="btn btn-primary" style="width: 30%!important"/>
                             <p:outputPanel>
                                 <h:outputText value="" />
                                 <p:inputText value="#{usuarioController.parametroBusqueda}"  style="max-width: 27%!important"
@@ -158,6 +158,10 @@
                                              pt:type="number" pt:minlength="6" pt:maxlength="6" pt:required="true">
                                     <f:validateLength minimum="6" maximum="6"/>
                                 </p:inputText>
+
+                                <p:commandButton value="Generar clave" styleClass="botonOpcional-form" 
+                                                 action="#{usuarioController.generarClave()}" update="formVerUsuario"/>
+                                <h:outputText value="#{usuarioController.nuevaClaveGenerada}"/>
 
                                 <h:outputText value="Cedula"/>
                                 <h:outputText value="#{usuarioController.usuario.identification}"/>

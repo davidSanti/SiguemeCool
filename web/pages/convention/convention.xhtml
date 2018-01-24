@@ -48,7 +48,7 @@
                             </p:commandButton>
 
                             <p:commandButton icon="ui-icon-trash" action="#{convencionesController.eliminarConvencion(convencion)}"
-                                             update="formConvenciones, formConvenciones:tablaConvenciones"
+                                             update=":formConvenciones, :formConvenciones:tablaConvenciones"
                                              disabled="#{convencionesController.validarBotonEliminar(convencion) eq true}">
                                 <p:confirm header="Confirmación" message="Estas Seguro de eliminar este convencion? Todos los puestos se asignaran al MSC" icon="ui-icon-alert"/>
                             </p:commandButton>
@@ -64,7 +64,7 @@
                           showEffect="fold" hideEffect="fold" responsive="true">
 
                     <center>
-                        <h:form id="formConvencion">
+                        <h:form id="formRegistrarConvencion">
 
                             <h2>Registrar Convención</h2>
                             <h:panelGrid columns="1" id="gridRegistrarConvencion" width="280">
@@ -83,7 +83,7 @@
                                                  styleClass="btn btn-warning"/>
 
                                 <p:commandButton value="Registrar" action="#{convencionesController.registrarConvesiones()}"
-                                                 update=":formConvenciones,formConvencion:gridRegistrarConvencion"
+                                                 update=":formConvenciones, :formRegistrarConvencion:gridRegistrarConvencion"
                                                  styleClass="btn btn-primary"/>   
                             </h:panelGrid>
 

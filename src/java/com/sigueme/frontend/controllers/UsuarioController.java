@@ -62,6 +62,7 @@ public class UsuarioController implements Serializable {
     private List<UserStatus> listaEstadosUsuario;
     private String claveOriginal;
     private String nuevaClave;
+    private String nuevaClaveGenerada;
     private boolean isModificarClave;
 
     @PostConstruct
@@ -73,6 +74,7 @@ public class UsuarioController implements Serializable {
         listarUsuarios();
         claveOriginal = "";
         nuevaClave = "";
+        nuevaClaveGenerada = "";
         isModificarClave = false;
     }
 
@@ -132,7 +134,7 @@ public class UsuarioController implements Serializable {
                     usuario.setUserPassword(usuario.getIdentification());
                     //Aqui se le asigna el estado por defecto que NO es Activo sino change password, para que la primera vez que esntre al sistema cambie la contraseña.
                     usuario.setUserStatusId(userStatusFacadeLocal.find(4));
-                     userFacadeLocal.create(usuario);
+                    userFacadeLocal.create(usuario);
                     List<User> list = new ArrayList();
                     User user1 = new User();
                     user1.setEmail("dsrobayo80@misena.edu.co");
@@ -208,6 +210,12 @@ public class UsuarioController implements Serializable {
                     //Validar People Soft
                     if (verificarIdentificacion(usuario.getPeopleSoft())) {
                         validacion = true;
+                        //Se recurrió a esta opción para el cambio de contraseña de un usuario
+                        if (nuevaClaveGenerada != null && nuevaClaveGenerada.length() > 2) {
+                            usuario.setUserPassword(Crypto.Encriptar(nuevaClaveGenerada));
+                            //Se deja a usuario en Estado de cambiar contraseña
+                            usuario.setUserStatusId(userStatusFacadeLocal.find(4));
+                        }
                         userFacadeLocal.edit(usuario);
                         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos del usuarios han sido actualizados correctamente "));
                         ocultarModal(1);
@@ -223,6 +231,10 @@ public class UsuarioController implements Serializable {
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Los datos no se actualizaron, inténtalo más tarde"));
         }
+    }
+
+    public void generarClave() {
+        nuevaClaveGenerada = PasswordGenerator.getPassword();
     }
 
     public void eliminarUsuario(User user) {
@@ -460,4 +472,11 @@ public class UsuarioController implements Serializable {
         this.nuevaClave = nuevaClave;
     }
 
+    public String getNuevaClaveGenerada() {
+        return nuevaClaveGenerada;
+    }
+
+    public void setNuevaClaveGenerada(String nuevaClaveGenerada) {
+        this.nuevaClaveGenerada = nuevaClaveGenerada;
+    }
 }

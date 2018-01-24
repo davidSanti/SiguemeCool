@@ -76,6 +76,9 @@ public class TiposElementosController implements Serializable {
                 formulario = ":formTipoDeElemento:gridTipoDeElemento";
 //                init();
                 break;
+            case 3:
+                req.execute("PF('tablaTipoElementos').hide()");
+                break;
             default:
                 break;
         }
@@ -86,7 +89,7 @@ public class TiposElementosController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
             tipoElementoFacadeLocal.create(tipoElemento);
-            ocultarModal(2);
+            ocultarModal(1);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "la tipo elemento se ha registrado correctamente"));
         } catch (Exception ex) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "", "Ha ocurrido un error al registrar la tipo elemento, intentalo de nuevo"));

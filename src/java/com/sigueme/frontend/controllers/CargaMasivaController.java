@@ -57,7 +57,7 @@ public class CargaMasivaController implements Serializable {
     private Desk puesto;
     private Convention convencion;
     private Element elemento;
-    private ElementType tipoElmento;
+    private ElementType tipoElemento;
 
     private UploadedFile file;
 
@@ -70,7 +70,7 @@ public class CargaMasivaController implements Serializable {
         puesto = new Desk();
         convencion = new Convention();
         elemento = new Element();
-        tipoElmento = new ElementType();
+        tipoElemento = new ElementType();
     }
 
     public void cerrarModal(int opcion) {
@@ -103,7 +103,7 @@ public class CargaMasivaController implements Serializable {
                 FileOutputStream output = new FileOutputStream(path);
                 output.write(data);
                 output.close();
-        
+
             } else {
                 System.out.println("nada");
             }
@@ -115,23 +115,21 @@ public class CargaMasivaController implements Serializable {
         return path;
     }
 
+    /*Inicio Código para la carga masiva de Puesto*/
     public void cargaMasivaDePuestos() {
         cargarPuesto();
     }
 
     public void cargarPuesto() {
         try {
-            puesto = new Desk();
-            convencion = new Convention();
-
             String path = cargarAdjunto();
             File ff = new File(path);
-            System.out.println("sss" + ff.exists());
             Workbook workbook = Workbook.getWorkbook(ff);
-            System.out.println("vamos");
             Sheet sheet = workbook.getSheet(0);
-            System.out.println("sss" + sheet.getRows());
             for (int fila = 1; fila < (sheet.getRows()); fila++) {
+                puesto = new Desk();
+                convencion = new Convention();
+
                 String serialCode = sheet.getCell(0, fila).getContents();
                 String stringconvencion = sheet.getCell(1, fila).getContents();
 
@@ -219,6 +217,124 @@ public class CargaMasivaController implements Serializable {
         }
     }
 
+    /*Fin Código para la carga masiva de Puesto*/
+ /*Inicio Código para la carga masiva de Elementos*/
+    public void cargaMasivaDeElementos() {
+        cargarElementos();
+    }
+
+    public void cargarElementos() {
+        int cantidadElementosRegistrados = 0;
+        try {
+            String path = cargarAdjunto();
+            File ff = new File(path);
+            Workbook workbook = Workbook.getWorkbook(ff);
+            Sheet sheet = workbook.getSheet(0);
+
+            for (int fila = 1; fila < (sheet.getRows()); fila++) {
+                elemento = new Element();
+                tipoElemento = new ElementType();
+
+                String stringPuesto = sheet.getCell(0, fila).getContents();
+                String stringTipoElemento = sheet.getCell(1, fila).getContents();
+                String serialCode = sheet.getCell(2, fila).getContents();
+                String placaInventario = sheet.getCell(3, fila).getContents();
+                String marca = sheet.getCell(4, fila).getContents();
+                String modelo = sheet.getCell(5, fila).getContents();
+                String comentario = sheet.getCell(7, fila).getContents();
+
+                Desk puestoElemento = buscarPuestoPorSerialCode(retornarSerialCode(stringPuesto));
+                
+                System.out.println("vamos");
+                if (puestoElemento != null) {
+                    System.out.println("puesto");
+                    elemento.setDeskId(puestoElemento);
+
+                    tipoElemento = buscarTipoElementoPorDescripcion(stringTipoElemento);
+                    if (tipoElemento == null) {
+                        tipoElemento = registrarNuevoTipoElemento(stringTipoElemento);
+                    }
+                    System.out.println("tipo" + tipoElemento.getDescription());
+
+                    elemento.setTypeId(tipoElemento);
+                    elemento.setSerialCode(serialCode);
+                    elemento.setInventoryPlaque(placaInventario);
+                    elemento.setBrand(marca);
+                    elemento.setModel(modelo);
+                    if (verificarSiElementoEsComputador(tipoElemento)) {
+                        String nombrePc = sheet.getCell(6, fila).getContents();
+                        elemento.setPcName(nombrePc);
+                    }
+                    elementFacadeLocal.create(elemento);
+                    cantidadElementosRegistrados += 1;
+                }
+
+            }
+            System.out.println("cuantos se registraron:" + cantidadElementosRegistrados);
+            cerrarModal(1);
+        } catch (Exception e) {
+            System.out.println("ee" + e.getMessage());
+            Logger.getLogger(CargaMasivaController.class.getName()).log(Level.SEVERE, null, e);
+
+        }
+
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        ec.getFlash().setKeepMessages(true);
+        try {
+            ec.redirect(ec.getRequestContextPath() + "/faces" + ec.getRequestPathInfo());
+        } catch (IOException ex) {
+            Logger.getLogger(CargaMasivaController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public Desk buscarPuestoPorSerialCode(String serialPuesto) {
+        Desk puestoReal = null;
+        try {
+            puestoReal = deskFacadeLocal.buscarPorSerialCode(serialPuesto);
+        } catch (Exception e) {
+        }
+        return puestoReal;
+    }
+
+    public ElementType buscarTipoElementoPorDescripcion(String descripcion) {
+        ElementType tipoBusqueda = null;
+        try {
+            List<ElementType> lista = elementTypeFacadeLocal.findAll();
+            descripcion = descripcion.replaceAll(" ", "");
+
+            for (ElementType item : lista) {
+                String itemDescripcion = item.getDescription().replaceAll(" ", "");
+
+                if (itemDescripcion.equalsIgnoreCase(descripcion)) {
+                    tipoBusqueda = item;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+        }
+        return tipoBusqueda;
+    }
+
+    public ElementType registrarNuevoTipoElemento(String nombre) {
+        ElementType nuevoTipo = new ElementType();
+        try {
+            nuevoTipo.setDescription(nombre);
+            elementTypeFacadeLocal.create(nuevoTipo);
+        } catch (Exception e) {
+        }
+        return nuevoTipo;
+    }
+
+    public boolean verificarSiElementoEsComputador(ElementType tipo) {
+        String descripcion = tipo.getDescription().replaceAll(" ", "").toLowerCase();
+        if (descripcion.equalsIgnoreCase("desktop") || descripcion.equalsIgnoreCase("laptop")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /*Fin Código para la carga masiva de Elementos*/
     public User getUsuario() {
         return usuario;
     }
@@ -251,12 +367,12 @@ public class CargaMasivaController implements Serializable {
         this.elemento = elemento;
     }
 
-    public ElementType getTipoElmento() {
-        return tipoElmento;
+    public ElementType getTipoElemento() {
+        return tipoElemento;
     }
 
-    public void setTipoElmento(ElementType tipoElmento) {
-        this.tipoElmento = tipoElmento;
+    public void setTipoElemento(ElementType tipoElemento) {
+        this.tipoElemento = tipoElemento;
     }
 
     public UploadedFile getFile() {

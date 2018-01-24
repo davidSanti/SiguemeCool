@@ -19,13 +19,15 @@
 
                 <h:form style="margin: 8px;">
                     <center>
-                        <h:panelGrid columns="3">       
+                        <h:panelGrid columns="4">       
                             <p:commandButton value="Migrar Elementos" oncomplete="PF('modalMigrar').show()"
                                              update="modalMigrar" styleClass="btn btn-info"/>
                             <p:commandButton value="Registrar" oncomplete="PF('registrarPuesto').show()"
                                              styleClass="btn btn-primary"/>
                             <p:commandButton value="Carga Masiva" oncomplete="PF('cargaMasiva').show()" 
                                              styleClass="btn btn-warning"/>
+                            <p:commandButton value="Convenciones" oncomplete="PF('modalTablaConvencion').show()" 
+                                             styleClass="btn btn-success"/>
                         </h:panelGrid>
                     </center>
                 </h:form>
@@ -267,7 +269,7 @@
                                     <p:commandButton value="Cerrar" actionListener="#{inventarioController.cerrarModal(4)}" 
                                                      styleClass="btn btn-warning "/>
                                     <p:commandButton value="Agregar" oncomplete="PF('modalAsignarElementos').show()"
-                                                     update="modalAsignarElementos, formAsociarElementos" styleClass="btn btn-primary "/>
+                                                     update="modalAsignarElementos, formAsociarElementos" styleClass="btn btn-info "/>
 
                                 </h:panelGrid>
                             </center>
@@ -425,7 +427,7 @@
                             </h:panelGrid>
 
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Cerrar" action="#{cargaMasivaController.cerrarModal(1)}" update="formMigrar" immediate="true"
+                                <p:commandButton value="Cerrar" action="#{cargaMasivaController.cerrarModal(1)}" update="formCargaMasiva" immediate="true"
                                                  styleClass="btn btn-warning"/>
                                 <p:commandButton value="Enviar" action="#{cargaMasivaController.cargaMasivaDePuestos()}" 
                                                  update="formCargaMasiva, :formInventario:tablaInventario" 
@@ -436,6 +438,116 @@
                     </center>
                 </p:dialog>
 
+
+                <!--Inicio modales convenciones-->
+                <p:dialog id="modalTablaConvencion" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="modalTablaConvencion" 
+                          modal="true" showEffect="fade" hideEffect="fade" width="700">
+
+                    <center>
+                        <h2>Lista Convenciones</h2>
+                        <h:form id="formConvenciones">
+                            <p:growl id="growlConvencion" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+
+                            <p:dataTable id="tablaConvenciones"  var="convencion" value="#{convencionesController.listaConvenciones}"
+                                         emptyMessage="No se encontrarón registros"  reflow="true" 
+                                         paginator="true" paginatorPosition="bottom" rows="6" rowStyleClass="row-color">
+
+                                <f:facet name="header">
+                                    <p:commandButton value="Registrar" oncomplete="PF('registroConvencion').show()"  
+                                                     styleClass="btn btn-primary"  
+                                                     style="width: 30%!important"/>
+                                </f:facet>
+
+                                <p:column headerText="Descripción" filterBy="#{convencion.description}" filterMatchMode="contains">
+                                    <h:outputText value="#{convencion.description}">  
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="Accciones" exportable="false">  
+                                    <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarConvencion').show()" update="editarConvencion"
+                                                     actionListener="#{convencionesController.editarConvencion(convencion)}">
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-trash" action="#{convencionesController.eliminarConvencion(convencion)}"
+                                                     update="formConvenciones, formConvenciones:tablaConvenciones"
+                                                     disabled="#{convencionesController.validarBotonEliminar(convencion) eq true}">
+                                        <p:confirm header="Confirmación" message="Estas Seguro de eliminar este convencion? Todos los puestos se asignaran al MSC" icon="ui-icon-alert"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                            <h:panelGrid>
+                                <p:commandButton value="Cerrar" immediate="true" styleClass="btn btn-warning"
+                                                 actionListener="#{convencionesController.ocultarModal(3)}"/>
+                            </h:panelGrid>
+                        </h:form>   
+                    </center>
+                </p:dialog>
+
+                <p:dialog id="registrarConvencion"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="registroConvencion" modal="true" width="380"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+
+                    <center>
+                        <h:form id="formRegistrarConvencion">
+
+                            <h2>Registrar Convención</h2>
+                            <h:panelGrid columns="1" id="gridRegistrarConvencion" width="280">
+
+                                <p:inputText id="description" value="#{convencionesController.convencion.description}" title="Description" 
+                                             required="true" requiredMessage="La descripción es obligatoria" maxlength="70"
+                                             pt:placeholder="Descripción" validatorMessage="La descripcion debe contener entre 3 y 70 Carácteres">
+                                    <f:validateLength minimum="3" maximum="70"/>
+                                </p:inputText>
+
+                            </h:panelGrid> 
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{convencionesController.ocultarModal(1)}"
+                                                 immediate="true" update=":formRegistrarConvencion"
+                                                 styleClass="btn btn-warning"/>
+
+                                <p:commandButton value="Registrar" action="#{convencionesController.registrarConvesiones()}"
+                                                 update=":formConvenciones, :formRegistrarConvencion:gridRegistrarConvencion"
+                                                 styleClass="btn btn-primary"/>     
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+
+                <p:dialog id="editarConvencion"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="editarConvencion" modal="true" width="380"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+
+                    <center>
+                        <h:form id="formEditarConvencion">
+                            <h2>Modificar Convención</h2>
+                            <h:panelGrid columns="1" id="gridEditarConvencion" width="280">
+                                <p:inputTextarea id="description" value="#{convencionesController.convencion.description}" title="Description" 
+                                                 required="true" requiredMessage="La descripción es obligatoria" maxlength="70"
+                                                 pt:placeholder="Descripción">
+                                    <f:validateLength minimum="3" maximum="70"/>
+                                </p:inputTextarea>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" >                                
+                                <p:commandButton value="Cerrar" action="#{convencionesController.ocultarModal(2)}" 
+                                                 immediate="true" update="formConvenciones"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Guardar" action="#{convencionesController.editarYCerrar()}"
+                                                 update=":formConvenciones, :formEditarConvencion:gridEditarConvencion"
+                                                 styleClass="btn btn-success"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+
+                <!--Fin modales convenciones-->
             </ui:define>
         </ui:composition>
     </body>
