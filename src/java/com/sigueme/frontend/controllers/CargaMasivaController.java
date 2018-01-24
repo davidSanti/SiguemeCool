@@ -134,15 +134,16 @@ public class CargaMasivaController implements Serializable {
                 String stringconvencion = sheet.getCell(1, fila).getContents();
 
                 puesto.setSerialCode(retornarSerialCode(serialCode));
-                System.out.println("serial: " + puesto.getSerialCode());
 
                 this.convencion = buscarConvencionPorDescripcion(stringconvencion);
                 if (this.convencion == null) {
                     this.convencion = registrarConvencion(stringconvencion);
                 }
                 puesto.setConventionId(this.convencion);
-                System.out.println("convencion" + puesto.getConventionId().getDescription());
                 deskFacadeLocal.create(puesto);
+
+                System.out.println("serial: " + puesto.getSerialCode());
+                System.out.println("convencion" + puesto.getConventionId().getDescription());
             }
 
             cerrarModal(1);
@@ -244,7 +245,7 @@ public class CargaMasivaController implements Serializable {
                 String comentario = sheet.getCell(7, fila).getContents();
 
                 Desk puestoElemento = buscarPuestoPorSerialCode(retornarSerialCode(stringPuesto));
-                
+
                 System.out.println("vamos");
                 if (puestoElemento != null) {
                     System.out.println("puesto");
