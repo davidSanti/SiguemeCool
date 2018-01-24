@@ -137,7 +137,7 @@ public class ConvencionesController implements Serializable {
             if (!listaEscritorios.isEmpty()) {
                 asignarPuestosAlMsc();
             }
-            convencionFacadeLocal.remove(convencion);
+            convencionFacadeLocal.remove(this.convencion);
 
             listarConvenciones();
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La convención se ha eliminado correctamente"));

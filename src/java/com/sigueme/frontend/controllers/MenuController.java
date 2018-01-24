@@ -6,6 +6,7 @@
 package com.sigueme.frontend.controllers;
 
 import com.sigueme.backend.entities.Permission;
+import com.sigueme.backend.entities.PermissionRole;
 import com.sigueme.backend.entities.Role;
 import com.sigueme.backend.entities.User;
 import com.sigueme.backend.model.PermissionFacadeLocal;
@@ -248,6 +249,62 @@ public class MenuController implements Serializable {
             }
         } catch (Exception e) {
         }
+    }
+
+    public boolean validarPermisoBoton(int opcion) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        boolean bandera;
+        String urlPagina = context.getExternalContext().getRequestPathInfo();
+        Role rolEnSesion = retornarRolEnSesion();
+        List<PermissionRole> permisosPorRol = permissionRoleFacadeLocal.listarPermisosPorRol2(rolEnSesion);
+
+        bandera = encontrarPermiso(permisosPorRol, urlPagina, opcion);
+        return bandera;
+    }
+
+    private boolean encontrarPermiso(List<PermissionRole> permisosPorRol, String urlPagina, int opcion) {
+        boolean bandera = false;
+
+        for (PermissionRole permiso : permisosPorRol) {
+            if (permiso.getPermissionId().getUrl() != null && !permiso.getPermissionId().getUrl().equals("")) {
+                if (permiso.getPermissionId().getUrl().equals(urlPagina.replaceFirst("/", ""))) {
+                    //Una vez que se encontró la página especificada se verifica si tiene o no habilitada la opcion para el botón
+                    bandera = validarSiTienePermiso(permiso, opcion);
+                    break;
+                }
+            }
+        }
+
+        return bandera;
+    }
+
+    private boolean validarSiTienePermiso(PermissionRole permisoRol, int opcionCrud) {
+        boolean tienePermiso = false;
+        switch (opcionCrud) {
+            case 1:
+                if (permisoRol.getOpCreate() != null) {
+                    tienePermiso = permisoRol.getOpCreate();
+                }
+                break;
+            case 2:
+                if (permisoRol.getOpEdit() != null) {
+                    tienePermiso = permisoRol.getOpEdit();
+                }
+                break;
+            case 3:
+                if (permisoRol.getOpDelete() != null) {
+                    tienePermiso = permisoRol.getOpDelete();
+                }
+                break;
+            case 4:
+                if (permisoRol.getOpOther() != null) {
+                    tienePermiso = permisoRol.getOpOther();
+                }
+                break;
+            default:
+                break;
+        }
+        return tienePermiso;
     }
 
     public String redireccion() {

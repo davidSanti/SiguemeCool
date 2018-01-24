@@ -18,10 +18,12 @@
                         <h2><h:outputText value="Lista De Elementos"/></h2> 
                         <h:panelGrid columns="3">
                             <p:commandButton value="Registrar" oncomplete="PF('registrarElementos').show()"
-                                             styleClass="btn btn-primary"/>
-                            
+                                             styleClass="btn btn-primary"
+                                             rendered="#{menuController.validarPermisoBoton(1) eq true}"/>
+
                             <p:commandButton value="Carga Masiva" oncomplete="PF('cargaMasiva').show()" 
-                                             styleClass="btn btn-warning"/>
+                                             styleClass="btn btn-warning"
+                                             rendered="#{menuController.validarPermisoBoton(4) eq true}"/>
 
                             <p:commandButton value="Tipo Elemento" oncomplete="PF('tablaTipoElementos').show()"
                                              update="tablaTipoElementos"
@@ -87,14 +89,15 @@
                                              oncomplete="PF('modalVerElemento').show()" update="modalVerElemento"/>
 
                             <p:commandButton  icon="ui-icon-pencil" actionListener="#{elementoController.editarElemento(elemento)}"
-                                              oncomplete="PF('editarElementos').show()" update="editarElementos"/>
+                                              oncomplete="PF('editarElementos').show()" update="editarElementos"
+                                              rendered="#{menuController.validarPermisoBoton(2) eq true}"/>
 
                             <p:commandButton  icon="ui-icon-trash" action="#{elementoController.eliminarElemento(elemento)}"
-                                              update="tablaElmentos, formElementos:growlElements">
+                                              update="tablaElmentos, formElementos:growlElements"
+                                              rendered="#{menuController.validarPermisoBoton(3) eq true}">
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Estas Seguro de eliminar este Elemento?" />
                             </p:commandButton>
-                            <!--<p:commandLink styleClass="ui-icon ui-icon-trash" />-->
                         </p:column>
 
                     </p:dataTable>
@@ -363,8 +366,8 @@
 
                                 <f:facet name="header">
                                     <p:commandButton value="Registrar" onclick="PF('registroTipoElemento').show()"  
-                                                     styleClass="btn btn-primary"  
-                                                     style="width: 30%!important"/>
+                                                     styleClass="btn btn-primary"  style="width: 30%!important"
+                                                     rendered="#{menuController.validarPermisoBoton(1) eq true}"/>
                                 </f:facet>
 
                                 <p:column headerText="Descripcion" filterBy="#{tipoElemento.description}">
@@ -376,7 +379,8 @@
 
                                     <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarTipoElemento').show()"
                                                      update="editarTipoElemento"
-                                                     actionListener="#{tiposElementosController.editarTipoElemento(tipoElemento)}"> 
+                                                     actionListener="#{tiposElementosController.editarTipoElemento(tipoElemento)}"
+                                                     rendered="#{menuController.validarPermisoBoton(2) eq true}"> 
                                     </p:commandButton>
 
                                 </p:column>

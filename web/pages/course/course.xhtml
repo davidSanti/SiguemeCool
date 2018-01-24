@@ -41,8 +41,8 @@
                         <f:facet name="header">
 
                             <p:commandButton value="Registrar" onclick="PF('registrarCurso').show()"  
-                                             styleClass="btn btn-primary"  
-                                             style="width: 30%!important"/>
+                                             styleClass="btn btn-primary" style="width: 30%!important"
+                                             rendered="#{menuController.validarPermisoBoton(1) eq true}"/>
                         </f:facet>
 
                         <p:column headerText="Nombre" filterBy="#{curso.courseName}" filterMatchMode="contains">
@@ -112,11 +112,13 @@
                             </p:commandButton>
 
                             <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarCurso').show()" update="editarCurso"
-                                             actionListener="#{cursoController.editarCurso(curso,2)}">
+                                             actionListener="#{cursoController.editarCurso(curso,2)}"
+                                             rendered="#{menuController.validarPermisoBoton(2) eq true}">
                             </p:commandButton>
 
                             <p:commandButton  icon="ui-icon-trash" action="#{cursoController.eliminarCurso(curso)}"
-                                              update="tablaCurso, :formCurso:growlCurso, :formVerCurso:gridVerCurso">
+                                              update="tablaCurso, :formCurso:growlCurso, :formVerCurso:gridVerCurso"
+                                              rendered="#{menuController.validarPermisoBoton(3) eq true}">
                                 <p:confirm header="Confirmación" message="Estas Seguro de eliminar este curso?" icon="ui-icon-alert"/>
                             </p:commandButton>
 
@@ -535,7 +537,8 @@
                                         <p:commandButton icon="ui-icon-star" 
                                                          actionListener="#{cursoController.asignarUsuarioCurso(usuariosCurso)}"
                                                          oncomplete="PF('calificarCurso').show();"
-                                                         update="calificarCurso" />
+                                                         update="calificarCurso" 
+                                                         rendered="#{menuController.validarPermisoBoton(4) eq true}"/>
                                     </p:column>
                                 </p:dataTable>
 

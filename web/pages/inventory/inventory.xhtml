@@ -21,11 +21,16 @@
                     <center>
                         <h:panelGrid columns="4">       
                             <p:commandButton value="Migrar Elementos" oncomplete="PF('modalMigrar').show()"
-                                             update="modalMigrar" styleClass="btn btn-info"/>
+                                             update="modalMigrar" styleClass="btn btn-info"
+                                             rendered="#{menuController.validarPermisoBoton(2) eq true}"/>
+
                             <p:commandButton value="Registrar" oncomplete="PF('registrarPuesto').show()"
-                                             styleClass="btn btn-primary"/>
+                                             styleClass="btn btn-primary"
+                                             rendered="#{menuController.validarPermisoBoton(1) eq true}"/>
+
                             <p:commandButton value="Carga Masiva" oncomplete="PF('cargaMasiva').show()" 
-                                             styleClass="btn btn-warning"/>
+                                             styleClass="btn btn-warning"
+                                             rendered="#{menuController.validarPermisoBoton(4) eq true}"/>
                             <p:commandButton value="Convenciones" oncomplete="PF('modalTablaConvencion').show()" 
                                              styleClass="btn btn-success"/>
                         </h:panelGrid>
@@ -80,9 +85,11 @@
 
                         <p:column headerText="Acciones">
                             <p:commandButton icon="ui-icon-pencil" actionListener="#{inventarioController.editarPuesto(puesto,false)}"
-                                             oncomplete="PF('modalEditarPuesto').show()" update="modalEditarPuesto"/>
+                                             oncomplete="PF('modalEditarPuesto').show()" update="modalEditarPuesto"
+                                             rendered="#{menuController.validarPermisoBoton(2) eq true}"/>
                             <p:commandButton icon="ui-icon-circle-zoomin" actionListener="#{inventarioController.editarPuesto(puesto,true)}"
-                                             oncomplete="PF('modalVerPuesto').show()" update="modalVerPuesto"/>
+                                             oncomplete="PF('modalVerPuesto').show()" update="modalVerPuesto"
+                                             rendered="#{menuController.validarPermisoBoton(3) eq true}"/>
                         </p:column>
                     </p:dataTable>
 
@@ -455,8 +462,8 @@
 
                                 <f:facet name="header">
                                     <p:commandButton value="Registrar" oncomplete="PF('registroConvencion').show()"  
-                                                     styleClass="btn btn-primary"  
-                                                     style="width: 30%!important"/>
+                                                     styleClass="btn btn-primary" style="width: 30%!important" 
+                                                     rendered="#{menuController.validarPermisoBoton(1) eq true}"/>
                                 </f:facet>
 
                                 <p:column headerText="Descripción" filterBy="#{convencion.description}" filterMatchMode="contains">
@@ -466,12 +473,14 @@
 
                                 <p:column headerText="Accciones" exportable="false">  
                                     <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarConvencion').show()" update="editarConvencion"
-                                                     actionListener="#{convencionesController.editarConvencion(convencion)}">
+                                                     actionListener="#{convencionesController.editarConvencion(convencion)}"
+                                                     rendered="#{menuController.validarPermisoBoton(2) eq true}">
                                     </p:commandButton>
 
                                     <p:commandButton icon="ui-icon-trash" action="#{convencionesController.eliminarConvencion(convencion)}"
                                                      update="formConvenciones, formConvenciones:tablaConvenciones"
-                                                     disabled="#{convencionesController.validarBotonEliminar(convencion) eq true}">
+                                                     disabled="#{convencionesController.validarBotonEliminar(convencion) eq true}"
+                                                     rendered="#{menuController.validarPermisoBoton(3) eq true}">
                                         <p:confirm header="Confirmación" message="Estas Seguro de eliminar este convencion? Todos los puestos se asignaran al MSC" icon="ui-icon-alert"/>
                                     </p:commandButton>
                                 </p:column>
@@ -548,6 +557,17 @@
                 </p:dialog>
 
                 <!--Fin modales convenciones-->
+
+                <h:form>   
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes boton-confirm-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no boton-confirm-no" icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </center>
+                    </p:confirmDialog>
+                </h:form> 
             </ui:define>
         </ui:composition>
     </body>

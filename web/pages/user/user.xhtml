@@ -30,7 +30,8 @@
                         <f:facet name="header">
                             <p:commandButton value="Registrar" update="registrarUsuario"
                                              oncomplete="PF('registrarUsuario').show();"
-                                             styleClass="btn btn-primary" style="width: 30%!important"/>
+                                             styleClass="btn btn-primary" style="width: 30%!important"
+                                             rendered="#{menuController.validarPermisoBoton(1) eq true}"/>
                             <p:outputPanel>
                                 <h:outputText value="" />
                                 <p:inputText value="#{usuarioController.parametroBusqueda}"  style="max-width: 27%!important"
@@ -100,10 +101,12 @@
                         <p:column headerText="Acciones">
                             <p:commandButton icon="ui-icon-circle-zoomin"
                                              actionListener="#{usuarioController.editarUsuario(usuario)}"
-                                             oncomplete="PF('verUsuario').show();" update="verUsuario"/>
+                                             oncomplete="PF('verUsuario').show();" update="verUsuario"
+                                             rendered="#{menuController.validarPermisoBoton(2) eq true}"/>
 
                             <p:commandButton  icon="ui-icon-trash" action="#{usuarioController.eliminarUsuario(usuario)}"
-                                              update="tablaUsuario, :formUsuario:growlUsuario" >
+                                              update="tablaUsuario, :formUsuario:growlUsuario" 
+                                              rendered="#{menuController.validarPermisoBoton(3) eq true}">
                                 <p:confirm header="Confirmación" icon="ui-icon-alert"
                                            message="Estas Seguro de eliminar este Usuario?" />
                             </p:commandButton>
@@ -159,7 +162,7 @@
                                     <f:validateLength minimum="6" maximum="6"/>
                                 </p:inputText>
 
-                                <p:commandButton value="Generar clave" styleClass="botonOpcional-form" 
+                                <p:commandButton value="Generar clave" styleClass="botonOpcional-form" immediate="true"
                                                  action="#{usuarioController.generarClave()}" update="formVerUsuario"/>
                                 <h:outputText value="#{usuarioController.nuevaClaveGenerada}"/>
 
