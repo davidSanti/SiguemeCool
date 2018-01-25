@@ -83,7 +83,7 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
             if (usuariosExcluidos.isEmpty()) {
                 query = em.createQuery("SELECT u FROM User u WHERE u.roleId IN :roles AND u.userStatusId.userStatusId <> :estadoUsuario");
             } else {
-                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.roleId IN :roles AND u NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario");
+                query = em.createQuery("SELECT u FROM User u WHERE u.roleId IN :roles AND u.userId NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario");
                 query.setParameter("usuariosExcluidos", usuariosExcluidos);
             }
             query.setParameter("roles", listaRoles);
@@ -117,7 +117,7 @@ public class UserFacade extends AbstractFacade<User> implements UserFacadeLocal 
                 query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.roleId IN :roles AND u.userStatusId.userStatusId <> :estadoUsuario");
 
             } else {
-                query = em.createQuery("SELECT DISTINCT u FROM UserByCourse uc JOIN uc.userId u WHERE u.groupId IN :grupos AND u.roleId IN :roles AND u NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario");
+                query = em.createQuery("SELECT u FROM User u WHERE u.groupId IN :grupos AND u.roleId IN :roles AND u.userId NOT IN :usuariosExcluidos AND u.userStatusId.userStatusId <> :estadoUsuario");
                 query.setParameter("usuariosExcluidos", usuariosExcluidos);
             }
             query.setParameter("grupos", listaGrupos);

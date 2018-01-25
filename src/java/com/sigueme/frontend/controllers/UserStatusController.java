@@ -74,6 +74,10 @@ public class UserStatusController implements Serializable {
                 formulario = ":formEditarEstadousuario:gridEditarEstadousuario";
                 init();
                 break;
+            case 3:
+                req.execute("PF('modalEstadoUsuario').hide()");
+                init();
+                break;
 
             default:
                 break;

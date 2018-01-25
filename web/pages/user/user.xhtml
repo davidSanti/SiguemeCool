@@ -19,8 +19,6 @@
                         <h2><h:outputText value="Lista De Usuarios"/></h2>
                     </center>
 
-
-
                     <p:growl id="growlUsuario" showDetail="true" showSummary="false" sticky="false" life="3000"/>
 
                     <p:dataTable id="tablaUsuario" value="#{usuarioController.listaUsuarios}" var="usuario"
@@ -30,15 +28,25 @@
                         <f:facet name="header">
                             <p:commandButton value="Registrar" update="registrarUsuario"
                                              oncomplete="PF('registrarUsuario').show();"
-                                             styleClass="btn btn-primary" style="width: 30%!important"
+                                             styleClass="btn btn-primary" style="width: 15%!important"
                                              rendered="#{menuController.validarPermisoBoton(1) eq true}"/>
+
+                            <p:commandButton value="Carga Masiva" oncomplete="PF('cargaMasiva').show()" 
+                                             styleClass="btn btn-warning" style="width: 15%!Important"
+                                             rendered="#{menuController.validarPermisoBoton(4) eq true}"/>
+
+                            <p:commandButton value="Estados Usuario" oncomplete="PF('modalEstadoUsuario').show()" 
+                                             update="modalEstadoUsuario"
+                                             styleClass="btn btn-success" style="width: 15%!Important"
+                                             rendered="#{menuController.validarPermisoBoton(4) eq true}"/>
+
                             <p:outputPanel>
-                                <h:outputText value="" />
                                 <p:inputText value="#{usuarioController.parametroBusqueda}"  style="max-width: 27%!important"
                                              pt:placeholder="Buscar por campos">
                                     <p:ajax event="keyup" update="tablaUsuario" 
                                             listener="#{usuarioController.filtrarTodosLosCampos()}" />
                                 </p:inputText>
+                               
                                 <p:commandButton icon="ui-icon-closethick" update="tablaUsuario"
                                                  action="#{usuarioController.limpiarFiltro()}"/>
                             </p:outputPanel>
@@ -117,7 +125,7 @@
 
                 <p:dialog id="verUsuario"  resizable="false" responsive="true"
                           closeOnEscape="false" draggable="false" closable="false"
-                          widgetVar="verUsuario" modal="true" width="380"
+                          widgetVar="verUsuario" modal="true" width="400"
                           showEffect="fade" hideEffect="fade">
                     <center>
                         <h:form id="formVerUsuario">
@@ -294,6 +302,31 @@
                     </center>
                 </p:dialog>
 
+                <p:dialog id="cargaMasiva" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="cargaMasiva" 
+                          modal="true" showEffect="fade" hideEffect="fade" width="350">
+                    <center>
+                        <h:form id="formCargaMasiva" enctype="multipart/form-data" >
+                            <p:growl id="growlCargaMasiva" showSummary="false" showDetail="true" sticky="false" life="3000"/>                      
+                            <center><h2>Carga Masiva de Usuarios</h2></center> 
+
+                            <h:panelGrid columns="1" id="gridCargaMasiva" width="250">
+                                <p:fileUpload value="#{cargaMasivaController.file}" mode="simple"
+                                              required="true" pt:required="true"/>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{cargaMasivaController.cerrarModal(1)}" update="formCargaMasiva" immediate="true"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Enviar" action="#{cargaMasivaController.cargaMasivaDeUsuarios()}" 
+                                                 update="formCargaMasiva, :formUsuario:tablaUsuario"
+                                                 styleClass="btn btn-success" ajax="false"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+
                 <h:form>   
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                         <center>
@@ -304,6 +337,123 @@
                         </center>
                     </p:confirmDialog>
                 </h:form>  
+
+
+
+                <!--Inicio código estados del usuario-->
+                <p:dialog id="modalEstadoUsuario" resizable="false" closeOnEscape="false" 
+                          draggable="false" closable="false" widgetVar="modalEstadoUsuario" 
+                          modal="true" showEffect="fade" hideEffect="fade" width="700">
+                    <center>
+
+                        <h2><h:outputText value="Lista Estados Usuarios"/></h2>
+                        <h:form id="formEstadosusuario">
+
+                            <p:dataTable  id="tablaEstadousuario" value="#{userStatusController.listaEstadoUsuario}" 
+                                          var="estadoUsuario"
+                                          emptyMessage="No se encontrarón registros"  reflow="true" 
+                                          paginator="true" paginatorPosition="bottom" rows="10" rowStyleClass="row-color" >
+
+                                <f:facet name="header">
+
+                                    <p:commandButton value="Registrar" onclick="PF('registroEstadousuario').show()"  
+                                                     styleClass="btn btn-primary"  
+                                                     style="width: 30%!important"
+                                                     rendered="#{menuController.validarPermisoBoton(1) eq true}"/>
+                                </f:facet>
+
+                                <p:column headerText="Descripcion" filterBy="#{estadoUsuario.description}">
+                                    <h:outputText value="#{estadoUsuario.description}">
+                                    </h:outputText>
+                                </p:column>
+
+
+                                <p:column headerText="Accciones" exportable="false">  
+
+                                    <p:commandButton icon="ui-icon-pencil" oncomplete="PF('editarEstadousuario').show()" update="editarEstadousuario"
+                                                     actionListener="#{userStatusController.editarEstadosUsuario(estadoUsuario)}"
+                                                     rendered="#{menuController.validarPermisoBoton(2) eq true}">
+                                    </p:commandButton>
+
+                                </p:column>
+                            </p:dataTable>
+                            <h:panelGrid columns="1">
+                                <p:commandButton value="Cerrar" 
+                                                 styleClass="btn btn-warning"
+                                                 actionListener="#{userStatusController.ocultarModal(3)}"/>
+                            </h:panelGrid>
+                        </h:form>
+
+                    </center>
+                </p:dialog>
+
+
+                <p:dialog id="registrarEstadousuario"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="registroEstadousuario" modal="true" width="380"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+
+                    <center>
+                        <h:form id="formEstadousuario">
+
+                            <h2>Registrar Tipo Elemento</h2>
+                            <h:panelGrid columns="1" id="gridEstadousuario" width="280">
+
+                                <p:inputText id="description" value="#{userStatusController.estadousuario.description}" title="Description" 
+                                             required="true" requiredMessage="La descripción es obligatoria" maxlength="25"
+                                             validatorMessage="El estado debe contener entre 3 y 25 carácteres"
+                                             pt:placeholder="Descripción">
+                                    <f:validateLength minimum="3" maximum="25"/>
+                                </p:inputText>
+
+                            </h:panelGrid> 
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Cerrar" action="#{userStatusController.ocultarModal(1)}"
+                                                 immediate="true" update="formEstadosusuario"
+                                                 styleClass="btn btn-warning"/>
+
+                                <p:commandButton value="Registrar" action="#{userStatusController.registrarEstadousuario()}"
+                                                 update="formEstadosusuario,formEstadousuario:gridEstadousuario"
+                                                 styleClass="btn btn-primary"/>   
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+
+                </p:dialog>
+
+                <p:dialog id="editarEstadousuario"  resizable="false"
+                          closeOnEscape="false" draggable="false" closable="false"
+                          widgetVar="editarEstadousuario" modal="true" width="380"
+                          showEffect="fold" hideEffect="fold" responsive="true">
+
+                    <center>
+                        <h:form id="formEditarEstadousuario">
+                            <h2>Modificar Estado usuario</h2>
+                            <h:panelGrid columns="1" id="gridEditarEstadousuario" width="280">
+                                <p:inputTextarea id="description" value="#{userStatusController.estadousuario.description}" title="Description" 
+                                                 required="true" requiredMessage="La descripción es obligatoria" maxlength="25"
+                                                 validatorMessage="El estado debe contener entre 3 y 25 carácteres"
+                                                 pt:placeholder="Descripción">
+                                    <f:validateLength minimum="3" maximum="25"/>
+                                </p:inputTextarea>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" >                                
+                                <p:commandButton value="Cerrar" action="#{userStatusController.ocultarModal(2)}" 
+                                                 immediate="true" update="formEstadosusuario"
+                                                 styleClass="btn btn-warning"/>
+                                <p:commandButton value="Guardar" action="#{userStatusController.editarYCerrar()}"
+                                                 update="formEstadosusuario, formEditarEstadousuario:gridEditarEstadousuario"
+                                                 styleClass="btn btn-success"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </center>
+                </p:dialog>
+                <!--Fin código estados del usuario-->
             </ui:define>
 
         </ui:composition>

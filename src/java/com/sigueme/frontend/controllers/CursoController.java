@@ -353,7 +353,7 @@ public class CursoController implements Serializable {
                 } else {
                     if (eliminarUsuariosDelCurso()) {
                         cursoFacadeLocal.remove(curso);
-                        enviarCorreoAlEditarUsuariosCurso(new ArrayList<>(), usuariosRemovidosDelCursoEmail);
+//                        enviarCorreoAlEditarUsuariosCurso(new ArrayList<>(), usuariosRemovidosDelCursoEmail);
                         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Curso Eliminado Correctamente"));
                     }
                 }
@@ -369,7 +369,7 @@ public class CursoController implements Serializable {
     public void eliminarTodosLosUsuariosDelCurso() {
         if (eliminarUsuariosDelCurso()) {
             ocultarModal(12);
-            enviarCorreoAlEditarUsuariosCurso(new ArrayList<>(), usuariosRemovidosDelCursoEmail);
+//            enviarCorreoAlEditarUsuariosCurso(new ArrayList<>(), usuariosRemovidosDelCursoEmail);
             FacesContext.getCurrentInstance().addMessage(
                     null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "los usuarios se han removido correctamente"));
         }
@@ -871,7 +871,7 @@ public class CursoController implements Serializable {
         verificarEstadoCurso();
         cursoFacadeLocal.edit(curso);
         //Aqui rocedemos a enviar el correo
-        enviarCorreoAlEditarUsuariosCurso(listaUsuariosAgregados, listaUsuariosRemovidos);
+//        enviarCorreoAlEditarUsuariosCurso(listaUsuariosAgregados, listaUsuariosRemovidos);
 
         FacesContext.getCurrentInstance().addMessage(
                 null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Los datos se han modificado correctamente"));

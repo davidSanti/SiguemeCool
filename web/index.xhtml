@@ -56,19 +56,21 @@
 
                     <h2>Recuperar Contraseña</h2>
                     <h:panelGrid id="gridRecuperarClave" columns="1">
-
-                        <p:inputText id="recuperarIdentificacion" value="#{loginController.identificacionRecuperarClave}" pt:required="true"
-                                     required="true" requiredMessage="Campo obligatorio"  pt:placeholder="Cedula | PeopleSoft"  />
-
-                        <p:inputText id="recuperarCorreo" value="#{loginController.correoRecuperarClave}" pt:required="true"
-                                     required="true" requiredMessage="Campo obligatorio" pt:placeholder="Correo" styleClass="cedula-contraseñaEstilos" />
-                    </h:panelGrid>
-
-                    <h:panelGrid columns="2">
-                        <p:commandButton value="Continuar" action="#{loginController.recuperarClave()}" 
-                                         update="recuperarClave, formRecuperarClave:growlRecuperar" 
-                                         styleClass="btn btn-primary" />
-
+                        <h3>Por favor comuníquese con el Site Manager </h3>
+                        <h3>para la asignación de contraseñas</h3>
+                        <!--
+                                                <p:inputText id="recuperarIdentificacion" value="#{loginController.identificacionRecuperarClave}" pt:required="true"
+                                                             required="true" requiredMessage="Campo obligatorio"  pt:placeholder="Cedula | PeopleSoft"  />
+                        
+                                                <p:inputText id="recuperarCorreo" value="#{loginController.correoRecuperarClave}" pt:required="true"
+                                                             required="true" requiredMessage="Campo obligatorio" pt:placeholder="Correo" styleClass="cedula-contraseñaEstilos" />
+                                            </h:panelGrid>
+                        
+                                            <h:panelGrid columns="2">
+                                                <p:commandButton value="Continuar" action="#{loginController.recuperarClave()}" 
+                                                                 update="recuperarClave, formRecuperarClave:growlRecuperar" 
+                                                                 styleClass="btn btn-primary" />
+                        -->
                         <p:commandButton value="Cancelar" immediate="true" styleClass="btn btn-warning" 
                                          actionListener="#{loginController.ocultarModal(1)}"/>
                     </h:panelGrid>

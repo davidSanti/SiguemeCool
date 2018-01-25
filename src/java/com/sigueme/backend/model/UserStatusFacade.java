@@ -37,7 +37,7 @@ public class UserStatusFacade extends AbstractFacade<UserStatus> implements User
     public List<UserStatus> listarEstados() {
         List<UserStatus> lista = new ArrayList<>();
         try {
-            Query query = em.createQuery("SELECT us FROM UserStatus us WHERE us.userStatusId NOT IN (2,3,4)");
+            Query query = em.createQuery("SELECT us FROM UserStatus us WHERE us.userStatusId NOT IN (2,3)");
             lista = query.getResultList();
         } catch (Exception e) {
             System.out.println("Error en el metodo filtrarPorTodosLosCampos= " + e.getMessage());

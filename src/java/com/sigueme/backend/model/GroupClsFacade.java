@@ -69,4 +69,4 @@ public class GroupClsFacade extends AbstractFacade<GroupCls> implements GroupCls
         }
         return lista;
     }
-}
+ }

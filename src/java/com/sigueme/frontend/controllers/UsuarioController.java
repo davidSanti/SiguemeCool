@@ -107,7 +107,11 @@ public class UsuarioController implements Serializable {
 
     public void filtrarTodosLosCampos() {
         listaUsuarios = new ArrayList<>();
-        listaUsuarios = userFacadeLocal.filtrarPorTodosLosCampos(parametroBusqueda);
+        if (parametroBusqueda != null && !parametroBusqueda.equals("")) {
+            listaUsuarios = userFacadeLocal.filtrarPorTodosLosCampos(parametroBusqueda);
+        } else {
+            listarUsuarios();
+        }
     }
 
     public void limpiarFiltro() {

@@ -103,12 +103,12 @@
                             <p:commandButton oncomplete="PF('Descargar').show()" 
                                              actionListener="#{miCursoController.asignarUsuarioCursos(curso,true)}" update="Descargar" 
                                              disabled="#{curso.attached == null and curso.description == null ? true : false }" icon="ui-icon-circle-arrow-s"/>   
-
+<!--
                             <p:commandButton action="#{miCursoController.eliminarEvidenciaCurso(curso)}" update="formMiCurso"
                                              disabled="#{curso.attached == null || curso.grade != null ? true : false }" icon="ui-icon-circle-close" >
                                 <p:confirm header="Confirmación" message="Estas Seguro de eliminar este curso?" icon="ui-icon-alert"/>
 
-                            </p:commandButton>
+                            </p:commandButton>-->
                         </p:column>
                     </p:dataTable>
 
@@ -257,7 +257,6 @@
                         </center>
                     </p:confirmDialog>
                 </h:form>
-
 
             </ui:define>
         </ui:composition>
