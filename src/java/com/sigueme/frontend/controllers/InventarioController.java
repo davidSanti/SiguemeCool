@@ -127,7 +127,8 @@ public class InventarioController implements Serializable {
         boolean bandera = puestoSerial == null;
         if (bandera) {
             try {
-//                this.deskFacadeLocal.create(puesto);
+                this.deskFacadeLocal.create(puesto);
+                listarPuestos();
                 banderaRegistro = true;
                 context.addMessage(
                         null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Registro exitoso"));
